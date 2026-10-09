@@ -1,7 +1,7 @@
 # TASK-018 — Maintenance stabilization and impact analysis
 
 - **ID:** T018
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 4 — Statistical Monitoring
 - **Gate:** None
 
