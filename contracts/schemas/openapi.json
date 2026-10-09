@@ -5500,19 +5500,65 @@
           },
           "description": {
             "$ref": "#/components/schemas/LocalizedText"
+          },
+          "residual": {
+            "default": false,
+            "description": "Condition-normalized residual against the matched regime (L4-03)",
+            "title": "Residual",
+            "type": "boolean"
           }
         },
         "required": [
           "name",
           "unit",
-          "description"
+          "description",
+          "residual"
         ],
         "title": "FeatureDef",
         "type": "object"
       },
+      "FeatureExtraction": {
+        "additionalProperties": false,
+        "properties": {
+          "vectors": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureVector"
+            },
+            "title": "Vectors",
+            "type": "array"
+          },
+          "skipped": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureSkip"
+            },
+            "title": "Skipped",
+            "type": "array"
+          },
+          "not_supported": {
+            "description": "Components whose type has no feature set (template only)",
+            "items": {
+              "type": "string"
+            },
+            "title": "Not Supported",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "vectors",
+          "skipped",
+          "not_supported",
+          "is_simulated"
+        ],
+        "title": "FeatureExtraction",
+        "type": "object"
+      },
       "FeatureSchema": {
         "additionalProperties": false,
-        "description": "Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.",
+        "description": "Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.\n\nA published version is immutable: changing a definition needs a new version.",
         "properties": {
           "feature_set": {
             "title": "Feature Set",
@@ -5520,6 +5566,10 @@
           },
           "version": {
             "title": "Version",
+            "type": "string"
+          },
+          "component_type": {
+            "title": "Component Type",
             "type": "string"
           },
           "features": {
@@ -5534,9 +5584,33 @@
         "required": [
           "feature_set",
           "version",
+          "component_type",
           "features"
         ],
         "title": "FeatureSchema",
+        "type": "object"
+      },
+      "FeatureSkip": {
+        "additionalProperties": false,
+        "description": "A running window for which a component got no feature vector, and why.",
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "component_id",
+          "window",
+          "reason"
+        ],
+        "title": "FeatureSkip",
         "type": "object"
       },
       "FeatureValue": {
@@ -5574,6 +5648,7 @@
       },
       "FeatureVector": {
         "additionalProperties": false,
+        "description": "Features of one component over one closed observation window, computed from that window only.\n\n``None`` means not computable in this window (signal absent, too few operations, or a residual\nwithout a matched regime); it is never filled in.",
         "properties": {
           "component_id": {
             "title": "Component Id",
@@ -5594,6 +5669,23 @@
             ],
             "title": "Regime Id"
           },
+          "regime_status": {
+            "description": "KNOWN, UNSUPPORTED or NOT_EVALUATED",
+            "title": "Regime Status",
+            "type": "string"
+          },
+          "catalog_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Regime catalog used for the residuals",
+            "title": "Catalog Id"
+          },
           "feature_ref": {
             "description": "feature_set@version",
             "title": "Feature Ref",
@@ -5601,6 +5693,13 @@
           },
           "window": {
             "$ref": "#/components/schemas/TimeWindow"
+          },
+          "source_signals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Signals",
+            "type": "array"
           },
           "values": {
             "additionalProperties": {
@@ -5625,8 +5724,11 @@
           "component_id",
           "lifecycle_id",
           "regime_id",
+          "regime_status",
+          "catalog_id",
           "feature_ref",
           "window",
+          "source_signals",
           "values",
           "is_simulated"
         ],

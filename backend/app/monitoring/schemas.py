@@ -106,13 +106,19 @@ class FeatureDef(ContractModel):
     name: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     unit: str
     description: LocalizedText
+    residual: bool = Field(
+        default=False, description="Condition-normalized residual against the matched regime (L4-03)"
+    )
 
 
 class FeatureSchema(ContractModel):
-    """Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``."""
+    """Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.
+
+    A published version is immutable: changing a definition needs a new version."""
 
     feature_set: str
     version: str
+    component_type: str
     features: list[FeatureDef] = Field(min_length=1)
 
     @property
@@ -121,12 +127,35 @@ class FeatureSchema(ContractModel):
 
 
 class FeatureVector(ContractModel):
+    """Features of one component over one closed observation window, computed from that window only.
+
+    ``None`` means not computable in this window (signal absent, too few operations, or a residual
+    without a matched regime); it is never filled in."""
+
     component_id: str
     lifecycle_id: str
     regime_id: str | None
+    regime_status: str = Field(description="KNOWN, UNSUPPORTED or NOT_EVALUATED")
+    catalog_id: str | None = Field(description="Regime catalog used for the residuals")
     feature_ref: str = Field(description="feature_set@version")
     window: TimeWindow
+    source_signals: list[str]
     values: dict[str, float | None]
+    is_simulated: bool
+
+
+class FeatureSkip(ContractModel):
+    """A running window for which a component got no feature vector, and why."""
+
+    component_id: str
+    window: TimeWindow
+    reason: LocalizedText
+
+
+class FeatureExtraction(ContractModel):
+    vectors: list[FeatureVector]
+    skipped: list[FeatureSkip]
+    not_supported: list[str] = Field(description="Components whose type has no feature set (template only)")
     is_simulated: bool
 
 

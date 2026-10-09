@@ -69,3 +69,9 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 ## D-015 — Gate G2 approved
 - **Date:** 2026-10-09 · **Status:** APPROVED by user (Mira, decision card, 2026-10-09T15:32Z)
 - **Decision:** G2 data and domain validation approved with assumptions A1–A5 in `contracts/evidence/G2/README.md` §2 accepted as stated. T015–T018 proceed on these semantics; A1–A3 are rechecked when real IoT data becomes available.
+
+## D-016 — Features are per closed observation window, versioned and immutable
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T015; no user gate). Part of the G3 review.
+- **Decision:** A feature vector covers one component over one closed observation window of a running machine and is computed from that window's rows only. A window still open at the extraction time is not emitted. The regime catalog used for residuals must be learned from a period ending before the extraction window. Residuals (torque at cruise, actuator duration medians) are robust distances from the matched regime's reference level and are empty without a known regime. A feature set version is immutable once registered. Stored vectors are deterministic per version and window, so saving different values for an existing window is refused. Windows overlapping maintenance or spanning a lifecycle change get no vector.
+- **Rationale:** Prevents leakage of future data into features and baselines (L4-04), keeps recipe changes from looking like degradation (L4-03), and lets every later result name the exact feature version it used (GEN-06).
+

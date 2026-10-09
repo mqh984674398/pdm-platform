@@ -30,3 +30,23 @@ MISALIGNED. The standstill torque is compared with the reference period: a shift
 Thresholds were set on the simulated scenarios: every Golden Case of S13–S16 and S20 is met and the
 15 scenarios without data faults raise no flags (`backend/scripts/quality_sweep.py`). They are not
 validated on real equipment.
+
+## Features (`features/`, T015)
+
+`extract_features` produces one `FeatureVector` per component and closed observation window of a
+running machine, using only that window's rows (rows after `as_of` are dropped; a window that could
+still grow is not emitted). Feature sets are declared per component type in `definitions.py` and
+referenced as `feature_set@version`; the store (`feature_schemas`, `feature_vectors`) refuses a changed
+definition under a published version and different values for an already stored window.
+
+| Feature set | Features |
+| --- | --- |
+| `ball_screw@1.0.0`, `linear_motor@1.0.0` | speed at cruise, RMS speed while moving, torque at cruise, RMS and 95th percentile torque, cruise torque residual |
+| `pneumatic_cylinder@1.0.0` | operation count; per direction: median and 90th percentile duration, incomplete ratio, duration residual |
+| `vacuum_cup@1.0.0` | operation count; release median and 90th percentile, incomplete ratio, release residual |
+
+Residuals are `(value − regime reference median) / max(MAD, 1 % of median)` against the matched regime
+of a catalog learned before the extraction window; without a known regime they are empty. Durations
+need at least 3 completed operations in the window. Windows overlapping maintenance or spanning a
+lifecycle change are listed in `skipped`.
+

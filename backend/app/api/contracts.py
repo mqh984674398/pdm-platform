@@ -100,6 +100,8 @@ CONTRACT_MODELS = [
     mon.FeatureDef,
     mon.FeatureSchema,
     mon.FeatureVector,
+    mon.FeatureSkip,
+    mon.FeatureExtraction,
     mon.FeatureStats,
     mon.Baseline,
     pred.SamplingRequirement,

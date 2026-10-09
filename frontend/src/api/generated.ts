@@ -1404,18 +1404,52 @@ export interface components {
       /** Unit */
       unit: string
       description: components['schemas']['LocalizedText']
+      /**
+       * Residual
+       * @description Condition-normalized residual against the matched regime (L4-03)
+       * @default false
+       */
+      residual: boolean
+    }
+    /** FeatureExtraction */
+    FeatureExtraction: {
+      /** Vectors */
+      vectors: components['schemas']['FeatureVector'][]
+      /** Skipped */
+      skipped: components['schemas']['FeatureSkip'][]
+      /**
+       * Not Supported
+       * @description Components whose type has no feature set (template only)
+       */
+      not_supported: string[]
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * FeatureSchema
      * @description Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.
+     *
+     *     A published version is immutable: changing a definition needs a new version.
      */
     FeatureSchema: {
       /** Feature Set */
       feature_set: string
       /** Version */
       version: string
+      /** Component Type */
+      component_type: string
       /** Features */
       features: components['schemas']['FeatureDef'][]
+    }
+    /**
+     * FeatureSkip
+     * @description A running window for which a component got no feature vector, and why.
+     */
+    FeatureSkip: {
+      /** Component Id */
+      component_id: string
+      window: components['schemas']['TimeWindow']
+      reason: components['schemas']['LocalizedText']
     }
     /** FeatureValue */
     FeatureValue: {
@@ -1430,7 +1464,13 @@ export interface components {
        */
       normalized: number | null
     }
-    /** FeatureVector */
+    /**
+     * FeatureVector
+     * @description Features of one component over one closed observation window, computed from that window only.
+     *
+     *     ``None`` means not computable in this window (signal absent, too few operations, or a residual
+     *     without a matched regime); it is never filled in.
+     */
     FeatureVector: {
       /** Component Id */
       component_id: string
@@ -1439,11 +1479,23 @@ export interface components {
       /** Regime Id */
       regime_id: string | null
       /**
+       * Regime Status
+       * @description KNOWN, UNSUPPORTED or NOT_EVALUATED
+       */
+      regime_status: string
+      /**
+       * Catalog Id
+       * @description Regime catalog used for the residuals
+       */
+      catalog_id: string | null
+      /**
        * Feature Ref
        * @description feature_set@version
        */
       feature_ref: string
       window: components['schemas']['TimeWindow']
+      /** Source Signals */
+      source_signals: string[]
       /** Values */
       values: {
         [key: string]: number | null
