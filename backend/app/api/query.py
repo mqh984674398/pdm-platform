@@ -82,9 +82,9 @@ def admin_template_history(template_id: str, _: Admin, db: DB) -> list[QueryTemp
     "/admin/query-templates", response_model=QueryTemplateAdminView, status_code=status.HTTP_201_CREATED
 )
 def admin_create_template(
-    spec: QueryTemplateSpec, who: Admin, db: DB, svc: Service
+    spec: QueryTemplateSpec, who: Admin, db: DB, reg: Sources
 ) -> QueryTemplateAdminView:
-    tables = allowed_tables(svc.sql_adapter(spec.data_source_id))
+    tables = allowed_tables(reg.adapter(spec.data_source_id))
     rec = TemplateRegistry(db).create(spec, who, tables)
     db.commit()
     return rec.to_admin_view()
@@ -92,11 +92,11 @@ def admin_create_template(
 
 @router.put("/admin/query-templates/{template_id}", response_model=QueryTemplateAdminView)
 def admin_update_template(
-    template_id: str, spec: QueryTemplateSpec, who: Admin, db: DB, svc: Service
+    template_id: str, spec: QueryTemplateSpec, who: Admin, db: DB, reg: Sources
 ) -> QueryTemplateAdminView:
     if spec.template_id != template_id:
         raise TemplateConflictError("template_id in the body must match the URL")
-    tables = allowed_tables(svc.sql_adapter(spec.data_source_id))
+    tables = allowed_tables(reg.adapter(spec.data_source_id))
     rec = TemplateRegistry(db).update(spec, who, tables)
     db.commit()
     return rec.to_admin_view()

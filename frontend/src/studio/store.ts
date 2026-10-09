@@ -9,6 +9,7 @@ import type {
   DataSourceConfig,
   PhysicalQuantity,
   SignalConfigVersion,
+  SignalDefinition,
   SignalGroup,
   SignalMapping,
   VisualizationTemplate,
@@ -25,6 +26,7 @@ import {
   type StudioSignal,
   type TemplateView,
 } from '@/api/studio'
+import { createHttpStudioApi, StudioApiError } from '@/api/studioHttp'
 import { summarizeQuality, type QualitySummary } from './quality'
 import { suggestedScale } from './units'
 
@@ -70,8 +72,17 @@ export interface FieldMapping {
   value_field: string
 }
 
+/** The real backend unless the build asks for the offline mock (VITE_STUDIO_API=mock, G1 demo). */
+export async function defaultStudioApi(): Promise<{ api: StudioApi; kind: 'http' | 'mock' }> {
+  if (import.meta.env.VITE_STUDIO_API === 'mock') {
+    return { api: createMockStudioApi(await loadStudioFixture()), kind: 'mock' }
+  }
+  return { api: createHttpStudioApi(), kind: 'http' }
+}
+
 export const useStudioStore = defineStore('studio', () => {
   const api = shallowRef<StudioApi | null>(null)
+  const apiKind = ref<'http' | 'mock'>('mock')
   const role = ref<StudioRole>('operator')
   const step = ref(0)
   const visited = ref(0)
@@ -98,10 +109,18 @@ export const useStudioStore = defineStore('studio', () => {
   const deviceComponents = ref<StudioComponent[]>([])
   const preview = ref<StudioPreview | null>(null)
   const saved = ref<SignalConfigVersion | null>(null)
+  const saveError = ref<StudioApiError | Error | null>(null)
   const comment = ref('')
 
   async function init(given?: StudioApi) {
-    api.value = given ?? createMockStudioApi(await loadStudioFixture())
+    if (given) {
+      api.value = given
+      apiKind.value = 'mock'
+    } else {
+      const chosen = await defaultStudioApi()
+      api.value = chosen.api
+      apiKind.value = chosen.kind
+    }
     source.value = await api.value.source()
     devices.value = await api.value.devices()
     versions.value = await api.value.versions()
@@ -281,31 +300,53 @@ export const useStudioStore = defineStore('studio', () => {
       },
       component_id: d.component_id,
     }))
+    const signals: SignalDefinition[] = activeDrafts.value.map((d) => {
+      const known = deviceSignals.value.find((x) => x.signal_id === d.signal_id)
+      return {
+        signal_id: d.signal_id,
+        name: known ? { ...known.name } : { zh: d.key_name, en: d.key_name },
+        quantity: d.quantity,
+        unit: d.target_unit,
+        expected_sampling_s: d.expected_sampling_s,
+        valid_min: known?.valid_min ?? null,
+        valid_max: known?.valid_max ?? null,
+      }
+    })
     const sig = (k: string) => drafts.value[k]!.signal_id
+    // Group and chart ids are scoped to the device so several devices can be configured.
+    const scoped = (id: string) => `${deviceId.value ?? ''}.${id}`
     const signalGroups: SignalGroup[] = groups.value.map((g) => ({
-      group_id: g.group_id,
+      group_id: scoped(g.group_id),
       name: g.name,
       signal_ids: g.keys.map(sig),
       component_id: groupComponent(g),
     }))
     const viz: VisualizationTemplate[] = groups.value.map((g) => ({
-      template_id: `viz-${g.group_id}`,
+      template_id: `viz-${scoped(g.group_id)}`,
       name: g.name,
       chart: g.chart,
       signal_ids: g.keys.map(sig),
       y_min: null,
       y_max: null,
     }))
-    return { mappings, groups: signalGroups, visualizations: viz }
+    return { signals, mappings, groups: signalGroups, visualizations: viz }
   })
 
   async function save() {
     if (!comment.value.trim()) return
-    saved.value = await api.value!.saveVersion(content.value, comment.value.trim(), role.value)
+    saveError.value = null
+    try {
+      saved.value = await api.value!.saveVersion(content.value, comment.value.trim(), role.value)
+    } catch (e) {
+      saveError.value = e instanceof Error ? e : new Error(String(e))
+      return
+    }
     versions.value = await api.value!.versions()
   }
 
   return {
+    apiKind,
+    saveError,
     role,
     step,
     visited,

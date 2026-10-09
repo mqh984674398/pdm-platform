@@ -204,5 +204,6 @@
   "fixtures/S14_linear_motor_raw.csv": "a09ad12d220b8364ecdebd5b23ba381809a19451808d0ad58a8d5836c8dc0f77",
   "fixtures/S18_cylinder_raw.csv": "9f8652939e016a9535683f8737d65b7b0e83f274ad7d5e10b576a3d90be1bbb6",
   "fixtures/demo_fleet.json": "6031de86af30a685702908be9fb8324c98283388e5a0f3d4f0883d1dcec0f48f",
-  "fixtures/studio_demo.json": "ca19b45e753bf4da39d2deddf0fcd3a0b62402eb2c903b486f9ae627e3e86ebc"
+  "fixtures/studio_demo.json": "4e16dab9fb0d2abe5e1f4cf81f1fde6718cc990265467be1a94ac87ee83d17e4",
+  "fixtures/studio_sources.json": "647075dd56ccf0c31f31281623e75e981a7dfd392991e844e4973c19dffceb9c"
 }

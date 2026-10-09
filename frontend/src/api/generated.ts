@@ -176,6 +176,248 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/signal-config': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Current Config */
+    get: operations['current_config_api_signal_config_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/versions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Config Versions */
+    get: operations['config_versions_api_signal_config_versions_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/versions/{version}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Config Version */
+    get: operations['config_version_api_signal_config_versions__version__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/sources/{data_source_id}/devices/{device_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Replace Device */
+    put: operations['replace_device_api_signal_config_sources__data_source_id__devices__device_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/signals/{item_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Signals */
+    put: operations['put_signals_api_signal_config_signals__item_id__put']
+    post?: never
+    /** Delete Signals */
+    delete: operations['delete_signals_api_signal_config_signals__item_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/mappings/{item_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Mappings */
+    put: operations['put_mappings_api_signal_config_mappings__item_id__put']
+    post?: never
+    /** Delete Mappings */
+    delete: operations['delete_mappings_api_signal_config_mappings__item_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/groups/{item_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Groups */
+    put: operations['put_groups_api_signal_config_groups__item_id__put']
+    post?: never
+    /** Delete Groups */
+    delete: operations['delete_groups_api_signal_config_groups__item_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signal-config/visualizations/{item_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Visualizations */
+    put: operations['put_visualizations_api_signal_config_visualizations__item_id__put']
+    post?: never
+    /** Delete Visualizations */
+    delete: operations['delete_visualizations_api_signal_config_visualizations__item_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signals/preview': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Preview Signals */
+    post: operations['preview_signals_api_signals_preview_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/signals/{signal_id}/preview': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Preview Saved Signal */
+    get: operations['preview_saved_signal_api_signals__signal_id__preview_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/check': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Check Source */
+    get: operations['check_source_api_datasources__data_source_id__check_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/layout': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Source Layout */
+    get: operations['source_layout_api_datasources__data_source_id__layout_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/devices': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Source Devices */
+    get: operations['source_devices_api_datasources__data_source_id__devices_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/devices/{device_id}/suggestions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Device Suggestions */
+    get: operations['device_suggestions_api_datasources__data_source_id__devices__device_id__suggestions_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -328,6 +570,20 @@ export interface components {
      * @enum {string}
      */
     BaselineKind: 'VERIFIED_HEALTHY' | 'ADAPTIVE' | 'DEGRADATION_HISTORY'
+    /** ChangeMeta */
+    ChangeMeta: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+    }
     /**
      * ChartKind
      * @enum {string}
@@ -427,6 +683,16 @@ export interface components {
      */
     ComponentType:
       'BALL_SCREW' | 'LINEAR_MOTOR' | 'VACUUM_CUP' | 'PNEUMATIC_CYLINDER' | 'CAM' | 'GEAR'
+    /** ConnectionCheck */
+    ConnectionCheck: {
+      /**
+       * Key
+       * @enum {string}
+       */
+      key: 'reachable' | 'readOnly' | 'timeout' | 'rowLimit'
+      /** Ok */
+      ok: boolean
+    }
     /**
      * CycleKind
      * @enum {string}
@@ -573,12 +839,60 @@ export interface components {
       /** Higher Is Worse */
       higher_is_worse: boolean
     }
+    /**
+     * DeviceConfigChange
+     * @description Replaces everything configured for one device of one source (the Studio's save).
+     */
+    DeviceConfigChange: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      /** Mappings */
+      mappings: components['schemas']['SignalMapping'][]
+      /** Groups */
+      groups: components['schemas']['SignalGroup'][]
+      /** Visualizations */
+      visualizations: components['schemas']['VisualizationTemplate'][]
+    }
+    /** DeviceKey */
+    DeviceKey: {
+      /** Key Name */
+      key_name: string
+      /** Rows */
+      rows: number | null
+    }
     /** DeviceKeys */
     DeviceKeys: {
       /** Device Id */
       device_id: string
       /** Key Names */
       key_names: string[]
+    }
+    /** DeviceSuggestions */
+    DeviceSuggestions: {
+      /** Data Source Id */
+      data_source_id: string
+      /** Device Id */
+      device_id: string
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      /** Mappings */
+      mappings: components['schemas']['SignalMapping'][]
+      /** Components */
+      components: components['schemas']['ComponentInstance'][]
+      preview_window: components['schemas']['TimeWindow'] | null
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * EligibilityCondition
@@ -767,6 +1081,15 @@ export interface components {
      * @enum {string}
      */
     HealthState: 'NORMAL' | 'WATCH' | 'WARNING' | 'CRITICAL' | 'UNKNOWN'
+    /** LayoutColumn */
+    LayoutColumn: {
+      /** Name */
+      name: string
+      /** Type */
+      type: string
+      /** Role */
+      role: ('device' | 'key' | 'time' | 'value') | null
+    }
     /**
      * LifecycleStatus
      * @enum {string}
@@ -905,6 +1228,23 @@ export interface components {
       is_simulated: boolean
     }
     /**
+     * NormalizedSeries
+     * @description Full-resolution normalized values (algorithm input), never downsampled (L2-06).
+     */
+    NormalizedSeries: {
+      /** Signal Id */
+      signal_id: string
+      /** Unit */
+      unit: string
+      /** Samples */
+      samples: components['schemas']['NormalizedSample'][]
+      /**
+       * Truncated
+       * @description True when the source returned more rows than the preview limit
+       */
+      truncated: boolean
+    }
+    /**
      * OperatingRegime
      * @description Observable operating conditions used for normalization and eligibility (L3-03).
      */
@@ -992,6 +1332,38 @@ export interface components {
       | components['schemas']['DegradationIndicatorResult']
       | components['schemas']['FailureProbabilityResult']
       | components['schemas']['UnsupportedPrediction']
+    /**
+     * PreviewRequest
+     * @description Preview mapped signals over a window. Definitions not given here come from the current
+     *     configuration, so drafts can be previewed before they are saved.
+     */
+    PreviewRequest: {
+      /** Mappings */
+      mappings: components['schemas']['SignalMapping'][]
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      window: components['schemas']['TimeWindow']
+      /**
+       * Max Points
+       * @default 1000
+       */
+      max_points: number
+      /**
+       * Include Normalized
+       * @default true
+       */
+      include_normalized: boolean
+    }
+    /** PreviewResponse */
+    PreviewResponse: {
+      window: components['schemas']['TimeWindow']
+      /** Normalized */
+      normalized: components['schemas']['NormalizedSeries'][]
+      /** Visualization */
+      visualization: components['schemas']['VisualizationSeries'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * QualityFlag
      * @enum {string}
@@ -1238,6 +1610,32 @@ export interface components {
       value: number | null
     }
     /**
+     * SignalConfig
+     * @description The whole signal configuration; each saved state is one immutable version (L2-05).
+     *
+     *     Invariants: ids are unique; every mapping, group, and chart refers to a defined signal; a signal
+     *     has at most one mapping and a device key feeds at most one signal; a conversion's target unit is
+     *     the signal's unit.
+     */
+    SignalConfig: {
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      /** Mappings */
+      mappings: components['schemas']['SignalMapping'][]
+      /** Groups */
+      groups: components['schemas']['SignalGroup'][]
+      /** Visualizations */
+      visualizations: components['schemas']['VisualizationTemplate'][]
+    }
+    /**
+     * SignalConfigState
+     * @description Current configuration; ``version`` is None until the first save.
+     */
+    SignalConfigState: {
+      version: components['schemas']['SignalConfigVersion'] | null
+      content: components['schemas']['SignalConfig']
+    }
+    /**
      * SignalConfigVersion
      * @description Immutable snapshot reference for the signal configuration (L2-05).
      */
@@ -1258,6 +1656,26 @@ export interface components {
       comment: string
       /** Content Hash */
       content_hash: string
+    }
+    /** SignalConfigVersionDetail */
+    SignalConfigVersionDetail: {
+      /** Version */
+      version: number
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Created By */
+      created_by: string
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /** Content Hash */
+      content_hash: string
+      content: components['schemas']['SignalConfig']
     }
     /** SignalDefinition */
     SignalDefinition: {
@@ -1286,6 +1704,57 @@ export interface components {
        */
       valid_max: number | null
     }
+    /** SignalDefinition */
+    'SignalDefinition-Input': {
+      /** Signal Id */
+      signal_id: string
+      name: components['schemas']['LocalizedText']
+      quantity: components['schemas']['PhysicalQuantity']
+      /**
+       * Unit
+       * @description Engineering unit of normalized values, e.g. 'rpm', 'N*m', 's'
+       */
+      unit: string
+      /** Expected Sampling S */
+      expected_sampling_s?: number | null
+      /** Valid Min */
+      valid_min?: number | null
+      /** Valid Max */
+      valid_max?: number | null
+    }
+    /** SignalDefinition */
+    'SignalDefinition-Output': {
+      /** Signal Id */
+      signal_id: string
+      name: components['schemas']['LocalizedText']
+      quantity: components['schemas']['PhysicalQuantity']
+      /**
+       * Unit
+       * @description Engineering unit of normalized values, e.g. 'rpm', 'N*m', 's'
+       */
+      unit: string
+      /** Expected Sampling S */
+      expected_sampling_s: number | null
+      /** Valid Min */
+      valid_min: number | null
+      /** Valid Max */
+      valid_max: number | null
+    }
+    /** SignalDefinitionChange */
+    SignalDefinitionChange: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+      item: components['schemas']['SignalDefinition']
+    }
     /** SignalGroup */
     SignalGroup: {
       /** Group Id */
@@ -1298,6 +1767,41 @@ export interface components {
        * @default null
        */
       component_id: string | null
+    }
+    /** SignalGroup */
+    'SignalGroup-Input': {
+      /** Group Id */
+      group_id: string
+      name: components['schemas']['LocalizedText']
+      /** Signal Ids */
+      signal_ids: string[]
+      /** Component Id */
+      component_id?: string | null
+    }
+    /** SignalGroup */
+    'SignalGroup-Output': {
+      /** Group Id */
+      group_id: string
+      name: components['schemas']['LocalizedText']
+      /** Signal Ids */
+      signal_ids: string[]
+      /** Component Id */
+      component_id: string | null
+    }
+    /** SignalGroupChange */
+    SignalGroupChange: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+      item: components['schemas']['SignalGroup']
     }
     /**
      * SignalMapping
@@ -1325,6 +1829,85 @@ export interface components {
        * @default null
        */
       component_id: string | null
+    }
+    /**
+     * SignalMapping
+     * @description Binds a logical signal to a device + KeyName in a data source (L2-01).
+     */
+    'SignalMapping-Input': {
+      /** Signal Id */
+      signal_id: string
+      /** Data Source Id */
+      data_source_id: string
+      /** Template Id */
+      template_id: string
+      /** Device Id */
+      device_id: string
+      /** Key Name */
+      key_name: string
+      /** Time Field */
+      time_field: string
+      /** Value Field */
+      value_field: string
+      conversion?: components['schemas']['UnitConversion-Input'] | null
+      /** Component Id */
+      component_id?: string | null
+    }
+    /**
+     * SignalMapping
+     * @description Binds a logical signal to a device + KeyName in a data source (L2-01).
+     */
+    'SignalMapping-Output': {
+      /** Signal Id */
+      signal_id: string
+      /** Data Source Id */
+      data_source_id: string
+      /** Template Id */
+      template_id: string
+      /** Device Id */
+      device_id: string
+      /** Key Name */
+      key_name: string
+      /** Time Field */
+      time_field: string
+      /** Value Field */
+      value_field: string
+      conversion: components['schemas']['UnitConversion-Output'] | null
+      /** Component Id */
+      component_id: string | null
+    }
+    /** SignalMappingChange */
+    SignalMappingChange: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+      item: components['schemas']['SignalMapping']
+    }
+    /**
+     * SourceLayout
+     * @description The telemetry table as configured: columns with their roles and a few sample rows.
+     */
+    SourceLayout: {
+      /** Data Source Id */
+      data_source_id: string
+      /** Table */
+      table: string
+      /** Row Count */
+      row_count: number | null
+      /** Columns */
+      columns: components['schemas']['LayoutColumn'][]
+      /** Sample Rows */
+      sample_rows: string[][]
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * SourceMetadata
@@ -1400,6 +1983,22 @@ export interface components {
        */
       verified: boolean
     }
+    /** StudioDevice */
+    StudioDevice: {
+      /** Device Id */
+      device_id: string
+      /**
+       * Dataset Id
+       * @default null
+       */
+      dataset_id: string | null
+      /** @default null */
+      label: components['schemas']['LocalizedText'] | null
+      /** Keys */
+      keys: components['schemas']['DeviceKey'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** TableInfo */
     TableInfo: {
       /** Schema Name */
@@ -1430,6 +2029,46 @@ export interface components {
      * @description Linear conversion ``target = source * scale + offset`` (L2-02).
      */
     UnitConversion: {
+      /** Source Unit */
+      source_unit: string
+      /** Target Unit */
+      target_unit: string
+      /**
+       * Scale
+       * @default 1
+       */
+      scale: number
+      /**
+       * Offset
+       * @default 0
+       */
+      offset: number
+    }
+    /**
+     * UnitConversion
+     * @description Linear conversion ``target = source * scale + offset`` (L2-02).
+     */
+    'UnitConversion-Input': {
+      /** Source Unit */
+      source_unit: string
+      /** Target Unit */
+      target_unit: string
+      /**
+       * Scale
+       * @default 1
+       */
+      scale: number
+      /**
+       * Offset
+       * @default 0
+       */
+      offset: number
+    }
+    /**
+     * UnitConversion
+     * @description Linear conversion ``target = source * scale + offset`` (L2-02).
+     */
+    'UnitConversion-Output': {
       /** Source Unit */
       source_unit: string
       /** Target Unit */
@@ -1533,6 +2172,47 @@ export interface components {
        * @default null
        */
       y_max: number | null
+    }
+    /** VisualizationTemplate */
+    'VisualizationTemplate-Input': {
+      /** Template Id */
+      template_id: string
+      name: components['schemas']['LocalizedText']
+      chart: components['schemas']['ChartKind']
+      /** Signal Ids */
+      signal_ids: string[]
+      /** Y Min */
+      y_min?: number | null
+      /** Y Max */
+      y_max?: number | null
+    }
+    /** VisualizationTemplate */
+    'VisualizationTemplate-Output': {
+      /** Template Id */
+      template_id: string
+      name: components['schemas']['LocalizedText']
+      chart: components['schemas']['ChartKind']
+      /** Signal Ids */
+      signal_ids: string[]
+      /** Y Min */
+      y_min: number | null
+      /** Y Max */
+      y_max: number | null
+    }
+    /** VisualizationTemplateChange */
+    VisualizationTemplateChange: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Base Version
+       * @description Reject the change unless this is still the current version (0 = none yet)
+       * @default null
+       */
+      base_version: number | null
+      item: components['schemas']['VisualizationTemplate']
     }
   }
   responses: never
@@ -1927,6 +2607,655 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AuditEntry'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  current_config_api_signal_config_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigState']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  config_versions_api_signal_config_versions_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  config_version_api_signal_config_versions__version__get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        version: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersionDetail']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  replace_device_api_signal_config_sources__data_source_id__devices__device_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+        device_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeviceConfigChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_signals_api_signal_config_signals__item_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SignalDefinitionChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_signals_api_signal_config_signals__item_id__delete: {
+    parameters: {
+      query?: {
+        comment?: string
+        base_version?: number | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_mappings_api_signal_config_mappings__item_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SignalMappingChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_mappings_api_signal_config_mappings__item_id__delete: {
+    parameters: {
+      query?: {
+        comment?: string
+        base_version?: number | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_groups_api_signal_config_groups__item_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SignalGroupChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_groups_api_signal_config_groups__item_id__delete: {
+    parameters: {
+      query?: {
+        comment?: string
+        base_version?: number | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_visualizations_api_signal_config_visualizations__item_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VisualizationTemplateChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_visualizations_api_signal_config_visualizations__item_id__delete: {
+    parameters: {
+      query?: {
+        comment?: string
+        base_version?: number | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        item_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignalConfigVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  preview_signals_api_signals_preview_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PreviewRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PreviewResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  preview_saved_signal_api_signals__signal_id__preview_get: {
+    parameters: {
+      query: {
+        start: string
+        end: string
+        max_points?: number
+        include_normalized?: boolean
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        signal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PreviewResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  check_source_api_datasources__data_source_id__check_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ConnectionCheck'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_layout_api_datasources__data_source_id__layout_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SourceLayout']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_devices_api_datasources__data_source_id__devices_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StudioDevice'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  device_suggestions_api_datasources__data_source_id__devices__device_id__suggestions_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+        device_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeviceSuggestions']
         }
       }
       /** @description Validation Error */

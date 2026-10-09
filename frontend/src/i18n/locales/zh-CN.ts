@@ -338,6 +338,7 @@ export default {
       template: '查询模板',
       comment: '变更说明',
       commentPlaceholder: '改了什么、为什么改',
+      saveFailed: '保存失败，配置未改变。',
       save: '保存版本',
       saved: '已保存为第 {v} 版',
       history: '版本历史',

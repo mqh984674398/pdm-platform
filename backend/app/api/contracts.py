@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from pydantic import TypeAdapter
 from pydantic.json_schema import models_json_schema
 
+from app.api import studio
 from app.core import audit
 from app.core import schemas as core
 from app.datasource import schemas as ds
@@ -50,6 +51,24 @@ CONTRACT_MODELS = [
     sig.NormalizedSample,
     sig.SeriesPoint,
     sig.VisualizationSeries,
+    sig.SignalConfig,
+    sig.SignalConfigVersionDetail,
+    sig.SignalConfigState,
+    sig.ChangeMeta,
+    sig.SignalDefinitionChange,
+    sig.SignalMappingChange,
+    sig.SignalGroupChange,
+    sig.VisualizationTemplateChange,
+    sig.DeviceConfigChange,
+    sig.PreviewRequest,
+    sig.NormalizedSeries,
+    sig.PreviewResponse,
+    studio.ConnectionCheck,
+    studio.LayoutColumn,
+    studio.SourceLayout,
+    studio.DeviceKey,
+    studio.StudioDevice,
+    studio.DeviceSuggestions,
     eq.Machine,
     eq.ComponentInstance,
     eq.ComponentLifecycle,

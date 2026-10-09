@@ -11,17 +11,25 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.api.studio import UnknownDeviceError
 from app.core.schemas import ApiError, LocalizedText
 from app.datasource.query_service.registry import TemplateConflictError, TemplateNotFoundError
 from app.datasource.query_service.service import ParameterError
 from app.datasource.query_service.sources import UnknownSourceError
 from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
+from app.signals.preview import PreviewError, UnknownSignalError
+from app.signals.registry import ConfigConflictError, ConfigNotFoundError
 
 log = logging.getLogger("pdm.api")
 
 # exception type -> (HTTP status, code, zh, en); first match wins
 ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
+    (UnknownDeviceError, 404, "unknown_device", "数据源中没有该设备。", "Device not found in this data source."),
+    (UnknownSignalError, 404, "unknown_signal", "未找到该信号。", "Signal not found."),
+    (ConfigNotFoundError, 404, "unknown_config_item", "未找到该配置项或版本。", "Configuration item or version not found."),
+    (ConfigConflictError, 409, "config_conflict", "信号配置冲突，未保存。", "Signal configuration conflict; nothing was saved."),
+    (PreviewError, 422, "invalid_preview", "预览请求无效。", "The preview request is invalid."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),
     (TemplateConflictError, 409, "template_conflict", "查询模板冲突。", "Query template conflict."),

@@ -9,6 +9,7 @@ from decimal import Decimal
 
 from sqlalchemy import text
 
+from app.datasource.adapter import TimeSeriesAdapter
 from app.datasource.query_service.registry import QueryTemplateRecord
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.schemas import QueryParameter, QueryParamType, QueryResult, QueryRunRequest
@@ -24,7 +25,9 @@ class ParameterError(AdapterError):
     pass
 
 
-def allowed_tables(adapter: SqlAdapter) -> set[str]:
+def allowed_tables(adapter: TimeSeriesAdapter) -> set[str]:
+    """Tables a template may read. Templates can be registered for simulated sources too (they
+    describe the source to users) but only run on SQL sources."""
     names: set[str] = set()
     for t in adapter.inspect_schema().tables:
         names.add(t.name.lower())

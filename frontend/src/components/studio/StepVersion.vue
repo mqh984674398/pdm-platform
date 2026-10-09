@@ -8,6 +8,14 @@ const s = useStudioStore()
 const { t } = useI18n()
 const { lt, fmtDate } = useLocalized()
 const template = computed(() => s.templates.find((x) => x.template_id === s.templateId))
+/** Backend messages are bilingual; show the one for the current language plus the reason. */
+const errorText = computed(() => {
+  const e = s.saveError
+  if (!e) return ''
+  const loc = 'localized' in e && e.localized ? lt(e.localized) : ''
+  const reason = 'reason' in e && e.reason ? e.reason : ''
+  return [loc || t('studio.version.saveFailed'), reason].filter(Boolean).join(' ')
+})
 </script>
 
 <template>
@@ -59,6 +67,9 @@ const template = computed(() => s.templates.find((x) => x.template_id === s.temp
     <p v-if="s.saved" class="saved" role="status" data-testid="saved-status">
       {{ t('studio.version.saved', { v: s.saved.version }) }}
     </p>
+    <p v-if="s.saveError" class="save-error" role="alert" data-testid="save-error">
+      {{ errorText }}
+    </p>
     <p class="st-note">{{ t('studio.version.immutable') }}</p>
 
     <section>
@@ -96,7 +107,7 @@ const template = computed(() => s.templates.find((x) => x.template_id === s.temp
           </tbody>
         </table>
       </div>
-      <p class="st-note">{{ t('studio.version.simHistory') }}</p>
+      <p v-if="s.apiKind === 'mock'" class="st-note">{{ t('studio.version.simHistory') }}</p>
     </section>
   </div>
 </template>
@@ -137,6 +148,10 @@ dd {
 }
 .saved {
   color: var(--health-normal);
+  font-weight: 600;
+}
+.save-error {
+  color: var(--health-critical);
   font-weight: 600;
 }
 .fresh td {

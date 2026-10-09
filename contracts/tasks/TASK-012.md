@@ -1,7 +1,7 @@
 # TASK-012 — Data quality, unit conversion, and time alignment
 
 - **ID:** T012
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** None
 

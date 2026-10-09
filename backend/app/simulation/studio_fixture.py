@@ -1,9 +1,10 @@
-"""Data Source Studio demo fixture (T008): a simulated SQL-like telemetry source.
+"""Data Source Studio demo source (T008, T011): four scenarios as one simulated telemetry source.
 
-The studio frontend runs against a mocked backend until the L1/L2 APIs land (T009-T011). This
-fixture gives that mock a read-only "telemetry" table built from four scenarios, so the preview and
-quality steps show real simulated behaviour: a clean source (S01), missing and duplicated rows (S13),
-timestamp jitter and out-of-order rows (S14), and a unit-scale fault (S16).
+Two files come out of it. ``studio_sources.json`` configures the backend's simulated source "sim-iot"
+(the real Studio API, T011). ``studio_demo.json`` is the same source as a static snapshot for the
+frontend's offline mock (unit tests and the G1 demo). The preview windows are chosen so the preview
+and quality steps show real simulated behaviour: a clean source (S01), missing and duplicated rows
+(S13), timestamp jitter and out-of-order rows (S14), and a unit-scale fault (S16).
 """
 
 from __future__ import annotations
@@ -64,7 +65,7 @@ TEMPLATES = [
             version=2,
         ),
         "SELECT deviceid, keyname, ts, value_double\n"
-        "FROM telemetry\n"
+        "FROM raw_telemetry\n"
         "WHERE deviceid = :device_id AND keyname = :key_name\n"
         "  AND ts >= :start AND ts < :end\n"
         "ORDER BY ts\n"
@@ -89,7 +90,7 @@ TEMPLATES = [
             version=1,
         ),
         "SELECT deviceid, keyname, ts, value_double\n"
-        "FROM telemetry\n"
+        "FROM raw_telemetry\n"
         "WHERE deviceid = :device_id AND keyname = :key_name\n"
         "  AND ts > :watermark\n"
         "ORDER BY ts\n"
@@ -115,6 +116,44 @@ VERSIONS = [
 ]
 
 
+def _source() -> DataSourceConfig:
+    return DataSourceConfig(
+        data_source_id=SOURCE_ID,
+        name="SIM IoT telemetry",
+        kind=DataSourceKind.SIMULATED,
+        engine=None,
+        host="sim-iot.local",
+        port=5432,
+        database="iot_telemetry",
+        credential_ref="secret://pdm/sim-iot-readonly",
+        read_only=True,
+        statement_timeout_s=30,
+        max_rows=200_000,
+        is_simulated=True,
+    )
+
+
+def _window(scen_dir: Path, start_h: float, hours: float) -> tuple[datetime, datetime]:
+    cfg = json.loads((scen_dir / "config.json").read_text(encoding="utf-8"))
+    t0 = datetime.fromisoformat(cfg["start"].replace("Z", "+00:00"))
+    return t0 + timedelta(hours=start_h), t0 + timedelta(hours=start_h + hours)
+
+
+def _iso(ts: datetime) -> str:
+    return ts.isoformat().replace("+00:00", "Z")
+
+
+def build_sources(data_dir: Path) -> list[dict[str, object]]:
+    datasets = []
+    for sid, start_h, hours in DEVICES:
+        (scen_dir,) = (data_dir / "scenarios").glob(f"{sid}_*")
+        w0, w1 = _window(scen_dir, start_h, hours)
+        datasets.append(
+            {"dir": f"../scenarios/{scen_dir.name}", "preview_window": {"start": _iso(w0), "end": _iso(w1)}}
+        )
+    return [{"config": _source().model_dump(mode="json"), "simulated_datasets": datasets}]
+
+
 def build_studio(data_dir: Path) -> dict[str, object]:
     devices, previews, signals, components, mappings = [], {}, [], [], []
     meta_devices, earliest, latest, total_rows = [], None, None, 0
@@ -123,9 +162,7 @@ def build_studio(data_dir: Path) -> dict[str, object]:
         (scen_dir,) = (data_dir / "scenarios").glob(f"{sid}_*")
         meta = json.loads((scen_dir / "scenario.json").read_text(encoding="utf-8"))
         topo = json.loads((scen_dir / "topology.json").read_text(encoding="utf-8"))
-        cfg = json.loads((scen_dir / "config.json").read_text(encoding="utf-8"))
-        t0 = datetime.fromisoformat(cfg["start"].replace("Z", "+00:00"))
-        w0, w1 = t0 + timedelta(hours=start_h), t0 + timedelta(hours=start_h + hours)
+        w0, w1 = _window(scen_dir, start_h, hours)
         lo, hi = w0.strftime("%Y-%m-%dT%H:%M:%S"), w1.strftime("%Y-%m-%dT%H:%M:%S")
         rows = list(csv.DictReader(io.StringIO(read_text(scen_dir / "raw_telemetry.csv"))))
         device_id = rows[0]["deviceid"]
@@ -154,27 +191,14 @@ def build_studio(data_dir: Path) -> dict[str, object]:
             }
         )
         previews[device_id] = {
-            "window_start": w0.isoformat().replace("+00:00", "Z"),
-            "window_end": w1.isoformat().replace("+00:00", "Z"),
+            "window_start": _iso(w0),
+            "window_end": _iso(w1),
             "series": series,
         }
         signals += [{**s, "device_id": device_id} for s in topo["signals"]]
         components += [{**c, "device_id": device_id} for c in topo["components"]]
         mappings += topo["mappings"]
-    source = DataSourceConfig(
-        data_source_id=SOURCE_ID,
-        name="SIM IoT telemetry",
-        kind=DataSourceKind.SIMULATED,
-        engine=None,
-        host="sim-iot.local",
-        port=5432,
-        database="iot_telemetry",
-        credential_ref="secret://pdm/sim-iot-readonly",
-        read_only=True,
-        statement_timeout_s=30,
-        max_rows=200_000,
-        is_simulated=True,
-    )
+    source = _source()
     metadata = SourceMetadata(
         data_source_id=SOURCE_ID,
         devices=meta_devices,
@@ -204,6 +228,8 @@ def build_studio(data_dir: Path) -> dict[str, object]:
 
 
 def write_studio(data_dir: Path) -> Path:
+    sources = data_dir / "fixtures" / "studio_sources.json"
+    sources.write_bytes((json.dumps(build_sources(data_dir), indent=2) + "\n").encode("utf-8"))
     path = data_dir / "fixtures" / "studio_demo.json"
     text = json.dumps(build_studio(data_dir), ensure_ascii=False, separators=(",", ":"))
     path.write_bytes((text + "\n").encode("utf-8"))

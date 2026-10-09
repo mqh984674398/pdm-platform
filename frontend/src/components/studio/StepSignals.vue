@@ -44,7 +44,9 @@ const device = computed(() => s.devices.find((d) => d.device_id === s.deviceId))
         />
         <span class="st-mono">{{ k.key_name }}</span>
         <span class="name">{{ lt(s.signalName(k.key_name)) || t('studio.signals.unnamed') }}</span>
-        <span class="st-note">{{ t('studio.signals.rows', { n: n(k.rows) }) }}</span>
+        <span v-if="k.rows !== null" class="st-note">{{
+          t('studio.signals.rows', { n: n(k.rows) })
+        }}</span>
       </label>
     </fieldset>
   </div>

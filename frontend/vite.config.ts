@@ -12,7 +12,8 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: { '/api': 'http://127.0.0.1:8000' },
+    // `vite preview` reuses this proxy; the end-to-end tests point it at their own backend.
+    proxy: { '/api': process.env.PDM_API_URL || 'http://127.0.0.1:8000' },
     fs: { allow: ['..'] },
   },
 })

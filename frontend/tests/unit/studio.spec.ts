@@ -154,7 +154,10 @@ describe('studio workflow', () => {
 
   it('renders the first step with the simulated badge', async () => {
     setLocale('en-US')
-    const w = mount(DataSourceStudioView, { global: { plugins: [i18n, createPinia()] } })
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    await useStudioStore().init(createMockStudioApi(fixture))
+    const w = mount(DataSourceStudioView, { global: { plugins: [i18n, pinia] } })
     await flushPromises()
     await flushPromises()
     expect(w.find('[data-testid="step-title"]').text()).toBe('Connection')

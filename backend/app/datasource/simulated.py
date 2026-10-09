@@ -6,6 +6,7 @@ import csv
 import gzip
 import io
 from bisect import bisect_left, bisect_right
+from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -31,30 +32,36 @@ RAW_COLUMNS = [
 
 
 class SimulatedAdapter(TimeSeriesAdapter):
-    """Read-only, in-memory view of ``raw_telemetry.csv``. Rows are served in timestamp order.
+    """Read-only, in-memory view of one or more datasets' ``raw_telemetry.csv``.
 
-    The file keeps the arrival order produced by fault injection (out-of-order rows, duplicates);
-    queries sort by timestamp like ``ORDER BY ts`` in SQL, duplicates are preserved.
+    Rows are served in timestamp order. The file keeps the arrival order produced by fault injection
+    (out-of-order rows, duplicates); queries sort by timestamp like ``ORDER BY ts`` in SQL, duplicates
+    are preserved. Several datasets form one source when their device ids do not overlap.
     """
 
     is_simulated = True
 
-    def __init__(self, dataset_dir: Path, data_source_id: str = "simulated"):
+    def __init__(self, dataset_dir: Path | Sequence[Path], data_source_id: str = "simulated"):
         self.data_source_id = data_source_id
-        self._source_ref = f"{data_source_id}:{dataset_dir.name}"
+        self.dataset_dirs = [dataset_dir] if isinstance(dataset_dir, Path) else list(dataset_dir)
         rows: dict[tuple[str, str], list[tuple[datetime, float | None]]] = {}
-        path = dataset_dir / "raw_telemetry.csv"
-        if path.exists():
-            text = path.read_text(encoding="utf-8")
-        else:
-            text = gzip.decompress((dataset_dir / "raw_telemetry.csv.gz").read_bytes()).decode("utf-8")
-        with io.StringIO(text, newline="") as fh:
-            for r in csv.DictReader(fh):
-                ts = datetime.fromisoformat(r["ts"].replace("Z", "+00:00"))
-                value = float(r["value_double"]) if r["value_double"] else None
-                rows.setdefault((r["deviceid"], r["keyname"]), []).append((ts, value))
+        self._refs: dict[tuple[str, str], str] = {}
+        for directory in self.dataset_dirs:
+            ref = f"{data_source_id}:{directory.name}"
+            own: set[tuple[str, str]] = set()
+            for device, key, ts, value in _read_rows(directory):
+                pair = (device, key)
+                if pair not in own and pair in self._refs:
+                    raise ValueError(f"device {device} appears in more than one dataset")
+                own.add(pair)
+                self._refs[pair] = ref
+                rows.setdefault(pair, []).append((ts, value))
         self._rows = {k: sorted(v, key=lambda x: x[0]) for k, v in rows.items()}
         self._ts = {k: [t for t, _ in v] for k, v in self._rows.items()}
+
+    def row_counts(self) -> dict[tuple[str, str], int]:
+        """Stored rows per (device, key), duplicates included."""
+        return {k: len(v) for k, v in self._rows.items()}
 
     def discover(self) -> SourceMetadata:
         devices: dict[str, list[str]] = {}
@@ -104,8 +111,21 @@ class SimulatedAdapter(TimeSeriesAdapter):
                 key_name=key_name,
                 ts=t,
                 value=v,
-                source_ref=self._source_ref,
+                source_ref=self._refs[(device_id, key_name)],
                 is_simulated=True,
             )
             for t, v in self._rows.get((device_id, key_name), [])[lo:hi]
         ]
+
+
+def _read_rows(dataset_dir: Path):
+    path = dataset_dir / "raw_telemetry.csv"
+    if path.exists():
+        text = path.read_text(encoding="utf-8")
+    else:
+        text = gzip.decompress((dataset_dir / "raw_telemetry.csv.gz").read_bytes()).decode("utf-8")
+    with io.StringIO(text, newline="") as fh:
+        for r in csv.DictReader(fh):
+            ts = datetime.fromisoformat(r["ts"].replace("Z", "+00:00"))
+            value = float(r["value_double"]) if r["value_double"] else None
+            yield r["deviceid"], r["keyname"], ts, value

@@ -15,8 +15,8 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T008](contracts/tasks/TASK-008.md) | SQL Data Source Studio frontend Demo | 2 | T003, T005, T006 | G1 | DONE |
 | [T009](contracts/tasks/TASK-009.md) | Time-series database adapter | 3 | T003 |  | DONE |
 | [T010](contracts/tasks/TASK-010.md) | Secure read-only SQL query service | 3 | T009 |  | DONE |
-| [T011](contracts/tasks/TASK-011.md) | Signal mapping and preview APIs | 3 | T010 |  | IN_PROGRESS |
-| [T012](contracts/tasks/TASK-012.md) | Data quality, unit conversion, and time alignment | 3 | T011 |  | TODO |
+| [T011](contracts/tasks/TASK-011.md) | Signal mapping and preview APIs | 3 | T010 |  | DONE |
+| [T012](contracts/tasks/TASK-012.md) | Data quality, unit conversion, and time alignment | 3 | T011 |  | IN_PROGRESS |
 | [T013](contracts/tasks/TASK-013.md) | Operating-regime and movement-cycle processing | 3 | T012 |  | TODO |
 | [T014](contracts/tasks/TASK-014.md) | Component lifecycle and maintenance services | 3 | T013 | G2 | TODO |
 | [T015](contracts/tasks/TASK-015.md) | Feature extraction and feature versioning | 4 | T013, T014 |  | TODO |

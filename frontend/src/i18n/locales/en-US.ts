@@ -351,6 +351,7 @@ const en: typeof zh = {
       template: 'Query template',
       comment: 'Change note',
       commentPlaceholder: 'What changed and why',
+      saveFailed: 'Saving failed; the configuration is unchanged.',
       save: 'Save version',
       saved: 'Saved as version {v}',
       history: 'Version history',

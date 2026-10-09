@@ -1,8 +1,8 @@
 /**
- * Mocked Data Source Studio backend (T008). Until the L1/L2 APIs exist (T009-T011), responses come
- * from the simulated fixture Data/fixtures/studio_demo.json and use the generated contract types.
- * The mock enforces the same rules the real API must: template SQL only for administrators,
- * read-only sources, and immutable configuration versions.
+ * Data Source Studio API surface. Two implementations: the real backend (`studioHttp.ts`, T011) and
+ * an offline mock over the simulated snapshot Data/fixtures/studio_demo.json (unit tests and the
+ * static G1 demo). The mock follows the same rules as the backend: template SQL only for
+ * administrators, read-only sources, and immutable configuration versions.
  */
 import type {
   ComponentType,
@@ -27,7 +27,8 @@ export interface StudioDevice {
   device_id: string
   scenario_id: string
   scenario_title: LocalizedText
-  keys: { key_name: string; rows: number }[]
+  /** rows is null when the source cannot count cheaply (real SQL sources). */
+  keys: { key_name: string; rows: number | null }[]
 }
 
 export interface StudioPreview {
@@ -53,7 +54,7 @@ export interface StudioFixture {
   is_simulated: true
   data_source: DataSourceConfig
   metadata: SourceMetadata
-  table: { name: string; row_count: number; columns: TableColumn[]; sample_rows: string[][] }
+  table: { name: string; row_count: number | null; columns: TableColumn[]; sample_rows: string[][] }
   devices: StudioDevice[]
   templates: QueryTemplate[]
   template_sql: Record<string, string>

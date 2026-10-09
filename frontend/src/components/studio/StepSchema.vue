@@ -15,7 +15,9 @@ const { fmtDate } = useLocalized()
         <span class="label">{{ t('studio.schema.table') }}</span>
         <strong class="st-mono">{{ s.schema.name }}</strong>
       </p>
-      <p>{{ t('studio.schema.rows', { n: n(s.schema.row_count) }) }}</p>
+      <p v-if="s.schema.row_count !== null">
+        {{ t('studio.schema.rows', { n: n(s.schema.row_count) }) }}
+      </p>
       <p>{{ t('studio.schema.devices', { n: s.schema.metadata.devices.length }) }}</p>
       <p v-if="s.schema.metadata.earliest_ts && s.schema.metadata.latest_ts">
         {{

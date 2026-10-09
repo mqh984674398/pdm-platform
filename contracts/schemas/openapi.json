@@ -865,6 +865,1547 @@
           }
         }
       }
+    },
+    "/api/signal-config": {
+      "get": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Current Config",
+        "operationId": "current_config_api_signal_config_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/versions": {
+      "get": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Config Versions",
+        "operationId": "config_versions_api_signal_config_versions_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SignalConfigVersion"
+                  },
+                  "title": "Response Config Versions Api Signal Config Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/versions/{version}": {
+      "get": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Config Version",
+        "operationId": "config_version_api_signal_config_versions__version__get",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersionDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/sources/{data_source_id}/devices/{device_id}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Replace Device",
+        "operationId": "replace_device_api_signal_config_sources__data_source_id__devices__device_id__put",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceConfigChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/signals/{item_id}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Put Signals",
+        "operationId": "put_signals_api_signal_config_signals__item_id__put",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignalDefinitionChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Delete Signals",
+        "operationId": "delete_signals_api_signal_config_signals__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "comment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "default": "",
+              "title": "Comment"
+            }
+          },
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Version"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/mappings/{item_id}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Put Mappings",
+        "operationId": "put_mappings_api_signal_config_mappings__item_id__put",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignalMappingChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Delete Mappings",
+        "operationId": "delete_mappings_api_signal_config_mappings__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "comment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "default": "",
+              "title": "Comment"
+            }
+          },
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Version"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/groups/{item_id}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Put Groups",
+        "operationId": "put_groups_api_signal_config_groups__item_id__put",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignalGroupChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Delete Groups",
+        "operationId": "delete_groups_api_signal_config_groups__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "comment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "default": "",
+              "title": "Comment"
+            }
+          },
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Version"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signal-config/visualizations/{item_id}": {
+      "put": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Put Visualizations",
+        "operationId": "put_visualizations_api_signal_config_visualizations__item_id__put",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VisualizationTemplateChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Delete Visualizations",
+        "operationId": "delete_visualizations_api_signal_config_visualizations__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "comment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "default": "",
+              "title": "Comment"
+            }
+          },
+          {
+            "name": "base_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base Version"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalConfigVersion"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signals/preview": {
+      "post": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Preview Signals",
+        "operationId": "preview_signals_api_signals_preview_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signals/{signal_id}/preview": {
+      "get": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Preview Saved Signal",
+        "operationId": "preview_saved_signal_api_signals__signal_id__preview_get",
+        "parameters": [
+          {
+            "name": "signal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Signal Id"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "title": "End"
+            }
+          },
+          {
+            "name": "max_points",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 10,
+              "default": 1000,
+              "title": "Max Points"
+            }
+          },
+          {
+            "name": "include_normalized",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Include Normalized"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/datasources/{data_source_id}/check": {
+      "get": {
+        "tags": [
+          "studio"
+        ],
+        "summary": "Check Source",
+        "operationId": "check_source_api_datasources__data_source_id__check_get",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectionCheck"
+                  },
+                  "title": "Response Check Source Api Datasources  Data Source Id  Check Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/datasources/{data_source_id}/layout": {
+      "get": {
+        "tags": [
+          "studio"
+        ],
+        "summary": "Source Layout",
+        "operationId": "source_layout_api_datasources__data_source_id__layout_get",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceLayout"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/datasources/{data_source_id}/devices": {
+      "get": {
+        "tags": [
+          "studio"
+        ],
+        "summary": "Source Devices",
+        "operationId": "source_devices_api_datasources__data_source_id__devices_get",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudioDevice"
+                  },
+                  "title": "Response Source Devices Api Datasources  Data Source Id  Devices Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/datasources/{data_source_id}/devices/{device_id}/suggestions": {
+      "get": {
+        "tags": [
+          "studio"
+        ],
+        "summary": "Device Suggestions",
+        "operationId": "device_suggestions_api_datasources__data_source_id__devices__device_id__suggestions_get",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceSuggestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1234,6 +2775,37 @@
         "title": "BaselineKind",
         "type": "string"
       },
+      "ChangeMeta": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version"
+        ],
+        "title": "ChangeMeta",
+        "type": "object"
+      },
       "ChartKind": {
         "enum": [
           "LINE",
@@ -1461,6 +3033,31 @@
         ],
         "title": "ComponentType",
         "type": "string"
+      },
+      "ConnectionCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "enum": [
+              "reachable",
+              "readOnly",
+              "timeout",
+              "rowLimit"
+            ],
+            "title": "Key",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "ok"
+        ],
+        "title": "ConnectionCheck",
+        "type": "object"
       },
       "CycleKind": {
         "enum": [
@@ -1816,6 +3413,98 @@
         "title": "DegradationIndicatorResult",
         "type": "object"
       },
+      "DeviceConfigChange": {
+        "additionalProperties": false,
+        "description": "Replaces everything configured for one device of one source (the Studio's save).",
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDefinition"
+            },
+            "minItems": 1,
+            "title": "Signals",
+            "type": "array"
+          },
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/SignalMapping"
+            },
+            "minItems": 1,
+            "title": "Mappings",
+            "type": "array"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/SignalGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "visualizations": {
+            "items": {
+              "$ref": "#/components/schemas/VisualizationTemplate"
+            },
+            "title": "Visualizations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version",
+          "signals",
+          "mappings",
+          "groups",
+          "visualizations"
+        ],
+        "title": "DeviceConfigChange",
+        "type": "object"
+      },
+      "DeviceKey": {
+        "additionalProperties": false,
+        "properties": {
+          "key_name": {
+            "title": "Key Name",
+            "type": "string"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          }
+        },
+        "required": [
+          "key_name",
+          "rows"
+        ],
+        "title": "DeviceKey",
+        "type": "object"
+      },
       "DeviceKeys": {
         "additionalProperties": false,
         "properties": {
@@ -1836,6 +3525,65 @@
           "key_names"
         ],
         "title": "DeviceKeys",
+        "type": "object"
+      },
+      "DeviceSuggestions": {
+        "additionalProperties": false,
+        "properties": {
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDefinition"
+            },
+            "title": "Signals",
+            "type": "array"
+          },
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/SignalMapping"
+            },
+            "title": "Mappings",
+            "type": "array"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentInstance"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "preview_window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TimeWindow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_source_id",
+          "device_id",
+          "signals",
+          "mappings",
+          "components",
+          "preview_window",
+          "is_simulated"
+        ],
+        "title": "DeviceSuggestions",
         "type": "object"
       },
       "EligibilityCondition": {
@@ -2303,6 +4051,43 @@
         "title": "HealthState",
         "type": "string"
       },
+      "LayoutColumn": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "device",
+                  "key",
+                  "time",
+                  "value"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "role"
+        ],
+        "title": "LayoutColumn",
+        "type": "object"
+      },
       "LifecycleStatus": {
         "enum": [
           "ACTIVE",
@@ -2602,6 +4387,40 @@
         "title": "NormalizedSample",
         "type": "object"
       },
+      "NormalizedSeries": {
+        "additionalProperties": false,
+        "description": "Full-resolution normalized values (algorithm input), never downsampled (L2-06).",
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedSample"
+            },
+            "title": "Samples",
+            "type": "array"
+          },
+          "truncated": {
+            "description": "True when the source returned more rows than the preview limit",
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signal_id",
+          "unit",
+          "samples",
+          "truncated"
+        ],
+        "title": "NormalizedSeries",
+        "type": "object"
+      },
       "OperatingRegime": {
         "additionalProperties": false,
         "description": "Observable operating conditions used for normalization and eligibility (L3-03).",
@@ -2823,6 +4642,86 @@
             "$ref": "#/components/schemas/UnsupportedPrediction"
           }
         ]
+      },
+      "PreviewRequest": {
+        "additionalProperties": false,
+        "description": "Preview mapped signals over a window. Definitions not given here come from the current\nconfiguration, so drafts can be previewed before they are saved.",
+        "properties": {
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/SignalMapping"
+            },
+            "maxItems": 32,
+            "minItems": 1,
+            "title": "Mappings",
+            "type": "array"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDefinition"
+            },
+            "title": "Signals",
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "max_points": {
+            "default": 1000,
+            "maximum": 10000,
+            "minimum": 10,
+            "title": "Max Points",
+            "type": "integer"
+          },
+          "include_normalized": {
+            "default": true,
+            "title": "Include Normalized",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "mappings",
+          "signals",
+          "window",
+          "max_points",
+          "include_normalized"
+        ],
+        "title": "PreviewRequest",
+        "type": "object"
+      },
+      "PreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "normalized": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedSeries"
+            },
+            "title": "Normalized",
+            "type": "array"
+          },
+          "visualization": {
+            "items": {
+              "$ref": "#/components/schemas/VisualizationSeries"
+            },
+            "title": "Visualization",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "window",
+          "normalized",
+          "visualization",
+          "is_simulated"
+        ],
+        "title": "PreviewResponse",
+        "type": "object"
       },
       "QualityFlag": {
         "enum": [
@@ -3436,6 +5335,73 @@
         "title": "SeriesPoint",
         "type": "object"
       },
+      "SignalConfig": {
+        "additionalProperties": false,
+        "description": "The whole signal configuration; each saved state is one immutable version (L2-05).\n\nInvariants: ids are unique; every mapping, group, and chart refers to a defined signal; a signal\nhas at most one mapping and a device key feeds at most one signal; a conversion's target unit is\nthe signal's unit.",
+        "properties": {
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDefinition"
+            },
+            "title": "Signals",
+            "type": "array"
+          },
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/SignalMapping"
+            },
+            "title": "Mappings",
+            "type": "array"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/SignalGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "visualizations": {
+            "items": {
+              "$ref": "#/components/schemas/VisualizationTemplate"
+            },
+            "title": "Visualizations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "signals",
+          "mappings",
+          "groups",
+          "visualizations"
+        ],
+        "title": "SignalConfig",
+        "type": "object"
+      },
+      "SignalConfigState": {
+        "additionalProperties": false,
+        "description": "Current configuration; ``version`` is None until the first save.",
+        "properties": {
+          "version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SignalConfigVersion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "content": {
+            "$ref": "#/components/schemas/SignalConfig"
+          }
+        },
+        "required": [
+          "version",
+          "content"
+        ],
+        "title": "SignalConfigState",
+        "type": "object"
+      },
       "SignalConfigVersion": {
         "additionalProperties": false,
         "description": "Immutable snapshot reference for the signal configuration (L2-05).",
@@ -3472,6 +5438,47 @@
           "content_hash"
         ],
         "title": "SignalConfigVersion",
+        "type": "object"
+      },
+      "SignalConfigVersionDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "minimum": 1,
+            "title": "Version",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "comment": {
+            "default": "",
+            "title": "Comment",
+            "type": "string"
+          },
+          "content_hash": {
+            "title": "Content Hash",
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SignalConfig"
+          }
+        },
+        "required": [
+          "version",
+          "created_at",
+          "created_by",
+          "comment",
+          "content_hash",
+          "content"
+        ],
+        "title": "SignalConfigVersionDetail",
         "type": "object"
       },
       "SignalDefinition": {
@@ -3542,6 +5549,168 @@
         "title": "SignalDefinition",
         "type": "object"
       },
+      "SignalDefinition-Input": {
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "title": "Signal Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/PhysicalQuantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "Engineering unit of normalized values, e.g. 'rpm', 'N*m', 's'"
+          },
+          "expected_sampling_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Sampling S"
+          },
+          "valid_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Min"
+          },
+          "valid_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Max"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "signal_id",
+          "name",
+          "quantity",
+          "unit"
+        ],
+        "title": "SignalDefinition"
+      },
+      "SignalDefinition-Output": {
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "title": "Signal Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/PhysicalQuantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "Engineering unit of normalized values, e.g. 'rpm', 'N*m', 's'"
+          },
+          "expected_sampling_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Sampling S"
+          },
+          "valid_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Min"
+          },
+          "valid_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Max"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "signal_id",
+          "name",
+          "quantity",
+          "unit",
+          "expected_sampling_s",
+          "valid_min",
+          "valid_max"
+        ],
+        "title": "SignalDefinition"
+      },
+      "SignalDefinitionChange": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          },
+          "item": {
+            "$ref": "#/components/schemas/SignalDefinition"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version",
+          "item"
+        ],
+        "title": "SignalDefinitionChange",
+        "type": "object"
+      },
       "SignalGroup": {
         "additionalProperties": false,
         "properties": {
@@ -3580,6 +5749,118 @@
           "component_id"
         ],
         "title": "SignalGroup",
+        "type": "object"
+      },
+      "SignalGroup-Input": {
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "title": "Group Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Signal Ids"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "group_id",
+          "name",
+          "signal_ids"
+        ],
+        "title": "SignalGroup"
+      },
+      "SignalGroup-Output": {
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "title": "Group Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Signal Ids"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "group_id",
+          "name",
+          "signal_ids",
+          "component_id"
+        ],
+        "title": "SignalGroup"
+      },
+      "SignalGroupChange": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          },
+          "item": {
+            "$ref": "#/components/schemas/SignalGroup"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version",
+          "item"
+        ],
+        "title": "SignalGroupChange",
         "type": "object"
       },
       "SignalMapping": {
@@ -3650,6 +5931,231 @@
           "component_id"
         ],
         "title": "SignalMapping",
+        "type": "object"
+      },
+      "SignalMapping-Input": {
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "title": "Signal Id"
+          },
+          "data_source_id": {
+            "type": "string",
+            "title": "Data Source Id"
+          },
+          "template_id": {
+            "type": "string",
+            "title": "Template Id"
+          },
+          "device_id": {
+            "type": "string",
+            "title": "Device Id"
+          },
+          "key_name": {
+            "type": "string",
+            "title": "Key Name"
+          },
+          "time_field": {
+            "type": "string",
+            "title": "Time Field"
+          },
+          "value_field": {
+            "type": "string",
+            "title": "Value Field"
+          },
+          "conversion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UnitConversion-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "signal_id",
+          "data_source_id",
+          "template_id",
+          "device_id",
+          "key_name",
+          "time_field",
+          "value_field"
+        ],
+        "title": "SignalMapping",
+        "description": "Binds a logical signal to a device + KeyName in a data source (L2-01)."
+      },
+      "SignalMapping-Output": {
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "title": "Signal Id"
+          },
+          "data_source_id": {
+            "type": "string",
+            "title": "Data Source Id"
+          },
+          "template_id": {
+            "type": "string",
+            "title": "Template Id"
+          },
+          "device_id": {
+            "type": "string",
+            "title": "Device Id"
+          },
+          "key_name": {
+            "type": "string",
+            "title": "Key Name"
+          },
+          "time_field": {
+            "type": "string",
+            "title": "Time Field"
+          },
+          "value_field": {
+            "type": "string",
+            "title": "Value Field"
+          },
+          "conversion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UnitConversion-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "signal_id",
+          "data_source_id",
+          "template_id",
+          "device_id",
+          "key_name",
+          "time_field",
+          "value_field",
+          "conversion",
+          "component_id"
+        ],
+        "title": "SignalMapping",
+        "description": "Binds a logical signal to a device + KeyName in a data source (L2-01)."
+      },
+      "SignalMappingChange": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          },
+          "item": {
+            "$ref": "#/components/schemas/SignalMapping"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version",
+          "item"
+        ],
+        "title": "SignalMappingChange",
+        "type": "object"
+      },
+      "SourceLayout": {
+        "additionalProperties": false,
+        "description": "The telemetry table as configured: columns with their roles and a few sample rows.",
+        "properties": {
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "row_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Count"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "sample_rows": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Sample Rows",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_source_id",
+          "table",
+          "row_count",
+          "columns",
+          "sample_rows",
+          "is_simulated"
+        ],
+        "title": "SourceLayout",
         "type": "object"
       },
       "SourceMetadata": {
@@ -3819,6 +6325,58 @@
         "title": "SqlTableLayout",
         "type": "object"
       },
+      "StudioDevice": {
+        "additionalProperties": false,
+        "properties": {
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Dataset Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceKey"
+            },
+            "title": "Keys",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "device_id",
+          "dataset_id",
+          "label",
+          "keys",
+          "is_simulated"
+        ],
+        "title": "StudioDevice",
+        "type": "object"
+      },
       "TableInfo": {
         "additionalProperties": false,
         "properties": {
@@ -3906,6 +6464,68 @@
         ],
         "title": "UnitConversion",
         "type": "object"
+      },
+      "UnitConversion-Input": {
+        "properties": {
+          "source_unit": {
+            "type": "string",
+            "title": "Source Unit"
+          },
+          "target_unit": {
+            "type": "string",
+            "title": "Target Unit"
+          },
+          "scale": {
+            "type": "number",
+            "title": "Scale",
+            "default": 1.0
+          },
+          "offset": {
+            "type": "number",
+            "title": "Offset",
+            "default": 0.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_unit",
+          "target_unit"
+        ],
+        "title": "UnitConversion",
+        "description": "Linear conversion ``target = source * scale + offset`` (L2-02)."
+      },
+      "UnitConversion-Output": {
+        "properties": {
+          "source_unit": {
+            "type": "string",
+            "title": "Source Unit"
+          },
+          "target_unit": {
+            "type": "string",
+            "title": "Target Unit"
+          },
+          "scale": {
+            "type": "number",
+            "title": "Scale",
+            "default": 1.0
+          },
+          "offset": {
+            "type": "number",
+            "title": "Offset",
+            "default": 0.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_unit",
+          "target_unit",
+          "scale",
+          "offset"
+        ],
+        "title": "UnitConversion",
+        "description": "Linear conversion ``target = source * scale + offset`` (L2-02)."
       },
       "UnsupportedPrediction": {
         "additionalProperties": false,
@@ -4133,6 +6753,149 @@
           "y_max"
         ],
         "title": "VisualizationTemplate",
+        "type": "object"
+      },
+      "VisualizationTemplate-Input": {
+        "properties": {
+          "template_id": {
+            "type": "string",
+            "title": "Template Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "chart": {
+            "$ref": "#/components/schemas/ChartKind"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Signal Ids"
+          },
+          "y_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Min"
+          },
+          "y_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Max"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "template_id",
+          "name",
+          "chart",
+          "signal_ids"
+        ],
+        "title": "VisualizationTemplate"
+      },
+      "VisualizationTemplate-Output": {
+        "properties": {
+          "template_id": {
+            "type": "string",
+            "title": "Template Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "chart": {
+            "$ref": "#/components/schemas/ChartKind"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Signal Ids"
+          },
+          "y_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Min"
+          },
+          "y_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Max"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "template_id",
+          "name",
+          "chart",
+          "signal_ids",
+          "y_min",
+          "y_max"
+        ],
+        "title": "VisualizationTemplate"
+      },
+      "VisualizationTemplateChange": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Comment",
+            "type": "string"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Reject the change unless this is still the current version (0 = none yet)",
+            "title": "Base Version"
+          },
+          "item": {
+            "$ref": "#/components/schemas/VisualizationTemplate"
+          }
+        },
+        "required": [
+          "comment",
+          "base_version",
+          "item"
+        ],
+        "title": "VisualizationTemplateChange",
         "type": "object"
       }
     }
