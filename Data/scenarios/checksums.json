@@ -202,5 +202,6 @@
   "golden_cases/index.json": "55e442d90e8b77cb5ef9dafeb20ed8004d661080dd45a339066ef5f9ec8f0385",
   "fixtures/S01_ball_screw_normalized.csv": "24b4c32a748d1a73bdd45f04c8a8a85ea89df4fcb947027f3026e03e1805959e",
   "fixtures/S14_linear_motor_raw.csv": "a09ad12d220b8364ecdebd5b23ba381809a19451808d0ad58a8d5836c8dc0f77",
-  "fixtures/S18_cylinder_raw.csv": "9f8652939e016a9535683f8737d65b7b0e83f274ad7d5e10b576a3d90be1bbb6"
+  "fixtures/S18_cylinder_raw.csv": "9f8652939e016a9535683f8737d65b7b0e83f274ad7d5e10b576a3d90be1bbb6",
+  "fixtures/demo_fleet.json": "6031de86af30a685702908be9fb8324c98283388e5a0f3d4f0883d1dcec0f48f"
 }

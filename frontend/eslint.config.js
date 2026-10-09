@@ -1,5 +1,6 @@
 import pluginVue from 'eslint-plugin-vue'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
 export default defineConfigWithVueTs(
   {
@@ -14,11 +15,5 @@ export default defineConfigWithVueTs(
   pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
   // Formatting is owned by Prettier.
-  {
-    rules: {
-      'vue/singleline-html-element-content-newline': 'off',
-      'vue/html-self-closing': 'off',
-      'vue/max-attributes-per-line': 'off',
-    },
-  },
+  skipFormatting,
 )

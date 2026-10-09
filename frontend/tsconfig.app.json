@@ -12,11 +12,19 @@
     "skipLibCheck": true,
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@data/*": ["../Data/*"]
     },
     "composite": true,
     "tsBuildInfoFile": "node_modules/.tmp/app.tsbuildinfo",
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "tests/unit/**/*.ts", "env.d.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "tests/unit/**/*.ts",
+    "env.d.ts",
+    "../Data/fixtures/*.json"
+  ]
 }

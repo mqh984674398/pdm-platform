@@ -66,6 +66,53 @@ const en: typeof zh = {
     markers: 'Data markers',
     surfaces: 'Interface colors',
   },
+  common: {
+    loadFailed: 'Data failed to load. Refresh the page to try again.',
+  },
+  overview: {
+    summary: 'Health summary',
+    summaryLine: '{machines} machines · {components} components',
+    attention: '{n} components need attention',
+    noAttention: 'No components need attention',
+  },
+  machine: {
+    choose: 'Choose machine',
+    snapshot: 'Scenario: {scenario} · snapshot {time} (UTC)',
+    mapTitle: 'Component health map',
+    hint: 'Select a component to see the health evidence, trend, and maintenance records.',
+    sharedChain: 'Shared drive chain',
+  },
+  component: {
+    trend: 'History',
+    bandNote:
+      'Only windows in one regime ({regime}) are shown; the shaded band is the early-operation reference range (mean ± 2σ).',
+    noTelemetry: 'This component has no telemetry yet.',
+    lifecycles: 'Lifecycles',
+    noLifecycle: 'No lifecycle records yet.',
+    maintenance: 'Maintenance',
+    noMaintenance: 'No maintenance up to the snapshot.',
+    openHistory: 'Open full history',
+    pick: 'Choose component',
+  },
+  types: {
+    BALL_SCREW: 'Ball screw',
+    LINEAR_MOTOR: 'Linear motor',
+    VACUUM_CUP: 'Vacuum cup',
+    PNEUMATIC_CYLINDER: 'Pneumatic cylinder',
+    CAM: 'Cam mechanism',
+    GEAR: 'Gear mechanism',
+  },
+  lifecycle: {
+    ACTIVE: 'Active',
+    RETIRED: 'Retired',
+  },
+  maintenanceType: {
+    LUBRICATION: 'Lubrication',
+    INSPECTION: 'Inspection',
+    ADJUSTMENT: 'Adjustment',
+    PARTIAL_REPAIR: 'Partial repair',
+    REPLACEMENT: 'Replacement',
+  },
   home: {
     backendOk: 'Backend running · version {version}',
     backendDown: 'Cannot reach the backend',

@@ -1,7 +1,7 @@
 # TASK-008 — SQL Data Source Studio frontend Demo
 
 - **ID:** T008
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 2 — High-Fidelity Frontend
 - **Gate:** G1 (approval requested after this task)
 

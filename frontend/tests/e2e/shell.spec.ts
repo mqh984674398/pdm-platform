@@ -9,7 +9,7 @@ test('navigates all screens and switches language without reload', async ({ page
   await page.getByTestId('lang-switch').getByRole('radio', { name: 'EN' }).click()
   await expect(page.locator('h1')).toHaveText('Data Source Studio')
   expect(await page.evaluate(() => (window as unknown as { __mark: number }).__mark)).toBe(marker)
-  for (const name of ['overview', 'machine', 'alarms', 'models', 'assistant']) {
+  for (const name of ['alarms', 'models', 'assistant']) {
     await page.locator(`[data-nav="${name}"]`).click()
     await expect(page.getByTestId('placeholder')).toBeVisible()
   }
