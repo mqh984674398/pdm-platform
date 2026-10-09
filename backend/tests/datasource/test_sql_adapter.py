@@ -103,7 +103,7 @@ def test_concurrency_limit(db_url):
     held, release = threading.Event(), threading.Event()
 
     def hold():
-        with a._connect():
+        with a.connection():
             held.set()
             release.wait(5)
 

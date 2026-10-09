@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://pdm:pdm@localhost:5432/pdm"
     # The platform must run without Ollama (GEN-04); LLM features are opt-in.
     llm_enabled: bool = False
+    # 'dev' trusts X-PDM-User/X-PDM-Role headers; replaced by real authentication in T028 (D-010).
+    auth_mode: str = "dev"
+    # Server-side JSON file describing data sources (configs, layouts, credential references).
+    datasources_file: str | None = None
 
 
 @lru_cache

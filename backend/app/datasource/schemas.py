@@ -129,3 +129,40 @@ class SqlTableLayout(ContractModel):
     verified: bool = Field(
         default=False, description="True only after the layout was checked against the real database"
     )
+
+
+class QueryTemplateSpec(ContractModel):
+    """What an administrator submits to create or change a template (L1-05). Versions are assigned."""
+
+    template_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{1,62}$")
+    name: LocalizedText
+    description: LocalizedText
+    data_source_id: str
+    parameters: list[QueryParameter]
+    sql: str = Field(min_length=1, max_length=8000)
+    max_rows: int = Field(gt=0, le=2_000_000)
+    max_range_hours: float = Field(gt=0)
+
+
+class QueryTemplateAdminView(QueryTemplate):
+    """Template including its SQL text; returned to administrators only."""
+
+    sql: str
+    created_by: str
+    created_at: AwareDatetime
+
+
+class QueryRunRequest(ContractModel):
+    parameters: dict[str, str | int | float] = Field(default_factory=dict)
+
+
+class QueryResult(ContractModel):
+    template_id: str
+    template_version: int
+    data_source_id: str
+    columns: list[str]
+    rows: list[list[str | int | float | bool | None]]
+    row_count: int = Field(ge=0)
+    truncated: bool = Field(description="True when more rows existed than the row limit allowed")
+    executed_at: AwareDatetime
+    is_simulated: bool

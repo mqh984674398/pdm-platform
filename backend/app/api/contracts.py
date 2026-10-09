@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from pydantic import TypeAdapter
 from pydantic.json_schema import models_json_schema
 
+from app.core import audit
 from app.core import schemas as core
 from app.datasource import schemas as ds
 from app.decision import schemas as dec
@@ -35,6 +36,11 @@ CONTRACT_MODELS = [
     ds.TableInfo,
     ds.SourceSchema,
     ds.SqlTableLayout,
+    ds.QueryTemplateSpec,
+    ds.QueryTemplateAdminView,
+    ds.QueryRunRequest,
+    ds.QueryResult,
+    audit.AuditEntry,
     sig.UnitConversion,
     sig.SignalDefinition,
     sig.SignalMapping,

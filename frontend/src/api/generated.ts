@@ -21,6 +21,161 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/datasources': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Sources */
+    get: operations['list_sources_api_datasources_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/metadata': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Source Metadata */
+    get: operations['source_metadata_api_datasources__data_source_id__metadata_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/datasources/{data_source_id}/schema': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Source Schema */
+    get: operations['source_schema_api_datasources__data_source_id__schema_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/query-templates': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Templates */
+    get: operations['list_templates_api_query_templates_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/query-templates/{template_id}/run': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Run Template */
+    post: operations['run_template_api_query_templates__template_id__run_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/query-templates': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Admin List Templates */
+    get: operations['admin_list_templates_api_admin_query_templates_get']
+    put?: never
+    /** Admin Create Template */
+    post: operations['admin_create_template_api_admin_query_templates_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/query-templates/{template_id}/history': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Admin Template History */
+    get: operations['admin_template_history_api_admin_query_templates__template_id__history_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/query-templates/{template_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Admin Update Template */
+    put: operations['admin_update_template_api_admin_query_templates__template_id__put']
+    post?: never
+    /** Admin Retire Template */
+    delete: operations['admin_retire_template_api_admin_query_templates__template_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/audit': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Admin Audit */
+    get: operations['admin_audit_api_admin_audit_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -114,6 +269,28 @@ export interface components {
       detail: {
         [key: string]: unknown
       } | null
+    }
+    /** AuditEntry */
+    AuditEntry: {
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string
+      /** Actor */
+      actor: string
+      /** Actor Role */
+      actor_role: string
+      /** Action */
+      action: string
+      /** Object Type */
+      object_type: string
+      /** Object Id */
+      object_id: string
+      /** Details */
+      details: {
+        [key: string]: unknown
+      }
     }
     /** Baseline */
     Baseline: {
@@ -568,6 +745,11 @@ export interface components {
      * @enum {string}
      */
     FeedbackVerdict: 'CONFIRMED' | 'FALSE_ALARM' | 'UNSURE'
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components['schemas']['ValidationError'][]
+    }
     /** HealthResponse */
     HealthResponse: {
       /** Status */
@@ -840,6 +1022,64 @@ export interface components {
        */
       required: boolean
     }
+    /** QueryParameter */
+    'QueryParameter-Input': {
+      /** Name */
+      name: string
+      type: components['schemas']['QueryParamType']
+      label: components['schemas']['LocalizedText']
+      /**
+       * Required
+       * @default true
+       */
+      required: boolean
+    }
+    /** QueryParameter */
+    'QueryParameter-Output': {
+      /** Name */
+      name: string
+      type: components['schemas']['QueryParamType']
+      label: components['schemas']['LocalizedText']
+      /**
+       * Required
+       * @default true
+       */
+      required: boolean
+    }
+    /** QueryResult */
+    QueryResult: {
+      /** Template Id */
+      template_id: string
+      /** Template Version */
+      template_version: number
+      /** Data Source Id */
+      data_source_id: string
+      /** Columns */
+      columns: string[]
+      /** Rows */
+      rows: (string | number | boolean | null)[][]
+      /** Row Count */
+      row_count: number
+      /**
+       * Truncated
+       * @description True when more rows existed than the row limit allowed
+       */
+      truncated: boolean
+      /**
+       * Executed At
+       * Format: date-time
+       */
+      executed_at: string
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** QueryRunRequest */
+    QueryRunRequest: {
+      /** Parameters */
+      parameters: {
+        [key: string]: string | number
+      }
+    }
     /**
      * QueryTemplate
      * @description An approved, parameterized, read-only query (L1-05). SQL text is visible to admins only.
@@ -859,6 +1099,55 @@ export interface components {
       max_range_hours: number
       /** Version */
       version: number
+    }
+    /**
+     * QueryTemplateAdminView
+     * @description Template including its SQL text; returned to administrators only.
+     */
+    QueryTemplateAdminView: {
+      /** Template Id */
+      template_id: string
+      name: components['schemas']['LocalizedText']
+      description: components['schemas']['LocalizedText']
+      /** Data Source Id */
+      data_source_id: string
+      /** Parameters */
+      parameters: components['schemas']['QueryParameter'][]
+      /** Max Rows */
+      max_rows: number
+      /** Max Range Hours */
+      max_range_hours: number
+      /** Version */
+      version: number
+      /** Sql */
+      sql: string
+      /** Created By */
+      created_by: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /**
+     * QueryTemplateSpec
+     * @description What an administrator submits to create or change a template (L1-05). Versions are assigned.
+     */
+    QueryTemplateSpec: {
+      /** Template Id */
+      template_id: string
+      name: components['schemas']['LocalizedText']
+      description: components['schemas']['LocalizedText']
+      /** Data Source Id */
+      data_source_id: string
+      /** Parameters */
+      parameters: components['schemas']['QueryParameter'][]
+      /** Sql */
+      sql: string
+      /** Max Rows */
+      max_rows: number
+      /** Max Range Hours */
+      max_range_hours: number
     }
     /**
      * RawTelemetryRow
@@ -1189,6 +1478,19 @@ export interface components {
       | 'MODEL_UNAVAILABLE'
       | 'NO_FAILURE_EVIDENCE'
       | 'COMPONENT_TEMPLATE_ONLY'
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[]
+      /** Message */
+      msg: string
+      /** Error Type */
+      type: string
+      /** Input */
+      input?: unknown
+      /** Context */
+      ctx?: Record<string, never>
+    }
     /**
      * VisualizationSeries
      * @description Downsampled data for charts only; never an algorithm input (L2-06).
@@ -1257,6 +1559,383 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['HealthResponse']
+        }
+      }
+    }
+  }
+  list_sources_api_datasources_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DataSourceConfig'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_metadata_api_datasources__data_source_id__metadata_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SourceMetadata']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_schema_api_datasources__data_source_id__schema_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SourceSchema']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_templates_api_query_templates_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryTemplate'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  run_template_api_query_templates__template_id__run_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['QueryRunRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_list_templates_api_admin_query_templates_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryTemplateAdminView'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_create_template_api_admin_query_templates_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['QueryTemplateSpec']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryTemplateAdminView']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_template_history_api_admin_query_templates__template_id__history_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryTemplateAdminView'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_update_template_api_admin_query_templates__template_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['QueryTemplateSpec']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QueryTemplateAdminView']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_retire_template_api_admin_query_templates__template_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  admin_audit_api_admin_audit_get: {
+    parameters: {
+      query?: {
+        object_type?: string | null
+        object_id?: string | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AuditEntry'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
     }

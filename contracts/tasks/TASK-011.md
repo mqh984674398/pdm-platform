@@ -1,7 +1,7 @@
 # TASK-011 — Signal mapping and preview APIs
 
 - **ID:** T011
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** None
 

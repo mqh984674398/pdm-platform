@@ -40,3 +40,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 ## D-009 — Gate G1 approved
 - **Date:** 2026-10-09 · **Status:** APPROVED by user (Mira, decision card, 2026-10-09T13:53Z)
 - **Decision:** The G1 frontend demonstration is approved with all four recommended UX choices in `contracts/evidence/G1/README.md` §2: light industrial look with dark mode and ISO 3864 health colors (UNKNOWN as hatch); schematic station-plate machine map; 12-step linear studio wizard (administrator one-page editor deferred); machine state = worst known component state, UNKNOWN only when nothing is known.
+
+## D-010 — Development authentication provider until T028
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T010; no user gate)
+- **Decision:** Role checks (SEC-01 roles viewer / maintenance / engineer / admin) and audit attribution are enforced from T010 on, using a `dev` provider that trusts `X-PDM-User` / `X-PDM-Role` headers when `PDM_AUTH_MODE=dev`. Any other mode refuses requests until a real provider exists. Real authentication is delivered in T028 and is part of G4.
+- **Rationale:** Lets admin-only template management and audit logging be built and tested now without inventing an identity system ahead of the deployment decisions.

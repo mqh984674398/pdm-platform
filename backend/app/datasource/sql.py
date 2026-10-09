@@ -125,7 +125,7 @@ class SqlAdapter(TimeSeriesAdapter):
         return table
 
     @contextmanager
-    def _connect(self) -> Iterator[Connection]:
+    def connection(self) -> Iterator[Connection]:
         if not self._slots.acquire(timeout=self._acquire_timeout):
             raise BusyError("too many concurrent queries for this data source")
         try:
@@ -136,10 +136,10 @@ class SqlAdapter(TimeSeriesAdapter):
 
     # --- time handling -------------------------------------------------------------------------
 
-    def _to_db(self, ts: datetime) -> datetime:
+    def to_db_time(self, ts: datetime) -> datetime:
         return ts.astimezone(self._zone).replace(tzinfo=None) if self._naive else ts
 
-    def _from_db(self, ts: datetime) -> datetime:
+    def from_db_time(self, ts: datetime) -> datetime:
         if ts.tzinfo is None:
             ts = ts.replace(tzinfo=self._zone)
         return ts.astimezone(UTC)
@@ -151,7 +151,7 @@ class SqlAdapter(TimeSeriesAdapter):
     # --- interface -----------------------------------------------------------------------------
 
     def discover(self) -> SourceMetadata:
-        with self._connect() as conn:
+        with self.connection() as conn:
             pairs = conn.execute(
                 select(self._device, self._key).distinct().order_by(self._device, self._key)
             ).all()
@@ -162,13 +162,13 @@ class SqlAdapter(TimeSeriesAdapter):
         return SourceMetadata(
             data_source_id=self.data_source_id,
             devices=[DeviceKeys(device_id=d, key_names=k) for d, k in devices.items()],
-            earliest_ts=self._from_db(lo) if lo else None,
-            latest_ts=self._from_db(hi) if hi else None,
+            earliest_ts=self.from_db_time(lo) if lo else None,
+            latest_ts=self.from_db_time(hi) if hi else None,
             is_simulated=self.is_simulated,
         )
 
     def inspect_schema(self) -> SourceSchema:
-        with self._connect() as conn:
+        with self.connection() as conn:
             insp = inspect(conn)
             schemas = [s for s in insp.get_schema_names() if s not in SYSTEM_SCHEMAS]
             tables = [
@@ -199,7 +199,7 @@ class SqlAdapter(TimeSeriesAdapter):
         if window.end - window.start > self.max_range:
             raise QueryLimitError(f"time range exceeds {self.max_range.total_seconds() / 3600:g} h")
         stmt = self._series(device_id, key_name).where(
-            self._time >= self._to_db(window.start), self._time < self._to_db(window.end)
+            self._time >= self.to_db_time(window.start), self._time < self.to_db_time(window.end)
         )
         return self._run(stmt.limit(limit), device_id, key_name)
 
@@ -207,7 +207,7 @@ class SqlAdapter(TimeSeriesAdapter):
         self, device_id: str, key_name: str, since: datetime, limit: int
     ) -> list[RawTelemetryRow]:
         self._check_limit(limit)
-        stmt = self._series(device_id, key_name).where(self._time > self._to_db(since))
+        stmt = self._series(device_id, key_name).where(self._time > self.to_db_time(since))
         return self._run(stmt.limit(limit), device_id, key_name)
 
     def _series(self, device_id: str, key_name: str):
@@ -218,13 +218,13 @@ class SqlAdapter(TimeSeriesAdapter):
         )
 
     def _run(self, stmt, device_id: str, key_name: str) -> list[RawTelemetryRow]:
-        with self._connect() as conn:
+        with self.connection() as conn:
             rows = conn.execute(stmt).all()
         return [
             RawTelemetryRow(
                 device_id=device_id,
                 key_name=key_name,
-                ts=self._from_db(ts),
+                ts=self.from_db_time(ts),
                 value=None if value is None else float(value),
                 source_ref=self._source_ref,
                 is_simulated=self.is_simulated,
