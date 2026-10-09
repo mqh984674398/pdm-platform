@@ -1,7 +1,7 @@
 # TASK-017 — Statistical rules and alarm-event engine
 
 - **ID:** T017
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 4 — Statistical Monitoring
 - **Gate:** None
 
