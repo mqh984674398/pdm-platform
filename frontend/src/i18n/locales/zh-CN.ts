@@ -276,6 +276,7 @@ export default {
       none: '该信号在预览时段内没有数据。',
     },
     quality: {
+      failed: '质量检查未能完成，请重试。',
       intro: '检查基于预览时段。被标记的数据会保留并注明，不会删除。',
       signal: '信号',
       samples: '样本数',

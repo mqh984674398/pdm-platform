@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLocalized } from '@/composables/useLocalized'
 import { useStudioStore } from '@/studio/store'
 
 const s = useStudioStore()
 const { t, n } = useI18n()
+onMounted(() => void s.loadQuality())
 const { lt } = useLocalized()
 
 function keyOf(signalId: string) {
@@ -18,6 +20,9 @@ function sec(v: number | null | undefined, digits = 2) {
 <template>
   <div class="st-stack">
     <p class="st-note">{{ t('studio.quality.intro') }}</p>
+    <p v-if="s.qualityError" class="st-error" role="alert" data-testid="quality-error">
+      {{ t('studio.quality.failed') }}
+    </p>
     <div class="st-scroll">
       <table class="st-table" data-testid="quality-table">
         <thead>

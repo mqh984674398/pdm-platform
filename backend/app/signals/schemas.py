@@ -94,6 +94,7 @@ class QualityFlag(StrEnum):
     OUT_OF_RANGE = "OUT_OF_RANGE"
     UNIT_SUSPECT = "UNIT_SUSPECT"
     MISALIGNED = "MISALIGNED"
+    BIAS_SUSPECT = "BIAS_SUSPECT"
 
 
 class NormalizedSample(ContractModel):

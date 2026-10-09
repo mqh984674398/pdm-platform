@@ -138,3 +138,8 @@
   color: var(--health-normal);
   font-weight: 500;
 }
+
+.st-error {
+  color: var(--health-critical);
+  font-weight: 600;
+}

@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import Float, MetaData, Table, cast, create_engine, event, func, inspect, select
+from sqlalchemy import Float, MetaData, Table, cast, create_engine, event, func, inspect, literal, select
 from sqlalchemy.engine import URL, Connection, Engine, make_url
 from sqlalchemy.exc import NoSuchTableError
 
@@ -86,6 +86,7 @@ class SqlAdapter(TimeSeriesAdapter):
         self._time = cols[layout.time_column]
         values = [cast(cols[c], Float) for c in layout.value_columns]
         self._value = values[0] if len(values) == 1 else func.coalesce(*values)
+        self._arrival = cols[layout.arrival_column] if layout.arrival_column else None
         self._naive = not getattr(self._time.type, "timezone", False)
         self._zone = ZoneInfo(layout.naive_time_zone)
         where = f"{layout.schema_name}." if layout.schema_name else ""
@@ -119,6 +120,8 @@ class SqlAdapter(TimeSeriesAdapter):
         except NoSuchTableError as exc:
             raise LayoutError(f"table '{lay.table}' not found") from exc
         needed = [lay.device_column, lay.key_column, lay.time_column, *lay.value_columns]
+        if lay.arrival_column:
+            needed.append(lay.arrival_column)
         missing = [c for c in needed if c not in table.c]
         if missing:
             raise LayoutError(f"columns not found in '{lay.table}': {', '.join(missing)}")
@@ -211,10 +214,12 @@ class SqlAdapter(TimeSeriesAdapter):
         return self._run(stmt.limit(limit), device_id, key_name)
 
     def _series(self, device_id: str, key_name: str):
+        arrival = self._arrival if self._arrival is not None else literal(None)
+        order = [self._time] if self._arrival is None else [self._time, self._arrival]
         return (
-            select(self._time, self._value)
+            select(self._time, self._value, arrival)
             .where(self._device == device_id, self._key == key_name)
-            .order_by(self._time)
+            .order_by(*order)
         )
 
     def _run(self, stmt, device_id: str, key_name: str) -> list[RawTelemetryRow]:
@@ -228,6 +233,7 @@ class SqlAdapter(TimeSeriesAdapter):
                 value=None if value is None else float(value),
                 source_ref=self._source_ref,
                 is_simulated=self.is_simulated,
+                arrival_seq=None if seq is None else int(seq),
             )
-            for ts, value in rows
+            for ts, value, seq in rows
         ]

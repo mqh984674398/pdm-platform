@@ -34,7 +34,9 @@ test('ordinary user completes the full data source workflow without SQL', async 
   await next(page, 'Preview')
   await expect(page.getByTestId('preview-chart').locator('canvas')).toBeVisible()
 
+  const qualityReport = page.waitForResponse((r) => r.url().endsWith('/api/quality/report'))
   await next(page, 'Sampling and quality')
+  expect((await qualityReport).status()).toBe(200) // backend L4 report, not the offline summary
   await expect(page.locator('[data-quality="M01_BS1_TRQ"] [data-flag="MISSING"]')).toBeVisible()
   await expect(page.locator('[data-quality="M01_CY1_EXT"] [data-flag="DUPLICATE"]')).toBeVisible()
   await expect(page.locator('[data-quality="M01_BS1_SPD"]')).toContainText('No issues')

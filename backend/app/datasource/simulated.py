@@ -44,20 +44,20 @@ class SimulatedAdapter(TimeSeriesAdapter):
     def __init__(self, dataset_dir: Path | Sequence[Path], data_source_id: str = "simulated"):
         self.data_source_id = data_source_id
         self.dataset_dirs = [dataset_dir] if isinstance(dataset_dir, Path) else list(dataset_dir)
-        rows: dict[tuple[str, str], list[tuple[datetime, float | None]]] = {}
+        rows: dict[tuple[str, str], list[tuple[datetime, float | None, int]]] = {}
         self._refs: dict[tuple[str, str], str] = {}
         for directory in self.dataset_dirs:
             ref = f"{data_source_id}:{directory.name}"
             own: set[tuple[str, str]] = set()
-            for device, key, ts, value in _read_rows(directory):
+            for seq, (device, key, ts, value) in enumerate(_read_rows(directory)):
                 pair = (device, key)
                 if pair not in own and pair in self._refs:
                     raise ValueError(f"device {device} appears in more than one dataset")
                 own.add(pair)
                 self._refs[pair] = ref
-                rows.setdefault(pair, []).append((ts, value))
+                rows.setdefault(pair, []).append((ts, value, seq))  # seq: line order in the file
         self._rows = {k: sorted(v, key=lambda x: x[0]) for k, v in rows.items()}
-        self._ts = {k: [t for t, _ in v] for k, v in self._rows.items()}
+        self._ts = {k: [t for t, _, _ in v] for k, v in self._rows.items()}
 
     def row_counts(self) -> dict[tuple[str, str], int]:
         """Stored rows per (device, key), duplicates included."""
@@ -113,8 +113,9 @@ class SimulatedAdapter(TimeSeriesAdapter):
                 value=v,
                 source_ref=self._refs[(device_id, key_name)],
                 is_simulated=True,
+                arrival_seq=seq,
             )
-            for t, v in self._rows.get((device_id, key_name), [])[lo:hi]
+            for t, v, seq in self._rows.get((device_id, key_name), [])[lo:hi]
         ]
 
 

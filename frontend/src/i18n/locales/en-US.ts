@@ -288,6 +288,7 @@ const en: typeof zh = {
       none: 'No samples for this signal in the preview window.',
     },
     quality: {
+      failed: 'The quality check could not be completed. Try again.',
       intro:
         'Checks run on the preview window. Flagged rows are kept and marked; nothing is deleted.',
       signal: 'Signal',

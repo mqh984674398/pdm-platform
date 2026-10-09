@@ -14,6 +14,7 @@ import type {
   SignalMapping,
   SourceMetadata,
 } from './contracts'
+import { summarizeQuality, type QualitySummary } from '@/studio/quality'
 
 export type StudioRole = 'operator' | 'admin'
 
@@ -75,6 +76,15 @@ export interface TemplateView extends QueryTemplate {
   sql?: string
 }
 
+/** What the quality step checks: the draft's mappings and signal definitions over the preview window. */
+export interface StudioQualityInput {
+  mappings: SignalMapping[]
+  signals: SignalDefinition[]
+  window: { start: string; end: string }
+  /** key name per signal id, for the offline mock which works on preview series by key */
+  keys: Record<string, string>
+}
+
 export interface StudioApi {
   source(): Promise<DataSourceConfig>
   testConnection(): Promise<ConnectionCheck[]>
@@ -84,6 +94,7 @@ export interface StudioApi {
   signals(deviceId: string): Promise<{ signals: StudioSignal[]; mappings: SignalMapping[] }>
   components(deviceId: string): Promise<StudioComponent[]>
   preview(deviceId: string): Promise<StudioPreview>
+  quality(input: StudioQualityInput): Promise<QualitySummary[]>
   versions(): Promise<SignalConfigVersion[]>
   saveVersion(content: unknown, comment: string, role: StudioRole): Promise<SignalConfigVersion>
 }
@@ -132,6 +143,17 @@ export function createMockStudioApi(
       if (!p) throw new Error(`no preview for ${deviceId}`)
       return p
     },
+    quality: async ({ mappings, signals, window, keys }) =>
+      mappings.map((m) => {
+        const device = fixture.previews[m.device_id]
+        const sig = signals.find((x) => x.signal_id === m.signal_id)
+        return summarizeQuality(
+          m.signal_id,
+          device?.series[keys[m.signal_id] ?? m.key_name] ?? [],
+          window,
+          sig?.expected_sampling_s,
+        )
+      }),
     versions: async () => [...versions].reverse(),
     saveVersion: async (content, comment, role) => {
       const v: SignalConfigVersion = {

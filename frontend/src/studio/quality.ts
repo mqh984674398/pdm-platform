@@ -1,6 +1,6 @@
 /**
- * Demo data-quality summary for the studio preview. It mirrors the DataQualityReport contract so the
- * screen needs no change when the L2 quality service (T010) replaces this function.
+ * Offline data-quality summary, used only by the mock Studio (unit tests, G1 demo). The real Studio
+ * shows the backend's L4 quality report (T012); both fill the DataQualityReport contract.
  */
 import type { DataQualityReport, QualityFlag } from '@/api/contracts'
 
@@ -8,7 +8,6 @@ import type { DataQualityReport, QualityFlag } from '@/api/contracts'
 export const WINDOW_BREAK_S = 60
 
 export interface QualitySummary extends DataQualityReport {
-  flags: QualityFlag[]
   observation_windows: number
 }
 
@@ -94,6 +93,14 @@ export function summarizeQuality(
     unit_suspect: unitSuspect,
     is_simulated: true,
     flags,
+    expected_interval_s: expectedSamplingS ?? null,
+    observation_window_count: spans.length,
+    largest_gap_s: null,
+    gap_threshold_s: null,
+    out_of_range_count: 0,
+    valid_range: null,
+    not_evaluated: [],
+    spans: [],
     observation_windows: spans.length,
   }
 }

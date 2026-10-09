@@ -7,9 +7,24 @@ from enum import StrEnum
 from pydantic import AwareDatetime, Field, model_validator
 
 from app.core.schemas import ContractModel, LocalizedText, ResultMeta, TimeWindow
+from app.signals.schemas import QualityFlag, SignalDefinition, SignalMapping
+
+
+class FlaggedSpan(ContractModel):
+    """A stretch of the analysed window with quality findings: an observation window or a gap."""
+
+    start: AwareDatetime
+    end: AwareDatetime
+    flags: list[QualityFlag]
 
 
 class DataQualityReport(ContractModel):
+    """Quality of one signal over a window, computed on full-resolution rows (L4-01, L2-06).
+
+    Problems are reported, never corrected: values stay as delivered. Checks that cannot be evaluated
+    for this signal or source are listed in ``not_evaluated`` instead of being reported as clean.
+    """
+
     signal_id: str
     window: TimeWindow
     sample_count: int = Field(ge=0)
@@ -20,6 +35,70 @@ class DataQualityReport(ContractModel):
     median_interval_s: float | None = Field(default=None, ge=0)
     interval_jitter_s: float | None = Field(default=None, ge=0)
     unit_suspect: bool = False
+    is_simulated: bool
+    flags: list[QualityFlag] = Field(default_factory=list)
+    expected_interval_s: float | None = Field(default=None, gt=0)
+    observation_window_count: int = Field(default=0, ge=0)
+    largest_gap_s: float | None = Field(default=None, ge=0)
+    gap_threshold_s: float | None = Field(default=None, gt=0)
+    out_of_range_count: int = Field(default=0, ge=0)
+    valid_range: tuple[float | None, float | None] | None = Field(
+        default=None, description="Range used for OUT_OF_RANGE: the signal's own, else a unit default"
+    )
+    not_evaluated: list[QualityFlag] = Field(default_factory=list)
+    spans: list[FlaggedSpan] = Field(default_factory=list)
+
+
+class AlignmentReport(ContractModel):
+    """Speed/torque consistency (L4-02): timestamp pairing within a tolerance, motion agreement per
+    observation window, and the torque level at standstill compared with its recent reference."""
+
+    speed_signal_id: str
+    torque_signal_id: str
+    window: TimeWindow
+    tolerance_s: float = Field(gt=0)
+    paired_count: int = Field(ge=0)
+    unpaired_speed_count: int = Field(ge=0)
+    unpaired_torque_count: int = Field(ge=0)
+    median_time_offset_s: float | None = Field(default=None, ge=0)
+    evaluated_windows: int = Field(ge=0)
+    agreement: float | None = Field(
+        default=None, ge=0, le=1, description="Lowest per-window motion agreement"
+    )
+    min_agreement: float = Field(ge=0, le=1, description="Windows below this are MISALIGNED")
+    misaligned_windows: list[TimeWindow] = Field(default_factory=list)
+    standstill_torque: float | None = None
+    reference_standstill_torque: float | None = None
+    flags: list[QualityFlag] = Field(default_factory=list)
+    not_evaluated: list[QualityFlag] = Field(default_factory=list)
+    is_simulated: bool
+
+
+class SignalPair(ContractModel):
+    speed_signal_id: str
+    torque_signal_id: str
+
+
+class QualityRequest(ContractModel):
+    """Assess saved signals (``signal_ids``) and/or drafts (``mappings`` + ``signals``) over a window.
+
+    The lookback period before the window is read only as a reference for level checks (unit scale,
+    standstill bias) and gap spacing. Speed/torque pairs default to signals of the same component.
+    """
+
+    signal_ids: list[str] = Field(default_factory=list, max_length=32)
+    mappings: list[SignalMapping] = Field(default_factory=list, max_length=32)
+    signals: list[SignalDefinition] = Field(default_factory=list)
+    window: TimeWindow
+    lookback_hours: float = Field(default=168, ge=0, le=336)
+    pairs: list[SignalPair] | None = None
+    tolerance_s: float | None = Field(default=None, gt=0, le=60)
+
+
+class QualityResponse(ContractModel):
+    window: TimeWindow
+    reports: list[DataQualityReport]
+    alignment: list[AlignmentReport]
     is_simulated: bool
 
 

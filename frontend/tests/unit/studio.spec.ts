@@ -119,9 +119,11 @@ describe('studio workflow', () => {
     s.next()
     s.templateId = 'telemetry-by-key-range'
     for (let i = 0; i < 8; i++) {
+      if (STEPS[s.step] === 'quality') await s.loadQuality() // the quality step loads its report
       expect(s.canAdvance, STEPS[s.step]).toBe(true)
       s.next()
     }
+    expect(s.quality.find((q) => q.signal_id === 'M01-BS1.torque')?.flags).toContain('MISSING')
     expect(STEPS[s.step]).toBe('version')
     const { mappings, groups, visualizations } = s.content
     expect(mappings.map((m) => m.key_name).sort()).toEqual([

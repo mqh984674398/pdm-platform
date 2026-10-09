@@ -13,6 +13,8 @@ import type {
   LocalizedText,
   PreviewRequest,
   PreviewResponse,
+  QualityRequest,
+  QualityResponse,
   SignalConfigVersion,
   SignalDefinition,
   SignalMapping,
@@ -216,6 +218,33 @@ export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalT
         }
       }
       return { window_start: s.preview_window.start, window_end: s.preview_window.end, series }
+    },
+
+    /** Backend L4 report; speed/torque findings (MISALIGNED, BIAS_SUSPECT) are shown on the torque row. */
+    async quality({ mappings, signals, window }) {
+      const body: QualityRequest = {
+        signal_ids: [],
+        mappings,
+        signals,
+        window,
+        lookback_hours: 168,
+        pairs: null,
+        tolerance_s: null,
+      }
+      const resp = await call<QualityResponse>('/quality/report', 'operator', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      })
+      return resp.reports.map((r) => {
+        const pairFlags = resp.alignment
+          .filter((a) => a.torque_signal_id === r.signal_id)
+          .flatMap((a) => a.flags)
+        return {
+          ...r,
+          flags: [...new Set([...r.flags, ...pairFlags])],
+          observation_windows: r.observation_window_count,
+        }
+      })
     },
 
     async versions() {

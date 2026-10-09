@@ -162,4 +162,39 @@ describe('studio over the backend', () => {
       reason: "duplicate signal 'a'",
     })
   })
+
+  it('shows speed/torque findings on the torque row of the quality report', async () => {
+    const report = (id: string, flags: string[]) => ({
+      signal_id: id,
+      flags,
+      observation_window_count: 3,
+      sample_count: 10,
+    })
+    const { impl, calls } = fakeBackend({
+      'POST /api/quality/report': () => [
+        200,
+        {
+          reports: [report('spd', []), report('trq', ['MISSING'])],
+          alignment: [{ speed_signal_id: 'spd', torque_signal_id: 'trq', flags: ['MISALIGNED'] }],
+          window: SUGGESTIONS.preview_window,
+          is_simulated: true,
+        },
+      ],
+    })
+    const api = createHttpStudioApi(impl)
+    const out = await api.quality({
+      mappings: [],
+      signals: [],
+      window: SUGGESTIONS.preview_window,
+      keys: {},
+    })
+    expect(out.map((q) => [q.signal_id, q.flags, q.observation_windows])).toEqual([
+      ['spd', [], 3],
+      ['trq', ['MISSING', 'MISALIGNED'], 3],
+    ])
+    expect(calls[0]!.body).toMatchObject({
+      lookback_hours: 168,
+      window: SUGGESTIONS.preview_window,
+    })
+  })
 })

@@ -71,6 +71,11 @@ class RawTelemetryRow(ContractModel):
     value: float | None
     source_ref: str = Field(description="Data source id plus template/version that produced the row")
     is_simulated: bool
+    arrival_seq: int | None = Field(
+        default=None,
+        description="Order in which the source stored the row (e.g. an insert id); None when the source "
+        "has none. Rows are served in timestamp order, so this reveals out-of-order delivery (L4-01).",
+    )
 
 
 class DeviceKeys(ContractModel):
@@ -123,6 +128,10 @@ class SqlTableLayout(ContractModel):
     key_column: str
     time_column: str
     value_columns: list[str] = Field(min_length=1)
+    arrival_column: str | None = Field(
+        default=None,
+        description="Monotonic insert column (e.g. an identity id) used to detect out-of-order delivery",
+    )
     naive_time_zone: str = Field(
         default="UTC", description="Zone for timestamp columns without time zone; verify against the source"
     )

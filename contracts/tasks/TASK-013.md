@@ -1,7 +1,7 @@
 # TASK-013 — Operating-regime and movement-cycle processing
 
 - **ID:** T013
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** None
 

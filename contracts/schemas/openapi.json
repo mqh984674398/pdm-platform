@@ -2406,6 +2406,81 @@
           }
         }
       }
+    },
+    "/api/quality/report": {
+      "post": {
+        "tags": [
+          "quality"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_quality_report_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2527,6 +2602,153 @@
         ],
         "title": "AlarmStatus",
         "type": "string"
+      },
+      "AlignmentReport": {
+        "additionalProperties": false,
+        "description": "Speed/torque consistency (L4-02): timestamp pairing within a tolerance, motion agreement per\nobservation window, and the torque level at standstill compared with its recent reference.",
+        "properties": {
+          "speed_signal_id": {
+            "title": "Speed Signal Id",
+            "type": "string"
+          },
+          "torque_signal_id": {
+            "title": "Torque Signal Id",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "tolerance_s": {
+            "exclusiveMinimum": 0,
+            "title": "Tolerance S",
+            "type": "number"
+          },
+          "paired_count": {
+            "minimum": 0,
+            "title": "Paired Count",
+            "type": "integer"
+          },
+          "unpaired_speed_count": {
+            "minimum": 0,
+            "title": "Unpaired Speed Count",
+            "type": "integer"
+          },
+          "unpaired_torque_count": {
+            "minimum": 0,
+            "title": "Unpaired Torque Count",
+            "type": "integer"
+          },
+          "median_time_offset_s": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Median Time Offset S"
+          },
+          "evaluated_windows": {
+            "minimum": 0,
+            "title": "Evaluated Windows",
+            "type": "integer"
+          },
+          "agreement": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Lowest per-window motion agreement",
+            "title": "Agreement"
+          },
+          "min_agreement": {
+            "description": "Windows below this are MISALIGNED",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Min Agreement",
+            "type": "number"
+          },
+          "misaligned_windows": {
+            "items": {
+              "$ref": "#/components/schemas/TimeWindow"
+            },
+            "title": "Misaligned Windows",
+            "type": "array"
+          },
+          "standstill_torque": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Standstill Torque"
+          },
+          "reference_standstill_torque": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reference Standstill Torque"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "not_evaluated": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Not Evaluated",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "speed_signal_id",
+          "torque_signal_id",
+          "window",
+          "tolerance_s",
+          "paired_count",
+          "unpaired_speed_count",
+          "unpaired_torque_count",
+          "median_time_offset_s",
+          "evaluated_windows",
+          "agreement",
+          "min_agreement",
+          "misaligned_windows",
+          "standstill_torque",
+          "reference_standstill_torque",
+          "flags",
+          "not_evaluated",
+          "is_simulated"
+        ],
+        "title": "AlignmentReport",
+        "type": "object"
       },
       "AnomalyScoreResult": {
         "additionalProperties": false,
@@ -3071,6 +3293,7 @@
       },
       "DataQualityReport": {
         "additionalProperties": false,
+        "description": "Quality of one signal over a window, computed on full-resolution rows (L4-01, L2-06).\n\nProblems are reported, never corrected: values stay as delivered. Checks that cannot be evaluated\nfor this signal or source are listed in ``not_evaluated`` instead of being reported as clean.",
         "properties": {
           "signal_id": {
             "title": "Signal Id",
@@ -3138,6 +3361,115 @@
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "expected_interval_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expected Interval S"
+          },
+          "observation_window_count": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Observation Window Count",
+            "type": "integer"
+          },
+          "largest_gap_s": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Largest Gap S"
+          },
+          "gap_threshold_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gap Threshold S"
+          },
+          "out_of_range_count": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Out Of Range Count",
+            "type": "integer"
+          },
+          "valid_range": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Range used for OUT_OF_RANGE: the signal's own, else a unit default",
+            "title": "Valid Range"
+          },
+          "not_evaluated": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Not Evaluated",
+            "type": "array"
+          },
+          "spans": {
+            "items": {
+              "$ref": "#/components/schemas/FlaggedSpan"
+            },
+            "title": "Spans",
+            "type": "array"
           }
         },
         "required": [
@@ -3151,7 +3483,16 @@
           "median_interval_s",
           "interval_jitter_s",
           "unit_suspect",
-          "is_simulated"
+          "is_simulated",
+          "flags",
+          "expected_interval_s",
+          "observation_window_count",
+          "largest_gap_s",
+          "gap_threshold_s",
+          "out_of_range_count",
+          "valid_range",
+          "not_evaluated",
+          "spans"
         ],
         "title": "DataQualityReport",
         "type": "object"
@@ -3998,6 +4339,36 @@
         "title": "FeedbackVerdict",
         "type": "string"
       },
+      "FlaggedSpan": {
+        "additionalProperties": false,
+        "description": "A stretch of the analysed window with quality findings: an observation window or a gap.",
+        "properties": {
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Flags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "flags"
+        ],
+        "title": "FlaggedSpan",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -4732,10 +5103,124 @@
           "GAP",
           "OUT_OF_RANGE",
           "UNIT_SUSPECT",
-          "MISALIGNED"
+          "MISALIGNED",
+          "BIAS_SUSPECT"
         ],
         "title": "QualityFlag",
         "type": "string"
+      },
+      "QualityRequest": {
+        "additionalProperties": false,
+        "description": "Assess saved signals (``signal_ids``) and/or drafts (``mappings`` + ``signals``) over a window.\n\nThe lookback period before the window is read only as a reference for level checks (unit scale,\nstandstill bias) and gap spacing. Speed/torque pairs default to signals of the same component.",
+        "properties": {
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 32,
+            "title": "Signal Ids",
+            "type": "array"
+          },
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/SignalMapping"
+            },
+            "maxItems": 32,
+            "title": "Mappings",
+            "type": "array"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalDefinition"
+            },
+            "title": "Signals",
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "lookback_hours": {
+            "default": 168,
+            "maximum": 336,
+            "minimum": 0,
+            "title": "Lookback Hours",
+            "type": "number"
+          },
+          "pairs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SignalPair"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pairs"
+          },
+          "tolerance_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 60,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tolerance S"
+          }
+        },
+        "required": [
+          "signal_ids",
+          "mappings",
+          "signals",
+          "window",
+          "lookback_hours",
+          "pairs",
+          "tolerance_s"
+        ],
+        "title": "QualityRequest",
+        "type": "object"
+      },
+      "QualityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/DataQualityReport"
+            },
+            "title": "Reports",
+            "type": "array"
+          },
+          "alignment": {
+            "items": {
+              "$ref": "#/components/schemas/AlignmentReport"
+            },
+            "title": "Alignment",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "window",
+          "reports",
+          "alignment",
+          "is_simulated"
+        ],
+        "title": "QualityResponse",
+        "type": "object"
       },
       "QueryParamType": {
         "enum": [
@@ -5162,6 +5647,19 @@
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
+          },
+          "arrival_seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Order in which the source stored the row (e.g. an insert id); None when the source has none. Rows are served in timestamp order, so this reveals out-of-order delivery (L4-01).",
+            "title": "Arrival Seq"
           }
         },
         "required": [
@@ -5170,7 +5668,8 @@
           "ts",
           "value",
           "source_ref",
-          "is_simulated"
+          "is_simulated",
+          "arrival_seq"
         ],
         "title": "RawTelemetryRow",
         "type": "object"
@@ -6102,6 +6601,25 @@
         "title": "SignalMappingChange",
         "type": "object"
       },
+      "SignalPair": {
+        "additionalProperties": false,
+        "properties": {
+          "speed_signal_id": {
+            "title": "Speed Signal Id",
+            "type": "string"
+          },
+          "torque_signal_id": {
+            "title": "Torque Signal Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "speed_signal_id",
+          "torque_signal_id"
+        ],
+        "title": "SignalPair",
+        "type": "object"
+      },
       "SourceLayout": {
         "additionalProperties": false,
         "description": "The telemetry table as configured: columns with their roles and a few sample rows.",
@@ -6299,6 +6817,19 @@
             "title": "Value Columns",
             "type": "array"
           },
+          "arrival_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Monotonic insert column (e.g. an identity id) used to detect out-of-order delivery",
+            "title": "Arrival Column"
+          },
           "naive_time_zone": {
             "default": "UTC",
             "description": "Zone for timestamp columns without time zone; verify against the source",
@@ -6319,6 +6850,7 @@
           "key_column",
           "time_column",
           "value_columns",
+          "arrival_column",
           "naive_time_zone",
           "verified"
         ],

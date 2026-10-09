@@ -27,7 +27,7 @@ import {
   type TemplateView,
 } from '@/api/studio'
 import { createHttpStudioApi, StudioApiError } from '@/api/studioHttp'
-import { summarizeQuality, type QualitySummary } from './quality'
+import type { QualitySummary } from './quality'
 import { suggestedScale } from './units'
 
 export const STEPS = [
@@ -240,18 +240,28 @@ export const useStudioStore = defineStore('studio', () => {
     selectedKeys.value.map((k) => drafts.value[k]!).filter(Boolean),
   )
 
-  const quality = computed<QualitySummary[]>(() => {
+  const quality = ref<QualitySummary[]>([])
+  const qualityError = ref<Error | null>(null)
+
+  /** Quality of the current draft over the preview window (backend L4 report, or the offline mock). */
+  async function loadQuality() {
     const p = preview.value
-    if (!p) return []
-    return activeDrafts.value.map((d) =>
-      summarizeQuality(
-        d.signal_id,
-        p.series[d.key_name] ?? [],
-        { start: p.window_start, end: p.window_end },
-        d.expected_sampling_s,
-      ),
-    )
-  })
+    if (!p || !api.value) return
+    const c = content.value
+    const keys = Object.fromEntries(activeDrafts.value.map((d) => [d.signal_id, d.key_name]))
+    qualityError.value = null
+    try {
+      quality.value = await api.value.quality({
+        mappings: c.mappings,
+        signals: c.signals,
+        window: { start: p.window_start, end: p.window_end },
+        keys,
+      })
+    } catch (e) {
+      quality.value = []
+      qualityError.value = e instanceof Error ? e : new Error(String(e))
+    }
+  }
 
   const stepComplete = computed<Record<StepName, boolean>>(() => ({
     connection: !!checks.value?.every((c) => c.ok),
@@ -345,6 +355,8 @@ export const useStudioStore = defineStore('studio', () => {
   }
 
   return {
+    loadQuality,
+    qualityError,
     apiKind,
     saveError,
     role,

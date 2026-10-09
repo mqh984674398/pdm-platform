@@ -418,6 +418,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/quality/report': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Report */
+    post: operations['report_api_quality_report_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -470,6 +487,62 @@ export interface components {
      * @enum {string}
      */
     AlarmStatus: 'RAISED' | 'ACKNOWLEDGED' | 'RESOLVED'
+    /**
+     * AlignmentReport
+     * @description Speed/torque consistency (L4-02): timestamp pairing within a tolerance, motion agreement per
+     *     observation window, and the torque level at standstill compared with its recent reference.
+     */
+    AlignmentReport: {
+      /** Speed Signal Id */
+      speed_signal_id: string
+      /** Torque Signal Id */
+      torque_signal_id: string
+      window: components['schemas']['TimeWindow']
+      /** Tolerance S */
+      tolerance_s: number
+      /** Paired Count */
+      paired_count: number
+      /** Unpaired Speed Count */
+      unpaired_speed_count: number
+      /** Unpaired Torque Count */
+      unpaired_torque_count: number
+      /**
+       * Median Time Offset S
+       * @default null
+       */
+      median_time_offset_s: number | null
+      /** Evaluated Windows */
+      evaluated_windows: number
+      /**
+       * Agreement
+       * @description Lowest per-window motion agreement
+       * @default null
+       */
+      agreement: number | null
+      /**
+       * Min Agreement
+       * @description Windows below this are MISALIGNED
+       */
+      min_agreement: number
+      /** Misaligned Windows */
+      misaligned_windows: components['schemas']['TimeWindow'][]
+      /**
+       * Standstill Torque
+       * @default null
+       */
+      standstill_torque: number | null
+      /**
+       * Reference Standstill Torque
+       * @default null
+       */
+      reference_standstill_torque: number | null
+      /** Flags */
+      flags: components['schemas']['QualityFlag'][]
+      /** Not Evaluated */
+      not_evaluated: components['schemas']['QualityFlag'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** AnomalyScoreResult */
     AnomalyScoreResult: {
       /** Operator Id */
@@ -698,7 +771,13 @@ export interface components {
      * @enum {string}
      */
     CycleKind: 'EXTEND' | 'RETRACT' | 'VACUUM_RELEASE' | 'MOTION_SEGMENT'
-    /** DataQualityReport */
+    /**
+     * DataQualityReport
+     * @description Quality of one signal over a window, computed on full-resolution rows (L4-01, L2-06).
+     *
+     *     Problems are reported, never corrected: values stay as delivered. Checks that cannot be evaluated
+     *     for this signal or source are listed in ``not_evaluated`` instead of being reported as clean.
+     */
     DataQualityReport: {
       /** Signal Id */
       signal_id: string
@@ -730,6 +809,43 @@ export interface components {
       unit_suspect: boolean
       /** Is Simulated */
       is_simulated: boolean
+      /** Flags */
+      flags: components['schemas']['QualityFlag'][]
+      /**
+       * Expected Interval S
+       * @default null
+       */
+      expected_interval_s: number | null
+      /**
+       * Observation Window Count
+       * @default 0
+       */
+      observation_window_count: number
+      /**
+       * Largest Gap S
+       * @default null
+       */
+      largest_gap_s: number | null
+      /**
+       * Gap Threshold S
+       * @default null
+       */
+      gap_threshold_s: number | null
+      /**
+       * Out Of Range Count
+       * @default 0
+       */
+      out_of_range_count: number
+      /**
+       * Valid Range
+       * @description Range used for OUT_OF_RANGE: the signal's own, else a unit default
+       * @default null
+       */
+      valid_range: [number | null, number | null] | null
+      /** Not Evaluated */
+      not_evaluated: components['schemas']['QualityFlag'][]
+      /** Spans */
+      spans: components['schemas']['FlaggedSpan'][]
     }
     /**
      * DataSourceConfig
@@ -1059,6 +1175,24 @@ export interface components {
      * @enum {string}
      */
     FeedbackVerdict: 'CONFIRMED' | 'FALSE_ALARM' | 'UNSURE'
+    /**
+     * FlaggedSpan
+     * @description A stretch of the analysed window with quality findings: an observation window or a gap.
+     */
+    FlaggedSpan: {
+      /**
+       * Start
+       * Format: date-time
+       */
+      start: string
+      /**
+       * End
+       * Format: date-time
+       */
+      end: string
+      /** Flags */
+      flags: components['schemas']['QualityFlag'][]
+    }
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -1377,6 +1511,48 @@ export interface components {
       | 'OUT_OF_RANGE'
       | 'UNIT_SUSPECT'
       | 'MISALIGNED'
+      | 'BIAS_SUSPECT'
+    /**
+     * QualityRequest
+     * @description Assess saved signals (``signal_ids``) and/or drafts (``mappings`` + ``signals``) over a window.
+     *
+     *     The lookback period before the window is read only as a reference for level checks (unit scale,
+     *     standstill bias) and gap spacing. Speed/torque pairs default to signals of the same component.
+     */
+    QualityRequest: {
+      /** Signal Ids */
+      signal_ids: string[]
+      /** Mappings */
+      mappings: components['schemas']['SignalMapping'][]
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      window: components['schemas']['TimeWindow']
+      /**
+       * Lookback Hours
+       * @default 168
+       */
+      lookback_hours: number
+      /**
+       * Pairs
+       * @default null
+       */
+      pairs: components['schemas']['SignalPair'][] | null
+      /**
+       * Tolerance S
+       * @default null
+       */
+      tolerance_s: number | null
+    }
+    /** QualityResponse */
+    QualityResponse: {
+      window: components['schemas']['TimeWindow']
+      /** Reports */
+      reports: components['schemas']['DataQualityReport'][]
+      /** Alignment */
+      alignment: components['schemas']['AlignmentReport'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * QueryParamType
      * @enum {string}
@@ -1544,6 +1720,12 @@ export interface components {
       source_ref: string
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Arrival Seq
+       * @description Order in which the source stored the row (e.g. an insert id); None when the source has none. Rows are served in timestamp order, so this reveals out-of-order delivery (L4-01).
+       * @default null
+       */
+      arrival_seq: number | null
     }
     /** Recommendation */
     Recommendation: {
@@ -1891,6 +2073,13 @@ export interface components {
       base_version: number | null
       item: components['schemas']['SignalMapping']
     }
+    /** SignalPair */
+    SignalPair: {
+      /** Speed Signal Id */
+      speed_signal_id: string
+      /** Torque Signal Id */
+      torque_signal_id: string
+    }
     /**
      * SourceLayout
      * @description The telemetry table as configured: columns with their roles and a few sample rows.
@@ -1970,6 +2159,12 @@ export interface components {
       time_column: string
       /** Value Columns */
       value_columns: string[]
+      /**
+       * Arrival Column
+       * @description Monotonic insert column (e.g. an identity id) used to detect out-of-order delivery
+       * @default null
+       */
+      arrival_column: string | null
       /**
        * Naive Time Zone
        * @description Zone for timestamp columns without time zone; verify against the source
@@ -3256,6 +3451,42 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['DeviceSuggestions']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  report_api_quality_report_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['QualityRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['QualityResponse']
         }
       }
       /** @description Validation Error */
