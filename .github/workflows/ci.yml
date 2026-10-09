@@ -20,6 +20,19 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pdm
+          POSTGRES_PASSWORD: pdm
+          POSTGRES_DB: pdmtest
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pdm" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Adapter tests seed this database, then connect read-only (T009).
+      PDM_TEST_PG_URL: postgresql+psycopg://pdm:pdm@localhost:5432/pdmtest
     defaults:
       run:
         working-directory: backend

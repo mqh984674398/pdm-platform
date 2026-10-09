@@ -11,7 +11,23 @@ from pathlib import Path
 
 from app.core.schemas import TimeWindow
 from app.datasource.adapter import TimeSeriesAdapter
-from app.datasource.schemas import DeviceKeys, RawTelemetryRow, SourceMetadata
+from app.datasource.schemas import (
+    ColumnInfo,
+    DeviceKeys,
+    RawTelemetryRow,
+    SourceMetadata,
+    SourceSchema,
+    TableInfo,
+)
+
+# Columns of the simulator's raw_telemetry.csv, described like a database table.
+RAW_COLUMNS = [
+    ("deviceid", "TEXT", False),
+    ("keyname", "TEXT", False),
+    ("ts", "TIMESTAMP WITH TIME ZONE", False),
+    ("datatype", "TEXT", True),
+    ("value_double", "DOUBLE PRECISION", True),
+]
 
 
 class SimulatedAdapter(TimeSeriesAdapter):
@@ -50,6 +66,20 @@ class SimulatedAdapter(TimeSeriesAdapter):
             devices=[DeviceKeys(device_id=d, key_names=k) for d, k in devices.items()],
             earliest_ts=min(all_ts) if all_ts else None,
             latest_ts=max(all_ts) if all_ts else None,
+            is_simulated=True,
+        )
+
+    def inspect_schema(self) -> SourceSchema:
+        return SourceSchema(
+            data_source_id=self.data_source_id,
+            engine="simulated",
+            tables=[
+                TableInfo(
+                    schema_name=None,
+                    name="raw_telemetry",
+                    columns=[ColumnInfo(name=n, type=t, nullable=null) for n, t, null in RAW_COLUMNS],
+                )
+            ],
             is_simulated=True,
         )
 

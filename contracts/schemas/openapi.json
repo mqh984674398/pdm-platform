@@ -419,6 +419,31 @@
         "title": "ClassProbabilityResult",
         "type": "object"
       },
+      "ColumnInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "description": "Type as reported by the database driver",
+            "title": "Type",
+            "type": "string"
+          },
+          "nullable": {
+            "title": "Nullable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "nullable"
+        ],
+        "title": "ColumnInfo",
+        "type": "object"
+      },
       "ComponentInstance": {
         "additionalProperties": false,
         "properties": {
@@ -2486,6 +2511,153 @@
           "is_simulated"
         ],
         "title": "SourceMetadata",
+        "type": "object"
+      },
+      "SourceSchema": {
+        "additionalProperties": false,
+        "description": "Read-only structural discovery: schemas, tables, columns (L1-04).",
+        "properties": {
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "engine": {
+            "description": "Engine reported by the live connection, e.g. 'postgresql'",
+            "title": "Engine",
+            "type": "string"
+          },
+          "server_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Server Version"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/TableInfo"
+            },
+            "title": "Tables",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_source_id",
+          "engine",
+          "server_version",
+          "tables",
+          "is_simulated"
+        ],
+        "title": "SourceSchema",
+        "type": "object"
+      },
+      "SqlTableLayout": {
+        "additionalProperties": false,
+        "description": "Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).\n\n``value_columns`` are read in order and the first non-null one is the value, which covers\nsources that split values by type (e.g. ``value_double`` and ``value_long``).",
+        "properties": {
+          "schema_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Schema Name"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          },
+          "device_column": {
+            "title": "Device Column",
+            "type": "string"
+          },
+          "key_column": {
+            "title": "Key Column",
+            "type": "string"
+          },
+          "time_column": {
+            "title": "Time Column",
+            "type": "string"
+          },
+          "value_columns": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Value Columns",
+            "type": "array"
+          },
+          "naive_time_zone": {
+            "default": "UTC",
+            "description": "Zone for timestamp columns without time zone; verify against the source",
+            "title": "Naive Time Zone",
+            "type": "string"
+          },
+          "verified": {
+            "default": false,
+            "description": "True only after the layout was checked against the real database",
+            "title": "Verified",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_name",
+          "table",
+          "device_column",
+          "key_column",
+          "time_column",
+          "value_columns",
+          "naive_time_zone",
+          "verified"
+        ],
+        "title": "SqlTableLayout",
+        "type": "object"
+      },
+      "TableInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Name"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/ColumnInfo"
+            },
+            "title": "Columns",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_name",
+          "name",
+          "columns"
+        ],
+        "title": "TableInfo",
         "type": "object"
       },
       "TimeWindow": {

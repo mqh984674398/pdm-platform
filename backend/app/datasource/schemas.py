@@ -86,3 +86,46 @@ class SourceMetadata(ContractModel):
     earliest_ts: AwareDatetime | None
     latest_ts: AwareDatetime | None
     is_simulated: bool
+
+
+class ColumnInfo(ContractModel):
+    name: str
+    type: str = Field(description="Type as reported by the database driver")
+    nullable: bool
+
+
+class TableInfo(ContractModel):
+    schema_name: str | None
+    name: str
+    columns: list[ColumnInfo]
+
+
+class SourceSchema(ContractModel):
+    """Read-only structural discovery: schemas, tables, columns (L1-04)."""
+
+    data_source_id: str
+    engine: str = Field(description="Engine reported by the live connection, e.g. 'postgresql'")
+    server_version: str | None = None
+    tables: list[TableInfo]
+    is_simulated: bool
+
+
+class SqlTableLayout(ContractModel):
+    """Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).
+
+    ``value_columns`` are read in order and the first non-null one is the value, which covers
+    sources that split values by type (e.g. ``value_double`` and ``value_long``).
+    """
+
+    schema_name: str | None = None
+    table: str
+    device_column: str
+    key_column: str
+    time_column: str
+    value_columns: list[str] = Field(min_length=1)
+    naive_time_zone: str = Field(
+        default="UTC", description="Zone for timestamp columns without time zone; verify against the source"
+    )
+    verified: bool = Field(
+        default=False, description="True only after the layout was checked against the real database"
+    )

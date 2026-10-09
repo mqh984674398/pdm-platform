@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Run the same checks as .github/workflows/ci.yml locally.
-# Usage: tools/ci_local.sh   (env: PY311, PY312 = interpreters with backend dev deps; PW_CHROMIUM_PATH optional)
+# Usage: tools/ci_local.sh   (env: PY311, PY312 = interpreters with backend dev deps; PW_CHROMIUM_PATH optional;
+#        PDM_TEST_PG_URL = writable throwaway PostgreSQL database for the adapter tests, as in CI)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+if [ -n "${PDM_TEST_PG_URL:-}" ]; then echo "== postgres adapter tests: enabled"; else echo "== postgres adapter tests: skipped (PDM_TEST_PG_URL not set)"; fi
 echo "== contracts"; python3 tools/check_contracts.py
 for py in "${PY311:-}" "${PY312:-}"; do
   [ -z "$py" ] && continue

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 from app.core.schemas import TimeWindow
-from app.datasource.schemas import RawTelemetryRow, SourceMetadata
+from app.datasource.schemas import RawTelemetryRow, SourceMetadata, SourceSchema
 
 
 class TimeSeriesAdapter(ABC):
@@ -18,6 +18,10 @@ class TimeSeriesAdapter(ABC):
     @abstractmethod
     def discover(self) -> SourceMetadata:
         """List devices and key names available in the source."""
+
+    @abstractmethod
+    def inspect_schema(self) -> SourceSchema:
+        """Describe tables and columns, read-only (L1-04)."""
 
     @abstractmethod
     def query_range(

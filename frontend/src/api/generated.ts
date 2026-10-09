@@ -179,6 +179,18 @@ export interface components {
       /** Calibrated */
       calibrated: boolean
     }
+    /** ColumnInfo */
+    ColumnInfo: {
+      /** Name */
+      name: string
+      /**
+       * Type
+       * @description Type as reported by the database driver
+       */
+      type: string
+      /** Nullable */
+      nullable: boolean
+    }
     /** ComponentInstance */
     ComponentInstance: {
       /** Component Id */
@@ -1040,6 +1052,73 @@ export interface components {
       latest_ts: string | null
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /**
+     * SourceSchema
+     * @description Read-only structural discovery: schemas, tables, columns (L1-04).
+     */
+    SourceSchema: {
+      /** Data Source Id */
+      data_source_id: string
+      /**
+       * Engine
+       * @description Engine reported by the live connection, e.g. 'postgresql'
+       */
+      engine: string
+      /**
+       * Server Version
+       * @default null
+       */
+      server_version: string | null
+      /** Tables */
+      tables: components['schemas']['TableInfo'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /**
+     * SqlTableLayout
+     * @description Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).
+     *
+     *     ``value_columns`` are read in order and the first non-null one is the value, which covers
+     *     sources that split values by type (e.g. ``value_double`` and ``value_long``).
+     */
+    SqlTableLayout: {
+      /**
+       * Schema Name
+       * @default null
+       */
+      schema_name: string | null
+      /** Table */
+      table: string
+      /** Device Column */
+      device_column: string
+      /** Key Column */
+      key_column: string
+      /** Time Column */
+      time_column: string
+      /** Value Columns */
+      value_columns: string[]
+      /**
+       * Naive Time Zone
+       * @description Zone for timestamp columns without time zone; verify against the source
+       * @default UTC
+       */
+      naive_time_zone: string
+      /**
+       * Verified
+       * @description True only after the layout was checked against the real database
+       * @default false
+       */
+      verified: boolean
+    }
+    /** TableInfo */
+    TableInfo: {
+      /** Schema Name */
+      schema_name: string | null
+      /** Name */
+      name: string
+      /** Columns */
+      columns: components['schemas']['ColumnInfo'][]
     }
     /**
      * TimeWindow

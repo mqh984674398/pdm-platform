@@ -1,7 +1,7 @@
 # TASK-010 — Secure read-only SQL query service
 
 - **ID:** T010
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** None
 
