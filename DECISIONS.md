@@ -116,3 +116,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-09 · **Status:** APPROVED by Mira at gate G3 (decision card, 2026-10-09T22:56Z, option "批准，T024 加老化分级").
 - **Decision:** G3 health interpretation and workflow behavior B1–B5 (contracts/evidence/G3/README.md §2) are accepted. T024 must grade a slow, steady drift consistent with the component's age at WATCH at most, while safety rules and abrupt or accelerating drift still escalate.
 - **Rationale:** Matches the Golden Cases while the verified reference stays frozen.
+
+## D-023 — Operator routing: role-based specs, eligibility before use, declared fallbacks
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T021; no user gate).
+- **Decision:** Operators live in `app/prediction/routing`. Spec signals name roles (`torque`, `extend_time`) so one spec serves every instance of a type. The registry refuses specs whose sampling does not cover exactly the input signals, whose feature schema is unknown or belongs to another type, or that name an unknown eligibility code. Templates map each component type to independent operators; cam and gear have none (COMPONENT_TEMPLATE_ONLY). Eligibility runs before an operator; a timeout or crash applies the declared fallback (unsupported, previous version, or the statistical `deviation` operator), and the fallback's own id is kept on the result. Built-in operators: `deviation-<type>@1.0.0` (degradation indicator) and `zscore-anomaly-<type>@1.0.0` (anomaly score).
+- **Rationale:** L5-01/L5-02, L6-01, GEN-07: no model output is used without its preconditions, and failures degrade to an explicit result.

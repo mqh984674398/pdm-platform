@@ -1,7 +1,7 @@
 # TASK-021 — Component-specific model routing
 
 - **ID:** T021
-- **Status:** TODO
+- **Status:** DONE
 - **Phase:** 5 — Predictive Models
 - **Gate:** None
 
@@ -45,4 +45,5 @@ Revert the task branch to the last green commit; record the failure and cause in
 
 ## Evidence
 
-_Filled in by the executing agent with actual commands and results._
+- **Date:** 2026-10-09. Decision D-023. `pytest tests/routing -v`: 18 passed (`contracts/evidence/T021/pytest_routing.log`). Full `tools/ci_local.sh`: backend 423 passed on 3.11 and 3.12 (PostgreSQL), schema drift OK, vitest 41, Playwright 12 (`contracts/evidence/T021/ci_local.log`).
+- **AC1:** built-in specs carry every L5-02 field; the registry rejects missing version, uncovered signals, unknown or foreign feature schema, unknown eligibility codes, empty eligibility (schema) and duplicates. **AC2:** routing per component type on SIMULATED S04 windows gives a typed degradation indicator and anomaly score; cam is COMPONENT_TEMPLATE_ONLY; missing reference, missing or sparse sampling and a mismatched feature version give UnsupportedPrediction with the reason. **AC3:** a 0.1 s timeout returns TIMEOUT, or falls back to the statistical operator or the previous version as declared; a crashing model gives MODEL_UNAVAILABLE.
