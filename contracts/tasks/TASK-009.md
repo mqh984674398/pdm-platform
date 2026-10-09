@@ -1,7 +1,7 @@
 # TASK-009 — Time-series database adapter
 
 - **ID:** T009
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** None
 

@@ -1,6 +1,6 @@
 # G1 前端演示 / Frontend demonstration
 
-日期 Date: 2026-10-09 · 任务 Tasks: T001–T008 · 状态 Status: 等待用户决定 / awaiting user decision
+日期 Date: 2026-10-09 · 任务 Tasks: T001–T008 · 状态 Status: 已批准 / APPROVED by Mira, 2026-10-09T13:53Z (D-009)
 
 在线演示 Live demo (private, simulated data): https://claude.ai/artifact/HWKJ5WfC7WioDW5xwVrZN5
 本地运行 Run locally: `cd frontend && npm ci && npm run dev`, then open http://localhost:5173
@@ -18,7 +18,7 @@ All data is simulated and labeled in the UI. Machine health is each simulated sc
 | SQL 数据源工作室引导流程（普通用户无需 SQL）Data Source Studio, no SQL for ordinary users | `studio-*.png`; E2E `studio.spec.ts` (12 steps as operator; SQL only for administrator) | 12 步全部可走通 / all 12 steps complete |
 | 来自 Data/ 场景的有意义模拟数据并清晰标注 Meaningful, labeled simulated data | `Data/fixtures/demo_fleet.json`, `studio_demo.json`; quality step finds the faults built into S13, S14, S16 | 通过 / pass |
 | 中英文切换无需刷新 zh/en switch without reload | E2E `shell.spec.ts` (window marker survives switch) | 通过 / pass |
-| 重大界面与流程决策 Major UX and workflow decisions | §2 below | **等待用户 / awaiting user** |
+| 重大界面与流程决策 Major UX and workflow decisions | §2 below | 已批准，采用全部推荐 / approved, all recommendations (D-009) |
 
 本地 CI（`tools/ci_local.sh`，D-007）最近一次：后端 71 项通过（Python 3.11 与 3.12），前端单元测试 29 项、端到端 5 项通过，类型检查、lint、构建通过。日志 `contracts/evidence/T008/ci_local.log`。
 
