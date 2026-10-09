@@ -29,8 +29,8 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T022](contracts/tasks/TASK-022.md) | Decision-tree and XGBoost modeling | 5 | T021, T005 |  | DONE |
 | [T023](contracts/tasks/TASK-023.md) | CNN/LSTM feasibility and optional integration | 5 | T022 |  | DONE |
 | [T024](contracts/tasks/TASK-024.md) | Evidence fusion and maintenance decision engine | 6 | T017, T021, T022 |  | DONE |
-| [T025](contracts/tasks/TASK-025.md) | Historical replay and rapid parameter optimization | 6 | T024, T005 |  | IN_PROGRESS |
-| [T026](contracts/tasks/TASK-026.md) | Model registry, evaluation, and rollback | 6 | T022, T025 |  | TODO |
+| [T025](contracts/tasks/TASK-025.md) | Historical replay and rapid parameter optimization | 6 | T024, T005 |  | DONE |
+| [T026](contracts/tasks/TASK-026.md) | Model registry, evaluation, and rollback | 6 | T022, T025 |  | IN_PROGRESS |
 | [T027](contracts/tasks/TASK-027.md) | Ollama-only LLM, local RAG, and feedback | 6 | T020, T024 |  | TODO |
 | [T028](contracts/tasks/TASK-028.md) | Windows/LAN deployment and final acceptance | 7 | T002–T027 | G4 | TODO |
 

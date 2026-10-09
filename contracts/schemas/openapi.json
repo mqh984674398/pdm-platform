@@ -4779,6 +4779,146 @@
           }
         }
       }
+    },
+    "/api/optimization/runs": {
+      "post": {
+        "tags": [
+          "optimization"
+        ],
+        "summary": "Start Run",
+        "operationId": "start_run_api_optimization_runs_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationRun"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/optimization/runs/latest": {
+      "get": {
+        "tags": [
+          "optimization"
+        ],
+        "summary": "Latest Run",
+        "operationId": "latest_run_api_optimization_runs_latest_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationRun"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5547,6 +5687,98 @@
         ],
         "title": "BaselineVerification",
         "type": "object"
+      },
+      "CandidateResult": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "title": "Candidate Id"
+          },
+          "path": {
+            "type": "string",
+            "enum": [
+              "champion",
+              "A",
+              "B"
+            ],
+            "title": "Path"
+          },
+          "changes": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Changes"
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version"
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version"
+          },
+          "safety_unchanged": {
+            "type": "boolean",
+            "title": "Safety Unchanged"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ReplayMetrics"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "candidate_id",
+          "path",
+          "changes",
+          "rules_version",
+          "policy_version",
+          "safety_unchanged",
+          "metrics"
+        ],
+        "title": "CandidateResult"
+      },
+      "CaseScore": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "component_id": {
+            "type": "string",
+            "title": "Component Id"
+          },
+          "windows": {
+            "type": "integer",
+            "title": "Windows"
+          },
+          "within": {
+            "type": "integer",
+            "title": "Within"
+          },
+          "over": {
+            "type": "integer",
+            "title": "Over",
+            "description": "Windows above the highest allowed level (false escalation)"
+          },
+          "under": {
+            "type": "integer",
+            "title": "Under",
+            "description": "Windows below the lowest allowed level (missed or late detection)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "case_id",
+          "component_id",
+          "windows",
+          "within",
+          "over",
+          "under"
+        ],
+        "title": "CaseScore"
       },
       "ChangeMeta": {
         "additionalProperties": false,
@@ -9037,6 +9269,71 @@
         "title": "OperatorSpec",
         "type": "object"
       },
+      "OptimizationRun": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "started_by": {
+            "type": "string",
+            "title": "Started By"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "suite": {
+            "type": "string",
+            "title": "Suite"
+          },
+          "champion": {
+            "$ref": "#/components/schemas/CandidateResult"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateResult"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "recommended": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended",
+            "description": "Best challenger that beats the champion without more missed windows; never promoted here"
+          },
+          "is_simulated": {
+            "type": "boolean",
+            "title": "Is Simulated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "started_by",
+          "started_at",
+          "seed",
+          "suite",
+          "champion",
+          "candidates",
+          "recommended",
+          "is_simulated"
+        ],
+        "title": "OptimizationRun"
+      },
       "OutputKind": {
         "enum": [
           "anomaly_score",
@@ -9940,6 +10237,48 @@
         "title": "RegimeStatus",
         "type": "string"
       },
+      "ReplayMetrics": {
+        "properties": {
+          "windows": {
+            "type": "integer",
+            "title": "Windows"
+          },
+          "within": {
+            "type": "integer",
+            "title": "Within"
+          },
+          "over": {
+            "type": "integer",
+            "title": "Over"
+          },
+          "under": {
+            "type": "integer",
+            "title": "Under"
+          },
+          "ratio": {
+            "type": "number",
+            "title": "Ratio"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/CaseScore"
+            },
+            "type": "array",
+            "title": "Cases"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "windows",
+          "within",
+          "over",
+          "under",
+          "ratio",
+          "cases"
+        ],
+        "title": "ReplayMetrics"
+      },
       "ResultMeta": {
         "additionalProperties": false,
         "description": "Provenance carried by every analytical result (GEN-06, GEN-03).\n\nVersions are opaque strings such as ``\"ewma-torque@1.2.0\"``. ``None`` is not allowed: a component\nthat does not use a model still reports which rule or operator version produced the result.",
@@ -10277,6 +10616,26 @@
         ],
         "title": "RuleState",
         "type": "object"
+      },
+      "RunRequest": {
+        "properties": {
+          "candidates": {
+            "type": "integer",
+            "maximum": 40.0,
+            "minimum": 1.0,
+            "title": "Candidates",
+            "default": 12
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Seed",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "RunRequest"
       },
       "SamplingRequirement": {
         "additionalProperties": false,

@@ -10,6 +10,7 @@ from app.api import (
     errors,
     fleet,
     health,
+    optimization,
     quality,
     query,
     signals,
@@ -40,6 +41,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(alarms.router, prefix="/api")
     app.include_router(timeseries.router, prefix="/api")
     app.include_router(fleet.router, prefix="/api")
+    app.include_router(optimization.router, prefix="/api")
     return app
 
 

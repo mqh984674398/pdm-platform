@@ -882,6 +882,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/optimization/runs': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Start Run */
+    post: operations['start_run_api_optimization_runs_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/optimization/runs/latest': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Latest Run */
+    get: operations['latest_run_api_optimization_runs_latest_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1213,6 +1247,48 @@ export interface components {
        * @description Why this period is known to be healthy
        */
       comment: string
+    }
+    /** CandidateResult */
+    CandidateResult: {
+      /** Candidate Id */
+      candidate_id: string
+      /**
+       * Path
+       * @enum {string}
+       */
+      path: 'champion' | 'A' | 'B'
+      /** Changes */
+      changes: {
+        [key: string]: number
+      }
+      /** Rules Version */
+      rules_version: string
+      /** Policy Version */
+      policy_version: string
+      /** Safety Unchanged */
+      safety_unchanged: boolean
+      metrics: components['schemas']['ReplayMetrics']
+    }
+    /** CaseScore */
+    CaseScore: {
+      /** Case Id */
+      case_id: string
+      /** Component Id */
+      component_id: string
+      /** Windows */
+      windows: number
+      /** Within */
+      within: number
+      /**
+       * Over
+       * @description Windows above the highest allowed level (false escalation)
+       */
+      over: number
+      /**
+       * Under
+       * @description Windows below the lowest allowed level (missed or late detection)
+       */
+      under: number
     }
     /** ChangeMeta */
     ChangeMeta: {
@@ -2631,6 +2707,32 @@ export interface components {
       /** Eligibility */
       eligibility: components['schemas']['EligibilityCondition'][]
     }
+    /** OptimizationRun */
+    OptimizationRun: {
+      /** Run Id */
+      run_id: string
+      /** Started By */
+      started_by: string
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string
+      /** Seed */
+      seed: number
+      /** Suite */
+      suite: string
+      champion: components['schemas']['CandidateResult']
+      /** Candidates */
+      candidates: components['schemas']['CandidateResult'][]
+      /**
+       * Recommended
+       * @description Best challenger that beats the champion without more missed windows; never promoted here
+       */
+      recommended: string | null
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * OutputKind
      * @enum {string}
@@ -2988,6 +3090,21 @@ export interface components {
      * @enum {string}
      */
     RegimeStatus: 'KNOWN' | 'UNSUPPORTED' | 'NOT_EVALUATED'
+    /** ReplayMetrics */
+    ReplayMetrics: {
+      /** Windows */
+      windows: number
+      /** Within */
+      within: number
+      /** Over */
+      over: number
+      /** Under */
+      under: number
+      /** Ratio */
+      ratio: number
+      /** Cases */
+      cases: components['schemas']['CaseScore'][]
+    }
     /**
      * ResultMeta
      * @description Provenance carried by every analytical result (GEN-06, GEN-03).
@@ -3135,6 +3252,19 @@ export interface components {
        * @default
        */
       comment: string
+    }
+    /** RunRequest */
+    RunRequest: {
+      /**
+       * Candidates
+       * @default 12
+       */
+      candidates: number
+      /**
+       * Seed
+       * @default 0
+       */
+      seed: number
     }
     /** SamplingRequirement */
     SamplingRequirement: {
@@ -6024,6 +6154,74 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ComponentHealthReport']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  start_run_api_optimization_runs_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RunRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OptimizationRun']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  latest_run_api_optimization_runs_latest_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OptimizationRun']
         }
       }
       /** @description Validation Error */

@@ -13,6 +13,7 @@ import type {
   Machine,
   MaintenanceEvent,
   MaintenanceWorkflow,
+  OptimizationRun,
   SignalConfigState,
   TimeWindow,
   VisualizationSeries,
@@ -113,6 +114,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       call<Alarm>(`/api/alarms/${encodeURIComponent(alarmId)}/acknowledge`, {
         method: 'POST',
         body: JSON.stringify({ comment }),
+      }),
+    latestOptimization: () => call<OptimizationRun>('/api/optimization/runs/latest'),
+    runOptimization: (candidates = 12, seed = 0) =>
+      call<OptimizationRun>('/api/optimization/runs', {
+        method: 'POST',
+        body: JSON.stringify({ candidates, seed }),
       }),
     resolve: (alarmId: string, comment: string) =>
       call<Alarm>(`/api/alarms/${encodeURIComponent(alarmId)}/resolve`, {

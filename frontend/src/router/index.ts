@@ -12,6 +12,7 @@ import DataSourceStudioView from '@/views/DataSourceStudioView.vue'
 import DesignView from '@/views/DesignView.vue'
 import MachineView from '@/views/MachineView.vue'
 import MaintenanceView from '@/views/MaintenanceView.vue'
+import OptimizationView from '@/views/OptimizationView.vue'
 import OverviewView from '@/views/OverviewView.vue'
 import PlaceholderView from '@/views/PlaceholderView.vue'
 import { NAV } from './nav'
@@ -26,6 +27,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   baselines: { component: BaselinesView },
   maintenance: { component: MaintenanceView },
   alarms: { component: AlarmsView },
+  optimization: { component: OptimizationView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {
