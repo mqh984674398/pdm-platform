@@ -80,3 +80,14 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Decision:** A VERIFIED_HEALTHY baseline is created only by an audited verification. It needs the engineer role, a comment, and a named period with at least 5 stored feature windows. It is frozen and replaced only by a later verification, and both are kept. The adaptive baseline (EWMA, alpha 0.1, restarted per lifecycle) and degradation snapshots can never become a verified reference. Degradation history is continuous across maintenance that keeps the lifecycle, and each such event is reported as a before/after step. A replacement starts a new segment, measured only against that lifecycle's own reference. A small API (`POST /api/baselines/verified`, `GET /api/components/{id}/baselines`, `GET /api/components/{id}/degradation`) exposes this for T019/T020.
 - **Rationale:** L4-06 and OPT-05: drifting online data must never become "healthy" silently. Per-lifecycle references keep a new part from being judged against the worn part's history.
 
+## D-018 — Deterministic rules on reference deviations; alarms are review records
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T017; no user gate). Part of the G3 review.
+- **Decision:**
+  - Statistical rules use a feature's deviation from the lifecycle's verified healthy reference (per regime where available) and fire on the median of 3 windows, so one odd window raises nothing. A sustained shift also raises WATCH through the CUSUM.
+  - Safety rules check raw values against fixed limits and need no reference.
+  - The rule set is versioned in code. Only enabling and disabling are configurable, and disabling a safety rule needs admin.
+  - Levels rise immediately and drop only after 3 windows.
+  - Alarms are raised, escalated and cleared by evaluation, and acknowledged and resolved only by people with audit. They send no notifications.
+  - Machines without speed signals get regimes from operation intervals (G2 A2). Axis feature sets moved to 1.1.0 with `speed_ripple`.
+- **Rationale:** Meets L4-07 and L6-03 with results that are explainable and reproducible. It keeps official alerting off until the user approves it (contract constraint).
+

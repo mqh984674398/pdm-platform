@@ -41,7 +41,7 @@ definition under a published version and different values for an already stored 
 
 | Feature set | Features |
 | --- | --- |
-| `ball_screw@1.0.0`, `linear_motor@1.0.0` | speed at cruise, RMS speed while moving, torque at cruise, RMS and 95th percentile torque, cruise torque residual |
+| `ball_screw@1.1.0`, `linear_motor@1.1.0` | speed at cruise, RMS speed while moving, torque at cruise, RMS and 95th percentile torque, cruise torque residual |
 | `pneumatic_cylinder@1.0.0` | operation count; per direction: median and 90th percentile duration, incomplete ratio, duration residual |
 | `vacuum_cup@1.0.0` | operation count; release median and 90th percentile, incomplete ratio, release residual |
 
@@ -57,4 +57,22 @@ lifecycle change are listed in `skipped`.
 | Verified healthy reference | Only `POST /api/baselines/verified` (engineer, comment, at least 5 feature windows in the period). Frozen statistics, pooled and per regime; audited; a new verification supersedes it. |
 | Adaptive baseline | EWMA mean and spread (alpha 0.1) of each feature, restarted at each lifecycle. Follows normal aging; never becomes a verified reference. |
 | Degradation history | Every window of every lifecycle, with deviation `(value − mean) / max(std, 1 % of mean)` against that lifecycle's verified reference (per regime when available). Maintenance that keeps the lifecycle is a step (median of 8 windows before and after); a replacement starts a new segment. |
+
+## Rules and alarms (`rules/`, `alarms/`, T017)
+
+Rule set `pdm-rules@1.0.0` (`rules/definitions.py`):
+
+| Rule | Kind | Signal | WATCH / WARNING / CRITICAL |
+| --- | --- | --- | --- |
+| ST-TORQUE | statistical | cruise torque residual | 4 / 8 / 25 reference spreads (median of 3 windows) |
+| ST-RIPPLE | statistical | speed ripple | same |
+| ST-RELEASE, ST-EXTEND, ST-RETRACT | statistical | duration residual, else raw median | same |
+| SF-INCOMPLETE | safety | share of timed-out operations | 10 % / 50 % / – |
+| SF-TORQUE-LIMIT | safety | p95 torque / configured limit | – / 0.9 / 1.0 |
+
+A sustained shift also raises WATCH through an upper CUSUM (k = 2, h = 12) on clipped deviations. A
+level drops only after 3 windows below it. Statistical rules need a verified reference; safety rules
+do not. Disabling a safety rule needs admin, a statistical rule engineer; every change is audited and
+bumps `config_version`. `POST /api/alarms/evaluate` runs the rules on stored features and syncs alarms
+(raised, escalated, condition cleared); people acknowledge and resolve them. No notification is sent.
 

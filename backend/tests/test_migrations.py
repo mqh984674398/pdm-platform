@@ -25,8 +25,10 @@ def test_migrations_match_models(tmp_path, monkeypatch):
     import app.datasource.query_service.registry  # noqa: F401
     import app.equipment.lifecycle  # noqa: F401
     import app.equipment.maintenance  # noqa: F401
+    import app.monitoring.alarms.service  # noqa: F401
     import app.monitoring.baselines.verified  # noqa: F401
     import app.monitoring.features.store  # noqa: F401
+    import app.monitoring.rules.settings  # noqa: F401
     import app.signals.registry  # noqa: F401
     from app.core.config import get_settings
     from app.core.db import Base

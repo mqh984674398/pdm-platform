@@ -98,13 +98,24 @@ def test_degradation_is_not_turned_into_a_new_regime():
     assert z and np.median(z) > 3  # late windows sit well above the regime's reference torque
 
 
-def test_regime_needs_speed_evidence():
+def test_machine_without_speed_uses_operation_intervals():
+    # G2 A2: regimes come from cruise speeds and the operation interval; S18 has actuators only
     sc = scenario("S18")
     cat = learn_catalog(series("S18"), sc.machine, sc.window(0, sc.hours), "s18")
-    assert cat.regimes == []
+    intervals = sorted(round(m.median, 1) for r in cat.regimes for m in r.match_features)
+    assert len(cat.regimes) == 2 and all("interval" in r.regime.speed_band for r in cat.regimes)
+    assert all(m.feature_id.endswith(":interval") for r in cat.regimes for m in r.match_features)
+    assert intervals[0] < intervals[-1]  # the two recipes' cycle periods
     assignments = assign_regimes(series("S18"), sc.window(0, sc.hours), cat)
     running = [a for a in assignments if a.state == S.RUNNING]
-    assert running and all(a.status == R.NOT_EVALUATED and "speed" in a.reason.en for a in running)
+    assert running and sum(a.status == R.KNOWN for a in running) > 0.8 * len(running)
+
+
+def test_regime_needs_speed_or_interval_evidence():
+    from app.equipment.regimes import has_regime_evidence
+
+    assert not has_regime_evidence(series("S18"), {"M01-CY1.extend_time:median": 0.3})
+    assert not has_regime_evidence(series("S01"), {"M01-CY1.extend_time:interval": 6.0})
 
 
 def test_sampled_speed_peak_may_fall_short_but_not_exceed():

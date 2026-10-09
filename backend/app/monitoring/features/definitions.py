@@ -16,13 +16,20 @@ def _f(name: str, unit: str, zh: str, en: str, residual: bool = False) -> Featur
 
 
 def _axis(feature_set: str, ctype: ComponentType) -> FeatureSchema:
+    # 1.1.0 (T017) adds speed_ripple; 1.0.0 vectors stay valid under their own registered schema
     return FeatureSchema(
         feature_set=feature_set,
-        version="1.0.0",
+        version="1.1.0",
         component_type=ctype.value,
         features=[
             _f("speed_cruise", "rpm", "巡航速度中位数", "Median speed in the cruise phase"),
             _f("speed_rms", "rpm", "速度均方根", "RMS speed while moving"),
+            _f(
+                "speed_ripple",
+                "ratio",
+                "巡航速度波动（稳健离散度/巡航速度）",
+                "Speed ripple in the cruise phase (robust spread / cruise level)",
+            ),
             _f("torque_cruise", "Nm", "巡航阶段扭矩中位数", "Median absolute torque in the cruise phase"),
             _f("torque_rms", "Nm", "扭矩均方根", "RMS torque"),
             _f("torque_p95", "Nm", "扭矩95分位", "95th percentile absolute torque"),

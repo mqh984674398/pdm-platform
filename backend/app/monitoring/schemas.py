@@ -272,3 +272,148 @@ class DegradationHistory(ContractModel):
     segments: list[DegradationSegment]
     steps: list[MaintenanceStep]
     is_simulated: bool
+
+
+class MonitoringLevel(StrEnum):
+    """Level from deterministic rules for one window. NORMAL means no rule fired."""
+
+    NORMAL = "NORMAL"
+    WATCH = "WATCH"
+    WARNING = "WARNING"
+    CRITICAL = "CRITICAL"
+
+
+class RuleKind(StrEnum):
+    STATISTICAL = "STATISTICAL"  # deviation from the verified healthy reference
+    SAFETY = "SAFETY"  # fixed limits on raw values (L6-03); disabling needs admin
+
+
+class RuleDefinition(ContractModel):
+    rule_id: str
+    kind: RuleKind
+    component_types: list[str]
+    features: list[str] = Field(
+        min_length=1,
+        description="STATISTICAL: candidates in order, first one in the reference is used. SAFETY: all",
+    )
+    watch: float | None = None
+    warning: float | None = None
+    critical: float | None = None
+    description: LocalizedText
+
+
+class RuleSet(ContractModel):
+    """Versioned, deterministic rule set (L4-07, L6-03). Thresholds change only with a new version."""
+
+    name: str
+    version: str
+    persistence: int = Field(ge=1, description="Statistical rules use the median of this many windows")
+    hold: int = Field(ge=1, description="Windows a level is held before it may drop (hysteresis)")
+    cusum_k: float
+    cusum_h: float
+    ewma_lambda: float = Field(gt=0, le=1)
+    rules: list[RuleDefinition]
+
+    @property
+    def ref(self) -> str:
+        return f"{self.name}@{self.version}"
+
+
+class RuleState(ContractModel):
+    rule_id: str
+    kind: RuleKind
+    enabled: bool
+    changed_by: str | None = None
+    changed_at: AwareDatetime | None = None
+    comment: str = ""
+
+
+class RuleSetStatus(ContractModel):
+    rule_set: RuleSet
+    states: list[RuleState]
+    config_version: str = Field(description="rule set ref plus the number of enable/disable changes")
+
+
+class RuleChange(ContractModel):
+    enabled: bool
+    comment: str = Field(min_length=1, max_length=2000)
+
+
+class RuleHit(ContractModel):
+    rule_id: str
+    kind: RuleKind
+    level: MonitoringLevel
+    feature: str
+    value: float = Field(description="Persistent deviation (STATISTICAL) or raw value (SAFETY)")
+    threshold: float
+
+
+class WindowEvaluation(ContractModel):
+    """All enabled rules on one feature window of one component."""
+
+    component_id: str
+    lifecycle_id: str
+    window: TimeWindow
+    feature_ref: str
+    level: MonitoringLevel
+    evaluated: bool = Field(description="False when no rule could be evaluated (e.g. unsupported regime)")
+    hits: list[RuleHit]
+    statistics: dict[str, float] = Field(
+        description="Per statistical rule: '<rule>:z', ':persistent', ':ewma', ':cusum'"
+    )
+    not_evaluated: list[str] = Field(description="Rules that could not be evaluated on this window")
+    rules_version: str
+    is_simulated: bool
+
+
+class AlarmSeverity(StrEnum):
+    WATCH = "WATCH"
+    WARNING = "WARNING"
+    CRITICAL = "CRITICAL"
+
+
+class AlarmStatus(StrEnum):
+    RAISED = "RAISED"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    RESOLVED = "RESOLVED"
+
+
+class Alarm(ContractModel):
+    """An alarm event (UI-09). Recorded for review; it sends no notification."""
+
+    alarm_id: str
+    component_id: str
+    lifecycle_id: str
+    severity: AlarmSeverity
+    status: AlarmStatus
+    rule_id: str
+    raised_at: AwareDatetime
+    acknowledged_at: AwareDatetime | None = None
+    acknowledged_by: str | None = None
+    resolved_at: AwareDatetime | None = None
+    resolved_by: str | None = None
+    resolution_comment: str = ""
+    condition_active: bool = Field(
+        default=True, description="Whether the rule still fires on the latest window"
+    )
+    last_window_end: AwareDatetime | None = None
+    message: LocalizedText
+    evidence_ids: list[str] = Field(min_length=1)
+    rules_version: str = ""
+    is_simulated: bool
+
+
+class AlarmAction(ContractModel):
+    comment: str = Field(default="", max_length=2000)
+
+
+class AlarmEvaluationRequest(ContractModel):
+    component_id: str
+    feature_ref: str
+
+
+class AlarmEvaluationResult(ContractModel):
+    evaluations: list[WindowEvaluation]
+    raised: list[str]
+    updated: list[str]
+    is_simulated: bool

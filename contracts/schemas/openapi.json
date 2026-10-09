@@ -3866,6 +3866,499 @@
           }
         }
       }
+    },
+    "/api/rules": {
+      "get": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "Get Rules",
+        "operationId": "get_rules_api_rules_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSetStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/{rule_id}": {
+      "put": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "Change Rule",
+        "operationId": "change_rule_api_rules__rule_id__put",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSetStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alarms/evaluate": {
+      "post": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "Evaluate Alarms",
+        "operationId": "evaluate_alarms_api_alarms_evaluate_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlarmEvaluationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlarmEvaluationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alarms": {
+      "get": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "List Alarms",
+        "operationId": "list_alarms_api_alarms_get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AlarmStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Alarm"
+                  },
+                  "title": "Response List Alarms Api Alarms Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alarms/{alarm_id}/acknowledge": {
+      "post": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "Acknowledge Alarm",
+        "operationId": "acknowledge_alarm_api_alarms__alarm_id__acknowledge_post",
+        "parameters": [
+          {
+            "name": "alarm_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alarm Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlarmAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alarm"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alarms/{alarm_id}/resolve": {
+      "post": {
+        "tags": [
+          "alarms"
+        ],
+        "summary": "Resolve Alarm",
+        "operationId": "resolve_alarm_api_alarms__alarm_id__resolve_post",
+        "parameters": [
+          {
+            "name": "alarm_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alarm Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlarmAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alarm"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3921,6 +4414,7 @@
       },
       "Alarm": {
         "additionalProperties": false,
+        "description": "An alarm event (UI-09). Recorded for review; it sends no notification.",
         "properties": {
           "alarm_id": {
             "title": "Alarm Id",
@@ -3962,6 +4456,18 @@
             "default": null,
             "title": "Acknowledged At"
           },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Acknowledged By"
+          },
           "resolved_at": {
             "anyOf": [
               {
@@ -3975,6 +4481,42 @@
             "default": null,
             "title": "Resolved At"
           },
+          "resolved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Resolved By"
+          },
+          "resolution_comment": {
+            "default": "",
+            "title": "Resolution Comment",
+            "type": "string"
+          },
+          "condition_active": {
+            "default": true,
+            "description": "Whether the rule still fires on the latest window",
+            "title": "Condition Active",
+            "type": "boolean"
+          },
+          "last_window_end": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Last Window End"
+          },
           "message": {
             "$ref": "#/components/schemas/LocalizedText"
           },
@@ -3985,6 +4527,11 @@
             "minItems": 1,
             "title": "Evidence Ids",
             "type": "array"
+          },
+          "rules_version": {
+            "default": "",
+            "title": "Rules Version",
+            "type": "string"
           },
           "is_simulated": {
             "title": "Is Simulated",
@@ -4000,12 +4547,91 @@
           "rule_id",
           "raised_at",
           "acknowledged_at",
+          "acknowledged_by",
           "resolved_at",
+          "resolved_by",
+          "resolution_comment",
+          "condition_active",
+          "last_window_end",
           "message",
           "evidence_ids",
+          "rules_version",
           "is_simulated"
         ],
         "title": "Alarm",
+        "type": "object"
+      },
+      "AlarmAction": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Comment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comment"
+        ],
+        "title": "AlarmAction",
+        "type": "object"
+      },
+      "AlarmEvaluationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "feature_ref": {
+            "title": "Feature Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "feature_ref"
+        ],
+        "title": "AlarmEvaluationRequest",
+        "type": "object"
+      },
+      "AlarmEvaluationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/WindowEvaluation"
+            },
+            "title": "Evaluations",
+            "type": "array"
+          },
+          "raised": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Raised",
+            "type": "array"
+          },
+          "updated": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Updated",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "evaluations",
+          "raised",
+          "updated",
+          "is_simulated"
+        ],
+        "title": "AlarmEvaluationResult",
         "type": "object"
       },
       "AlarmSeverity": {
@@ -7084,6 +7710,17 @@
         "title": "MaintenanceWorkflowState",
         "type": "string"
       },
+      "MonitoringLevel": {
+        "description": "Level from deterministic rules for one window. NORMAL means no rule fired.",
+        "enum": [
+          "NORMAL",
+          "WATCH",
+          "WARNING",
+          "CRITICAL"
+        ],
+        "title": "MonitoringLevel",
+        "type": "string"
+      },
       "MotionDirection": {
         "enum": [
           "FORWARD",
@@ -8383,6 +9020,294 @@
           "is_simulated"
         ],
         "title": "ResultMeta",
+        "type": "object"
+      },
+      "RuleChange": {
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "comment": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Comment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "enabled",
+          "comment"
+        ],
+        "title": "RuleChange",
+        "type": "object"
+      },
+      "RuleDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/RuleKind"
+          },
+          "component_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Component Types",
+            "type": "array"
+          },
+          "features": {
+            "description": "STATISTICAL: candidates in order, first one in the reference is used. SAFETY: all",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Features",
+            "type": "array"
+          },
+          "watch": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Watch"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Warning"
+          },
+          "critical": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Critical"
+          },
+          "description": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "rule_id",
+          "kind",
+          "component_types",
+          "features",
+          "watch",
+          "warning",
+          "critical",
+          "description"
+        ],
+        "title": "RuleDefinition",
+        "type": "object"
+      },
+      "RuleHit": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/RuleKind"
+          },
+          "level": {
+            "$ref": "#/components/schemas/MonitoringLevel"
+          },
+          "feature": {
+            "title": "Feature",
+            "type": "string"
+          },
+          "value": {
+            "description": "Persistent deviation (STATISTICAL) or raw value (SAFETY)",
+            "title": "Value",
+            "type": "number"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          }
+        },
+        "required": [
+          "rule_id",
+          "kind",
+          "level",
+          "feature",
+          "value",
+          "threshold"
+        ],
+        "title": "RuleHit",
+        "type": "object"
+      },
+      "RuleKind": {
+        "enum": [
+          "STATISTICAL",
+          "SAFETY"
+        ],
+        "title": "RuleKind",
+        "type": "string"
+      },
+      "RuleSet": {
+        "additionalProperties": false,
+        "description": "Versioned, deterministic rule set (L4-07, L6-03). Thresholds change only with a new version.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "persistence": {
+            "description": "Statistical rules use the median of this many windows",
+            "minimum": 1,
+            "title": "Persistence",
+            "type": "integer"
+          },
+          "hold": {
+            "description": "Windows a level is held before it may drop (hysteresis)",
+            "minimum": 1,
+            "title": "Hold",
+            "type": "integer"
+          },
+          "cusum_k": {
+            "title": "Cusum K",
+            "type": "number"
+          },
+          "cusum_h": {
+            "title": "Cusum H",
+            "type": "number"
+          },
+          "ewma_lambda": {
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "title": "Ewma Lambda",
+            "type": "number"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RuleDefinition"
+            },
+            "title": "Rules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "persistence",
+          "hold",
+          "cusum_k",
+          "cusum_h",
+          "ewma_lambda",
+          "rules"
+        ],
+        "title": "RuleSet",
+        "type": "object"
+      },
+      "RuleSetStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_set": {
+            "$ref": "#/components/schemas/RuleSet"
+          },
+          "states": {
+            "items": {
+              "$ref": "#/components/schemas/RuleState"
+            },
+            "title": "States",
+            "type": "array"
+          },
+          "config_version": {
+            "description": "rule set ref plus the number of enable/disable changes",
+            "title": "Config Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_set",
+          "states",
+          "config_version"
+        ],
+        "title": "RuleSetStatus",
+        "type": "object"
+      },
+      "RuleState": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/RuleKind"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "changed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Changed By"
+          },
+          "changed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Changed At"
+          },
+          "comment": {
+            "default": "",
+            "title": "Comment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "kind",
+          "enabled",
+          "changed_by",
+          "changed_at",
+          "comment"
+        ],
+        "title": "RuleState",
         "type": "object"
       },
       "SamplingRequirement": {
@@ -10127,6 +11052,81 @@
           "item"
         ],
         "title": "VisualizationTemplateChange",
+        "type": "object"
+      },
+      "WindowEvaluation": {
+        "additionalProperties": false,
+        "description": "All enabled rules on one feature window of one component.",
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "feature_ref": {
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/MonitoringLevel"
+          },
+          "evaluated": {
+            "description": "False when no rule could be evaluated (e.g. unsupported regime)",
+            "title": "Evaluated",
+            "type": "boolean"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/RuleHit"
+            },
+            "title": "Hits",
+            "type": "array"
+          },
+          "statistics": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Per statistical rule: '<rule>:z', ':persistent', ':ewma', ':cusum'",
+            "title": "Statistics",
+            "type": "object"
+          },
+          "not_evaluated": {
+            "description": "Rules that could not be evaluated on this window",
+            "items": {
+              "type": "string"
+            },
+            "title": "Not Evaluated",
+            "type": "array"
+          },
+          "rules_version": {
+            "title": "Rules Version",
+            "type": "string"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "component_id",
+          "lifecycle_id",
+          "window",
+          "feature_ref",
+          "level",
+          "evaluated",
+          "hits",
+          "statistics",
+          "not_evaluated",
+          "rules_version",
+          "is_simulated"
+        ],
+        "title": "WindowEvaluation",
         "type": "object"
       },
       "WorkflowTransition": {

@@ -692,6 +692,108 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/rules': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Rules */
+    get: operations['get_rules_api_rules_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/rules/{rule_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Change Rule */
+    put: operations['change_rule_api_rules__rule_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/alarms/evaluate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Evaluate Alarms */
+    post: operations['evaluate_alarms_api_alarms_evaluate_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/alarms': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Alarms */
+    get: operations['list_alarms_api_alarms_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/alarms/{alarm_id}/acknowledge': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Acknowledge Alarm */
+    post: operations['acknowledge_alarm_api_alarms__alarm_id__acknowledge_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/alarms/{alarm_id}/resolve': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Resolve Alarm */
+    post: operations['resolve_alarm_api_alarms__alarm_id__resolve_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -720,7 +822,10 @@ export interface components {
       /** N */
       n: number
     }
-    /** Alarm */
+    /**
+     * Alarm
+     * @description An alarm event (UI-09). Recorded for review; it sends no notification.
+     */
     Alarm: {
       /** Alarm Id */
       alarm_id: string
@@ -743,13 +848,70 @@ export interface components {
        */
       acknowledged_at: string | null
       /**
+       * Acknowledged By
+       * @default null
+       */
+      acknowledged_by: string | null
+      /**
        * Resolved At
        * @default null
        */
       resolved_at: string | null
+      /**
+       * Resolved By
+       * @default null
+       */
+      resolved_by: string | null
+      /**
+       * Resolution Comment
+       * @default
+       */
+      resolution_comment: string
+      /**
+       * Condition Active
+       * @description Whether the rule still fires on the latest window
+       * @default true
+       */
+      condition_active: boolean
+      /**
+       * Last Window End
+       * @default null
+       */
+      last_window_end: string | null
       message: components['schemas']['LocalizedText']
       /** Evidence Ids */
       evidence_ids: string[]
+      /**
+       * Rules Version
+       * @default
+       */
+      rules_version: string
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** AlarmAction */
+    AlarmAction: {
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+    }
+    /** AlarmEvaluationRequest */
+    AlarmEvaluationRequest: {
+      /** Component Id */
+      component_id: string
+      /** Feature Ref */
+      feature_ref: string
+    }
+    /** AlarmEvaluationResult */
+    AlarmEvaluationResult: {
+      /** Evaluations */
+      evaluations: components['schemas']['WindowEvaluation'][]
+      /** Raised */
+      raised: string[]
+      /** Updated */
+      updated: string[]
       /** Is Simulated */
       is_simulated: boolean
     }
@@ -2018,6 +2180,12 @@ export interface components {
       | 'NORMAL_MONITORING'
       | 'REVIEW_REQUIRED'
     /**
+     * MonitoringLevel
+     * @description Level from deterministic rules for one window. NORMAL means no rule fired.
+     * @enum {string}
+     */
+    MonitoringLevel: 'NORMAL' | 'WATCH' | 'WARNING' | 'CRITICAL'
+    /**
      * MotionDirection
      * @enum {string}
      */
@@ -2549,6 +2717,125 @@ export interface components {
       data_window: components['schemas']['TimeWindow']
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** RuleChange */
+    RuleChange: {
+      /** Enabled */
+      enabled: boolean
+      /** Comment */
+      comment: string
+    }
+    /** RuleDefinition */
+    RuleDefinition: {
+      /** Rule Id */
+      rule_id: string
+      kind: components['schemas']['RuleKind']
+      /** Component Types */
+      component_types: string[]
+      /**
+       * Features
+       * @description STATISTICAL: candidates in order, first one in the reference is used. SAFETY: all
+       */
+      features: string[]
+      /**
+       * Watch
+       * @default null
+       */
+      watch: number | null
+      /**
+       * Warning
+       * @default null
+       */
+      warning: number | null
+      /**
+       * Critical
+       * @default null
+       */
+      critical: number | null
+      description: components['schemas']['LocalizedText']
+    }
+    /** RuleHit */
+    RuleHit: {
+      /** Rule Id */
+      rule_id: string
+      kind: components['schemas']['RuleKind']
+      level: components['schemas']['MonitoringLevel']
+      /** Feature */
+      feature: string
+      /**
+       * Value
+       * @description Persistent deviation (STATISTICAL) or raw value (SAFETY)
+       */
+      value: number
+      /** Threshold */
+      threshold: number
+    }
+    /**
+     * RuleKind
+     * @enum {string}
+     */
+    RuleKind: 'STATISTICAL' | 'SAFETY'
+    /**
+     * RuleSet
+     * @description Versioned, deterministic rule set (L4-07, L6-03). Thresholds change only with a new version.
+     */
+    RuleSet: {
+      /** Name */
+      name: string
+      /** Version */
+      version: string
+      /**
+       * Persistence
+       * @description Statistical rules use the median of this many windows
+       */
+      persistence: number
+      /**
+       * Hold
+       * @description Windows a level is held before it may drop (hysteresis)
+       */
+      hold: number
+      /** Cusum K */
+      cusum_k: number
+      /** Cusum H */
+      cusum_h: number
+      /** Ewma Lambda */
+      ewma_lambda: number
+      /** Rules */
+      rules: components['schemas']['RuleDefinition'][]
+    }
+    /** RuleSetStatus */
+    RuleSetStatus: {
+      rule_set: components['schemas']['RuleSet']
+      /** States */
+      states: components['schemas']['RuleState'][]
+      /**
+       * Config Version
+       * @description rule set ref plus the number of enable/disable changes
+       */
+      config_version: string
+    }
+    /** RuleState */
+    RuleState: {
+      /** Rule Id */
+      rule_id: string
+      kind: components['schemas']['RuleKind']
+      /** Enabled */
+      enabled: boolean
+      /**
+       * Changed By
+       * @default null
+       */
+      changed_by: string | null
+      /**
+       * Changed At
+       * @default null
+       */
+      changed_at: string | null
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
     }
     /** SamplingRequirement */
     SamplingRequirement: {
@@ -3240,6 +3527,43 @@ export interface components {
        */
       base_version: number | null
       item: components['schemas']['VisualizationTemplate']
+    }
+    /**
+     * WindowEvaluation
+     * @description All enabled rules on one feature window of one component.
+     */
+    WindowEvaluation: {
+      /** Component Id */
+      component_id: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      window: components['schemas']['TimeWindow']
+      /** Feature Ref */
+      feature_ref: string
+      level: components['schemas']['MonitoringLevel']
+      /**
+       * Evaluated
+       * @description False when no rule could be evaluated (e.g. unsupported regime)
+       */
+      evaluated: boolean
+      /** Hits */
+      hits: components['schemas']['RuleHit'][]
+      /**
+       * Statistics
+       * @description Per statistical rule: '<rule>:z', ':persistent', ':ewma', ':cusum'
+       */
+      statistics: {
+        [key: string]: number
+      }
+      /**
+       * Not Evaluated
+       * @description Rules that could not be evaluated on this window
+       */
+      not_evaluated: string[]
+      /** Rules Version */
+      rules_version: string
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /** WorkflowTransition */
     WorkflowTransition: {
@@ -4999,6 +5323,223 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['DegradationHistory']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_rules_api_rules_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RuleSetStatus']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  change_rule_api_rules__rule_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        rule_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RuleChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RuleSetStatus']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  evaluate_alarms_api_alarms_evaluate_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AlarmEvaluationRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AlarmEvaluationResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_alarms_api_alarms_get: {
+    parameters: {
+      query?: {
+        component_id?: string | null
+        status?: components['schemas']['AlarmStatus'] | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Alarm'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  acknowledge_alarm_api_alarms__alarm_id__acknowledge_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        alarm_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AlarmAction']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Alarm']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  resolve_alarm_api_alarms__alarm_id__resolve_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        alarm_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AlarmAction']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Alarm']
         }
       }
       /** @description Validation Error */

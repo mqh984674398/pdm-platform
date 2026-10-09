@@ -21,7 +21,15 @@ import numpy as np
 
 from app.core.schemas import LocalizedText, TimeWindow
 from app.equipment.cycles import CycleSignal, classify, infer_kind
-from app.equipment.regimes import comparable, match, normalized, torque_speed_pairs, window_features
+from app.equipment.regimes import (
+    CRUISE_FRACTION,
+    comparable,
+    has_regime_evidence,
+    match,
+    normalized,
+    torque_speed_pairs,
+    window_features,
+)
 from app.equipment.schemas import (
     ComponentType,
     CycleKind,
@@ -42,6 +50,7 @@ from app.monitoring.features.definitions import FEATURE_SETS, MIN_OPERATIONS
 from app.monitoring.schemas import FeatureExtraction, FeatureSkip, FeatureVector
 from app.signals.schemas import PhysicalQuantity
 
+RIPPLE_BAND = 0.2  # cruise samples within this share of the cruise level measure ripple
 MOTION_FRACTION = 0.1  # samples above this share of the window's 95th percentile speed are moving
 OPERATION_NAMES = {
     CycleKind.EXTEND: "extend",
@@ -108,14 +117,28 @@ def _axis_values(
     tolerance: float,
 ) -> dict[str, float | None]:
     vals: dict[str, float | None] = dict.fromkeys(
-        ["speed_cruise", "speed_rms", "torque_cruise", "torque_rms", "torque_p95", "torque_cruise_residual"]
+        [
+            "speed_cruise",
+            "speed_rms",
+            "speed_ripple",
+            "torque_cruise",
+            "torque_rms",
+            "torque_p95",
+            "torque_cruise_residual",
+        ]
     )
     if speed is not None:
         _, v = speed.between(t0, t1)
         av = np.abs(v[~np.isnan(v)])
         if av.size:
             vals["speed_cruise"] = feats.get(f"{speed.signal.signal_id}:cruise")
-            vals["speed_rms"] = _rms(av[av > MOTION_FRACTION * float(np.percentile(av, 95))])
+            p95 = float(np.percentile(av, 95))
+            vals["speed_rms"] = _rms(av[av > MOTION_FRACTION * p95])
+            cruise = av[av >= CRUISE_FRACTION * p95]
+            level = float(np.median(cruise)) if cruise.size else 0.0
+            near = cruise[np.abs(cruise - level) <= RIPPLE_BAND * level]  # ramp samples excluded
+            if near.size >= 5 and level > 0:
+                vals["speed_ripple"] = float(1.4826 * np.median(np.abs(near - level)) / level)
     if torque is not None:
         _, q = torque.between(t0, t1)
         aq = np.abs(q[~np.isnan(q)])
@@ -185,7 +208,6 @@ def extract_features(
         if s.component_id in components:
             by_comp.setdefault(s.component_id, []).append(s)
     not_supported = sorted(c for c, t in components.items() if t not in FEATURE_SETS)
-    speed_keys = [f"{s.signal.signal_id}:cruise" for s in series if is_speed(s)]
     pairs = torque_speed_pairs(series)
     maint = [(m0.timestamp(), m1.timestamp()) for m0, m1, _ in maintenance]
     vectors, skipped = [], []
@@ -199,7 +221,7 @@ def extract_features(
         in_maint = any(m0 <= t1 and m1 >= t0 for m0, m1 in maint)
         feats = window_features(series, t0, t1, cycle_config)
         status, known = RegimeStatus.NOT_EVALUATED, None
-        if speed_keys and all(k in feats for k in speed_keys) and catalog is not None:
+        if catalog is not None and has_regime_evidence(series, feats):
             known = match(feats, catalog)
             status = RegimeStatus.KNOWN if known else RegimeStatus.UNSUPPORTED
         for cid, ctype in sorted(components.items()):

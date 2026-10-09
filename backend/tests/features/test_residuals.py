@@ -41,8 +41,10 @@ def test_residuals_need_a_known_regime():
 
 
 def test_actuator_residual_tracks_slowdown():
-    # S07 has no speed signal, so no regime: raw durations are reported, residuals stay empty
+    # S07 has no speed signal: its regimes come from the operation interval (G2 A2)
     rows = [v for v in extraction("S07").vectors if v.component_id == "M01-CY1"]
+    assert all(v.regime_status == "KNOWN" for v in rows)
     ext = [v.values["extend_median"] for v in rows if v.values["extend_median"] is not None]
+    res = [v.values["extend_residual"] for v in rows if v.values["extend_residual"] is not None]
     assert np.median(ext[-10:]) > 1.2 * np.median(ext[:10])
-    assert all(v.values["extend_residual"] is None for v in rows)
+    assert len(res) > 0.8 * len(rows) and np.median(res[-10:]) > np.median(res[:10]) + 10

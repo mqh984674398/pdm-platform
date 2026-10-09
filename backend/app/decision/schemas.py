@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import AwareDatetime, Field
+from pydantic import Field
 
 from app.core.schemas import ContractModel, LocalizedText, ResultMeta
 
@@ -64,28 +64,7 @@ class Recommendation(ContractModel):
     evidence_ids: list[str] = Field(min_length=1)
 
 
-class AlarmSeverity(StrEnum):
-    WATCH = "WATCH"
-    WARNING = "WARNING"
-    CRITICAL = "CRITICAL"
+# Alarm contracts live with the rules that raise them (L4); re-exported here for L6 consumers.
+from app.monitoring.schemas import Alarm, AlarmSeverity, AlarmStatus  # noqa: E402
 
-
-class AlarmStatus(StrEnum):
-    RAISED = "RAISED"
-    ACKNOWLEDGED = "ACKNOWLEDGED"
-    RESOLVED = "RESOLVED"
-
-
-class Alarm(ContractModel):
-    alarm_id: str
-    component_id: str
-    lifecycle_id: str
-    severity: AlarmSeverity
-    status: AlarmStatus
-    rule_id: str
-    raised_at: AwareDatetime
-    acknowledged_at: AwareDatetime | None = None
-    resolved_at: AwareDatetime | None = None
-    message: LocalizedText
-    evidence_ids: list[str] = Field(min_length=1)
-    is_simulated: bool
+__all__ = ["Alarm", "AlarmSeverity", "AlarmStatus"]

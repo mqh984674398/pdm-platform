@@ -11,8 +11,10 @@ from sqlalchemy.orm import Session, sessionmaker
 import app.core.audit  # noqa: F401  (registers tables)
 import app.equipment.lifecycle  # noqa: F401
 import app.equipment.maintenance  # noqa: F401
+import app.monitoring.alarms.service  # noqa: F401
 import app.monitoring.baselines.verified  # noqa: F401
 import app.monitoring.features.store  # noqa: F401
+import app.monitoring.rules.settings  # noqa: F401
 from app.core.db import Base, get_session
 from app.core.schemas import TimeWindow
 from app.core.security import Principal, Role

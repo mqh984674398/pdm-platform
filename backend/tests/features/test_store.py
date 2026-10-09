@@ -32,15 +32,15 @@ def test_published_version_is_immutable(store):
     changed = fs.model_copy(update={"features": fs.features[:-1]})
     with pytest.raises(FeatureConflictError):
         store.register(changed)
-    store.register(changed.model_copy(update={"version": "1.1.0"}))
-    assert store.schema("ball_screw@1.1.0").features == fs.features[:-1]
+    store.register(changed.model_copy(update={"version": "1.2.0"}))
+    assert store.schema("ball_screw@1.2.0").features == fs.features[:-1]
 
 
 def test_vectors_round_trip_and_save_is_idempotent(store):
     vs = extraction("S12").vectors
     assert store.save(vs) == len(vs)
     assert store.save(vs) == 0
-    got = store.vectors("M01-BS1", feature_ref="ball_screw@1.0.0")
+    got = store.vectors("M01-BS1", feature_ref="ball_screw@1.1.0")
     assert got == [v for v in vs if v.component_id == "M01-BS1"]
     lc2 = store.vectors("M01-BS1", lifecycle_id="M01-BS1-LC2")
     assert lc2 and all(v.lifecycle_id == "M01-BS1-LC2" for v in lc2)

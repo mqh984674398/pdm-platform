@@ -8,8 +8,10 @@ import app.core.audit  # noqa: E402,F401
 import app.datasource.query_service.registry  # noqa: E402,F401
 import app.equipment.lifecycle  # noqa: E402,F401
 import app.equipment.maintenance  # noqa: E402,F401
+import app.monitoring.alarms.service  # noqa: E402,F401
 import app.monitoring.baselines.verified  # noqa: E402,F401
 import app.monitoring.features.store  # noqa: E402,F401
+import app.monitoring.rules.settings  # noqa: E402,F401
 import app.signals.registry  # noqa: E402,F401
 from app.core.config import get_settings
 from app.core.db import Base

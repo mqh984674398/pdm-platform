@@ -21,9 +21,11 @@ from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
+from app.monitoring.alarms.service import AlarmNotFoundError, AlarmTransitionError
 from app.monitoring.baselines.verified import BaselineError, BaselinePermissionError
 from app.monitoring.features.store import FeatureConflictError
 from app.monitoring.quality.service import QualityRequestError, UnknownQualitySignalError
+from app.monitoring.rules.settings import RuleNotFoundError, RulePermissionError
 from app.signals.preview import PreviewError, UnknownSignalError
 from app.signals.registry import ConfigConflictError, ConfigNotFoundError
 
@@ -42,6 +44,10 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (EquipmentConflictError, 409, "equipment_conflict", "与已记录的设备或维护历史冲突，未保存。", "Conflicts with the recorded equipment or maintenance history; nothing was saved."),
     (WorkflowTransitionError, 409, "workflow_transition_refused", "不允许该维护工作流状态转换。", "This maintenance workflow transition is not allowed."),
     (WorkflowPermissionError, 403, "workflow_review_role", "关闭复核需要工程师角色。", "Closing a review requires the engineer role."),
+    (AlarmNotFoundError, 404, "unknown_alarm", "未找到该报警。", "Alarm not found."),
+    (AlarmTransitionError, 409, "alarm_transition_refused", "不允许该报警状态变更。", "This alarm status change is not allowed."),
+    (RuleNotFoundError, 404, "unknown_rule", "规则集中没有该规则。", "Rule not found in the rule set."),
+    (RulePermissionError, 403, "rule_change_role", "安全规则只能由管理员启用或停用。", "Only an administrator can enable or disable a safety rule."),
     (BaselinePermissionError, 403, "baseline_verify_role", "确认健康基准需要工程师角色。", "Verifying a healthy reference requires the engineer role."),
     (BaselineError, 422, "baseline_refused", "无法建立该基准，未保存。", "The baseline could not be created; nothing was saved."),
     (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),

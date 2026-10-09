@@ -13,7 +13,7 @@ F = "torque_cruise_residual"
 
 def test_normal_aging_visible_against_the_frozen_reference(db):
     store(db, "S03")
-    ref = verify(db, "S03", "M01-BS1", "M01-BS1-LC1", "ball_screw@1.0.0", 96, 500)
+    ref = verify(db, "S03", "M01-BS1", "M01-BS1-LC1", "ball_screw@1.1.0", 96, 500)
     vs = [v for v in extraction("S03").vectors if v.component_id == "M01-BS1"]
     track = adaptive_track(vs, F)
     stats = ref.stats[F]

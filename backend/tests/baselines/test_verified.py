@@ -14,7 +14,7 @@ from ..features.conftest import extraction
 from ..lifecycle.conftest import iso, seed
 from .conftest import ENGINEER, store, verify, window
 
-REF = "ball_screw@1.0.0"
+REF = "ball_screw@1.1.0"
 
 
 def test_verification_is_explicit_and_audited(client, db):

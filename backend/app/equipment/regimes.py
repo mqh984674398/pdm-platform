@@ -48,14 +48,17 @@ MIN_REGIME_WINDOWS = 3
 CRUISE_FRACTION = 0.8  # samples at or above this share of the 95th percentile speed are cruising
 
 REASONS = {
-    RegimeStatus.KNOWN: LocalizedText(zh="速度特征匹配已知工况", en="Speed features match a known regime"),
+    RegimeStatus.KNOWN: LocalizedText(
+        zh="速度或动作间隔特征匹配已知工况", en="Speed or operation-interval features match a known regime"
+    ),
     RegimeStatus.UNSUPPORTED: LocalizedText(
         zh="运行条件不属于任何已知工况，预测须弃权",
         en="Running outside every known regime: predictions must abstain",
     ),
     "not_running": LocalizedText(zh="非运行状态，不判断工况", en="Not running: regime not evaluated"),
     "no_speed": LocalizedText(
-        zh="无速度信号，无法判断工况", en="No speed signal: regime cannot be characterized"
+        zh="无速度或动作间隔特征，无法判断工况",
+        en="No speed or operation-interval features: regime cannot be characterized",
     ),
     "no_catalog": LocalizedText(zh="尚无已知工况目录", en="No regime catalog yet"),
 }
@@ -109,6 +112,14 @@ def window_features(
 
 def _speed_keys(series: Sequence[Series]) -> list[str]:
     return sorted(f"{s.signal.signal_id}:cruise" for s in series if is_speed(s))
+
+
+def has_regime_evidence(series: Sequence[Series], feats: Mapping[str, float]) -> bool:
+    """Every speed feature, or, on a machine without speed signals, an operation interval (G2 A2)."""
+    keys = _speed_keys(series)
+    if keys:
+        return all(k in feats for k in keys)
+    return any(k.endswith(":interval") for k in feats)
 
 
 def _match_keys(series: Sequence[Series], rows: Sequence[Mapping[str, float]]) -> list[str]:
@@ -191,7 +202,7 @@ def learn_catalog(
         if t0 < a or t1 > b or window_state(series, t0, t1)[0] != OperatingState.RUNNING:
             continue
         f = window_features(series, t0, t1, cycle_config)
-        if speed_keys and all(k in f for k in speed_keys):
+        if has_regime_evidence(series, f):
             rows.append(f)
     keys = _match_keys(series, rows)
 
@@ -234,7 +245,7 @@ def learn_catalog(
             match.append(FeatureStats(feature_id=k, median=root[k], mad=_mad(tight), count=int(tight.size)))
         speed = ", ".join(
             f"{x.feature_id.split(':')[0]}≈{x.median:.4g}" for x in match if x.feature_id in speed_keys
-        )
+        ) or ", ".join(f"{x.feature_id.split(':')[0]} interval≈{x.median:.3g} s" for x in match)
         load = ", ".join(f"{x.feature_id.split(':')[0]}≈{x.median:.3g}" for x in ref if x.feature_id in pairs)
         regime = OperatingRegime(
             regime_id=rid,
@@ -288,7 +299,6 @@ def assign_regimes(
     cycle_config: Mapping[str, CycleSignal] | None = None,
 ) -> list[RegimeAssignment]:
     a, b = window.start.timestamp(), window.end.timestamp()
-    has_speed = any(is_speed(s) for s in series)
     pairs = torque_speed_pairs(series)
     out = []
     for t0, t1 in observation_windows(series):
@@ -299,8 +309,7 @@ def assign_regimes(
         values = [FeatureValue(feature_id=k, value=v) for k, v in sorted(feats.items())]
         status, rid, why = RegimeStatus.NOT_EVALUATED, None, "not_running"
         if state == OperatingState.RUNNING:
-            keys = _speed_keys(series)
-            if not has_speed or not all(k in feats for k in keys):
+            if not has_regime_evidence(series, feats):
                 why = "no_speed"
             elif catalog is None:
                 why = "no_catalog"
