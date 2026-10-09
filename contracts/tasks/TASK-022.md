@@ -1,7 +1,7 @@
 # TASK-022 — Decision-tree and XGBoost modeling
 
 - **ID:** T022
-- **Status:** TODO
+- **Status:** DONE
 - **Phase:** 5 — Predictive Models
 - **Gate:** None
 

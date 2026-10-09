@@ -1,7 +1,7 @@
 # TASK-023 — CNN/LSTM feasibility and optional integration
 
 - **ID:** T023
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 5 — Predictive Models
 - **Gate:** None
 

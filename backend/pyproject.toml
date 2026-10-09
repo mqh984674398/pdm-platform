@@ -12,6 +12,8 @@ dependencies = [
   "alembic>=1.13,<2",
   "psycopg[binary]>=3.2,<4",
   "numpy>=1.26,<3",
+  "scikit-learn>=1.4,<2",
+  "xgboost>=2.0,<4",
 ]
 
 [project.optional-dependencies]
