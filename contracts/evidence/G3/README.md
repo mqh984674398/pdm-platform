@@ -1,6 +1,6 @@
 # G3 健康监测验证 / Health monitoring validation
 
-日期 Date: 2026-10-09 · 任务 Tasks: T015–T020 · 状态 Status: 等待您的决定 / awaiting your decision
+日期 Date: 2026-10-09 · 任务 Tasks: T015–T020 · 状态 Status: 已批准 / APPROVED by Mira, 2026-10-09T22:56Z (D-022, aging grading in T024)
 
 全部为模拟数据。11 台演示设备各回放一个模拟场景，经过真实的服务链路：模拟数据源 → 特征 → 健康参考 → 规则 → 告警 → 维护流程 → 界面。健康参考由标注为 `demo-engineer (SIMULATED)` 的演示账号通过审计流程确认，这不是真实的工程确认。下文所有数字由代码计算（`g3_data.json`，`backend/scripts/g3_data.py` 生成），不是预期值。
 

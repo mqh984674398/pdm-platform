@@ -111,3 +111,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
   - Alarm review in the UI: acknowledge, and resolve with a required outcome; both audited; no notifications.
   - Outside the listed scope: rule hits carry `basis` (persistent, cusum or raw) and CUSUM hits report `cusum_h` as threshold, so the reason text is truthful; the rule engine now updates its sequential statistics incrementally (same values, about 8× faster).
 - **Rationale:** UI-01/02/03/09 and L6-04 on live backend results, keeping health an output (AGENTS.md) and every claim traceable to evidence.
+
+## D-022 — G3 approved; normal aging graded in T024
+- **Date:** 2026-10-09 · **Status:** APPROVED by Mira at gate G3 (decision card, 2026-10-09T22:56Z, option "批准，T024 加老化分级").
+- **Decision:** G3 health interpretation and workflow behavior B1–B5 (contracts/evidence/G3/README.md §2) are accepted. T024 must grade a slow, steady drift consistent with the component's age at WATCH at most, while safety rules and abrupt or accelerating drift still escalate.
+- **Rationale:** Matches the Golden Cases while the verified reference stays frozen.
