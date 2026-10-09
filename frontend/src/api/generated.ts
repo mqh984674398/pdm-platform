@@ -641,6 +641,57 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/baselines/verified': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Verify Baseline */
+    post: operations['verify_baseline_api_baselines_verified_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/baselines': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Baselines */
+    get: operations['list_baselines_api_components__component_id__baselines_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/degradation': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Degradation */
+    get: operations['get_degradation_api_components__component_id__degradation_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -650,6 +701,25 @@ export interface components {
      * @enum {string}
      */
     AccelerationPhase: 'ACCELERATING' | 'CONSTANT' | 'DECELERATING' | 'STANDSTILL' | 'UNKNOWN'
+    /**
+     * AdaptivePoint
+     * @description Adaptive baseline of one feature after a window: exponentially weighted mean and spread.
+     */
+    AdaptivePoint: {
+      /**
+       * Window End
+       * Format: date-time
+       */
+      window_end: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Mean */
+      mean: number
+      /** Std */
+      std: number
+      /** N */
+      n: number
+    }
     /** Alarm */
     Alarm: {
       /** Alarm Id */
@@ -813,7 +883,10 @@ export interface components {
         [key: string]: unknown
       }
     }
-    /** Baseline */
+    /**
+     * Baseline
+     * @description One of the three baselines (L4-05) for a component lifecycle, optionally per regime.
+     */
     Baseline: {
       /** Baseline Id */
       baseline_id: string
@@ -832,6 +905,15 @@ export interface components {
         [key: string]: components['schemas']['app__monitoring__schemas__FeatureStats']
       }
       /**
+       * Regime Stats
+       * @description Per-regime statistics of the same period, for features whose spread depends on regime
+       */
+      regime_stats: {
+        [key: string]: {
+          [key: string]: components['schemas']['app__monitoring__schemas__FeatureStats']
+        }
+      }
+      /**
        * Verified By
        * @default null
        */
@@ -841,6 +923,16 @@ export interface components {
        * @default null
        */
       verified_at: string | null
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * Superseded By
+       * @default null
+       */
+      superseded_by: string | null
       meta: components['schemas']['ResultMeta']
     }
     /**
@@ -849,6 +941,29 @@ export interface components {
      * @enum {string}
      */
     BaselineKind: 'VERIFIED_HEALTHY' | 'ADAPTIVE' | 'DEGRADATION_HISTORY'
+    /**
+     * BaselineVerification
+     * @description Explicit request to freeze a period as the verified healthy reference (L4-06).
+     */
+    BaselineVerification: {
+      /** Component Id */
+      component_id: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Feature Ref */
+      feature_ref: string
+      /**
+       * Regime Id
+       * @default null
+       */
+      regime_id: string | null
+      window: components['schemas']['TimeWindow']
+      /**
+       * Comment
+       * @description Why this period is known to be healthy
+       */
+      comment: string
+    }
     /** ChangeMeta */
     ChangeMeta: {
       /**
@@ -1255,6 +1370,27 @@ export interface components {
       conflicting_evidence: boolean
       meta: components['schemas']['ResultMeta']
     }
+    /**
+     * DegradationHistory
+     * @description Long-term history of one feature for a component (L4-05), across maintenance and lifecycles.
+     *
+     *     Maintenance keeps a lifecycle and its history continuous; a replacement starts a new segment whose
+     *     deviations are measured only against that lifecycle's own verified reference.
+     */
+    DegradationHistory: {
+      /** Component Id */
+      component_id: string
+      /** Feature */
+      feature: string
+      /** Feature Ref */
+      feature_ref: string
+      /** Segments */
+      segments: components['schemas']['DegradationSegment'][]
+      /** Steps */
+      steps: components['schemas']['MaintenanceStep'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** DegradationIndicatorResult */
     DegradationIndicatorResult: {
       /** Operator Id */
@@ -1279,6 +1415,32 @@ export interface components {
       reference_baseline_id: string
       /** Higher Is Worse */
       higher_is_worse: boolean
+    }
+    /** DegradationPoint */
+    DegradationPoint: {
+      window: components['schemas']['TimeWindow']
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Regime Id */
+      regime_id: string | null
+      /** Value */
+      value: number
+      /**
+       * Deviation
+       * @description (value - reference mean) / reference spread against this lifecycle's verified healthy reference; None when the lifecycle has none
+       */
+      deviation: number | null
+      /** Adaptive Mean */
+      adaptive_mean: number
+    }
+    /** DegradationSegment */
+    DegradationSegment: {
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Reference Baseline Id */
+      reference_baseline_id: string | null
+      /** Points */
+      points: components['schemas']['DegradationPoint'][]
     }
     /**
      * DeviceConfigChange
@@ -1450,6 +1612,21 @@ export interface components {
       component_id: string
       window: components['schemas']['TimeWindow']
       reason: components['schemas']['LocalizedText']
+    }
+    /** FeatureStats */
+    FeatureStats: {
+      /** Mean */
+      mean: number
+      /** Std */
+      std: number
+      /** P05 */
+      p05: number | null
+      /** P50 */
+      p50: number | null
+      /** P95 */
+      p95: number | null
+      /** N */
+      n: number
     }
     /** FeatureValue */
     FeatureValue: {
@@ -1765,6 +1942,35 @@ export interface components {
        * @description Open workflows this event replaced
        */
       superseded: string[]
+    }
+    /**
+     * MaintenanceStep
+     * @description Change of the feature across a maintenance event that kept the lifecycle.
+     */
+    MaintenanceStep: {
+      /** Event Id */
+      event_id: string
+      /** Type */
+      type: string
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /**
+       * Before
+       * @description Median value of the last windows before the event
+       */
+      before: number | null
+      /**
+       * After
+       * @description Median value of the first windows after the event
+       */
+      after: number | null
+      /** Change */
+      change: number | null
     }
     /**
      * MaintenanceWorkflow
@@ -4684,6 +4890,115 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['MaintenanceWorkflow']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  verify_baseline_api_baselines_verified_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BaselineVerification']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Baseline']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_baselines_api_components__component_id__baselines_get: {
+    parameters: {
+      query?: {
+        include_superseded?: boolean
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Baseline'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_degradation_api_components__component_id__degradation_get: {
+    parameters: {
+      query: {
+        feature: string
+        feature_ref: string
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DegradationHistory']
         }
       }
       /** @description Validation Error */

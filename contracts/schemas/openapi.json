@@ -3609,6 +3609,263 @@
           }
         }
       }
+    },
+    "/api/baselines/verified": {
+      "post": {
+        "tags": [
+          "baselines"
+        ],
+        "summary": "Verify Baseline",
+        "operationId": "verify_baseline_api_baselines_verified_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaselineVerification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Baseline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/components/{component_id}/baselines": {
+      "get": {
+        "tags": [
+          "baselines"
+        ],
+        "summary": "List Baselines",
+        "operationId": "list_baselines_api_components__component_id__baselines_get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "include_superseded",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Superseded"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Baseline"
+                  },
+                  "title": "Response List Baselines Api Components  Component Id  Baselines Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/components/{component_id}/degradation": {
+      "get": {
+        "tags": [
+          "baselines"
+        ],
+        "summary": "Get Degradation",
+        "operationId": "get_degradation_api_components__component_id__degradation_get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "feature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Feature"
+            }
+          },
+          {
+            "name": "feature_ref",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Feature Ref"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DegradationHistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3623,6 +3880,44 @@
         ],
         "title": "AccelerationPhase",
         "type": "string"
+      },
+      "AdaptivePoint": {
+        "additionalProperties": false,
+        "description": "Adaptive baseline of one feature after a window: exponentially weighted mean and spread.",
+        "properties": {
+          "window_end": {
+            "format": "date-time",
+            "title": "Window End",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "mean": {
+            "title": "Mean",
+            "type": "number"
+          },
+          "std": {
+            "minimum": 0,
+            "title": "Std",
+            "type": "number"
+          },
+          "n": {
+            "minimum": 1,
+            "title": "N",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_end",
+          "lifecycle_id",
+          "mean",
+          "std",
+          "n"
+        ],
+        "title": "AdaptivePoint",
+        "type": "object"
       },
       "Alarm": {
         "additionalProperties": false,
@@ -4029,6 +4324,7 @@
       },
       "Baseline": {
         "additionalProperties": false,
+        "description": "One of the three baselines (L4-05) for a component lifecycle, optionally per regime.",
         "properties": {
           "baseline_id": {
             "title": "Baseline Id",
@@ -4070,6 +4366,17 @@
             "title": "Stats",
             "type": "object"
           },
+          "regime_stats": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/app__monitoring__schemas__FeatureStats"
+              },
+              "type": "object"
+            },
+            "description": "Per-regime statistics of the same period, for features whose spread depends on regime",
+            "title": "Regime Stats",
+            "type": "object"
+          },
           "verified_by": {
             "anyOf": [
               {
@@ -4095,6 +4402,23 @@
             "default": null,
             "title": "Verified At"
           },
+          "comment": {
+            "default": "",
+            "title": "Comment",
+            "type": "string"
+          },
+          "superseded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Superseded By"
+          },
           "meta": {
             "$ref": "#/components/schemas/ResultMeta"
           }
@@ -4108,8 +4432,11 @@
           "feature_ref",
           "window",
           "stats",
+          "regime_stats",
           "verified_by",
           "verified_at",
+          "comment",
+          "superseded_by",
           "meta"
         ],
         "title": "Baseline",
@@ -4124,6 +4451,56 @@
         ],
         "title": "BaselineKind",
         "type": "string"
+      },
+      "BaselineVerification": {
+        "additionalProperties": false,
+        "description": "Explicit request to freeze a period as the verified healthy reference (L4-06).",
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "feature_ref": {
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Regime Id"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "comment": {
+            "description": "Why this period is known to be healthy",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Comment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "lifecycle_id",
+          "feature_ref",
+          "regime_id",
+          "window",
+          "comment"
+        ],
+        "title": "BaselineVerification",
+        "type": "object"
       },
       "ChangeMeta": {
         "additionalProperties": false,
@@ -5096,6 +5473,52 @@
         "title": "Decision",
         "type": "object"
       },
+      "DegradationHistory": {
+        "additionalProperties": false,
+        "description": "Long-term history of one feature for a component (L4-05), across maintenance and lifecycles.\n\nMaintenance keeps a lifecycle and its history continuous; a replacement starts a new segment whose\ndeviations are measured only against that lifecycle's own verified reference.",
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "feature": {
+            "title": "Feature",
+            "type": "string"
+          },
+          "feature_ref": {
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/DegradationSegment"
+            },
+            "title": "Segments",
+            "type": "array"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceStep"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "component_id",
+          "feature",
+          "feature_ref",
+          "segments",
+          "steps",
+          "is_simulated"
+        ],
+        "title": "DegradationHistory",
+        "type": "object"
+      },
       "DegradationIndicatorResult": {
         "additionalProperties": false,
         "properties": {
@@ -5161,6 +5584,93 @@
           "higher_is_worse"
         ],
         "title": "DegradationIndicatorResult",
+        "type": "object"
+      },
+      "DegradationPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "deviation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "(value - reference mean) / reference spread against this lifecycle's verified healthy reference; None when the lifecycle has none",
+            "title": "Deviation"
+          },
+          "adaptive_mean": {
+            "title": "Adaptive Mean",
+            "type": "number"
+          }
+        },
+        "required": [
+          "window",
+          "lifecycle_id",
+          "regime_id",
+          "value",
+          "deviation",
+          "adaptive_mean"
+        ],
+        "title": "DegradationPoint",
+        "type": "object"
+      },
+      "DegradationSegment": {
+        "additionalProperties": false,
+        "properties": {
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "reference_baseline_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Baseline Id"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/DegradationPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "lifecycle_id",
+          "reference_baseline_id",
+          "points"
+        ],
+        "title": "DegradationSegment",
         "type": "object"
       },
       "DeviceConfigChange": {
@@ -5612,6 +6122,68 @@
         ],
         "title": "FeatureSkip",
         "type": "object"
+      },
+      "FeatureStats": {
+        "properties": {
+          "mean": {
+            "type": "number",
+            "title": "Mean"
+          },
+          "std": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Std"
+          },
+          "p05": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P05"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          },
+          "n": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "N"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mean",
+          "std",
+          "p05",
+          "p50",
+          "p95",
+          "n"
+        ],
+        "title": "FeatureStats"
       },
       "FeatureValue": {
         "additionalProperties": false,
@@ -6357,6 +6929,75 @@
           "superseded"
         ],
         "title": "MaintenanceRecordResult",
+        "type": "object"
+      },
+      "MaintenanceStep": {
+        "additionalProperties": false,
+        "description": "Change of the feature across a maintenance event that kept the lifecycle.",
+        "properties": {
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Median value of the last windows before the event",
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Median value of the first windows after the event",
+            "title": "After"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          }
+        },
+        "required": [
+          "event_id",
+          "type",
+          "at",
+          "lifecycle_id",
+          "before",
+          "after",
+          "change"
+        ],
+        "title": "MaintenanceStep",
         "type": "object"
       },
       "MaintenanceWorkflow": {

@@ -50,3 +50,11 @@ of a catalog learned before the extraction window; without a known regime they a
 need at least 3 completed operations in the window. Windows overlapping maintenance or spanning a
 lifecycle change are listed in `skipped`.
 
+## Baselines and degradation (`baselines/`, `degradation/`, T016)
+
+| Baseline | How it changes |
+| --- | --- |
+| Verified healthy reference | Only `POST /api/baselines/verified` (engineer, comment, at least 5 feature windows in the period). Frozen statistics, pooled and per regime; audited; a new verification supersedes it. |
+| Adaptive baseline | EWMA mean and spread (alpha 0.1) of each feature, restarted at each lifecycle. Follows normal aging; never becomes a verified reference. |
+| Degradation history | Every window of every lifecycle, with deviation `(value − mean) / max(std, 1 % of mean)` against that lifecycle's verified reference (per regime when available). Maintenance that keeps the lifecycle is a step (median of 8 windows before and after); a replacement starts a new segment. |
+

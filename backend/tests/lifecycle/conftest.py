@@ -13,6 +13,8 @@ import app.core.audit  # noqa: F401  (registers tables)
 import app.datasource.query_service.registry  # noqa: F401
 import app.equipment.lifecycle  # noqa: F401
 import app.equipment.maintenance  # noqa: F401
+import app.monitoring.baselines.verified  # noqa: F401
+import app.monitoring.features.store  # noqa: F401
 import app.signals.registry  # noqa: F401
 from app.core.db import Base, get_session
 from app.datasource.query_service.sources import DataSourceRegistry

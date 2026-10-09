@@ -177,6 +177,8 @@ class FeatureStats(ContractModel):
 
 
 class Baseline(ContractModel):
+    """One of the three baselines (L4-05) for a component lifecycle, optionally per regime."""
+
     baseline_id: str
     kind: BaselineKind
     component_id: str
@@ -185,8 +187,14 @@ class Baseline(ContractModel):
     feature_ref: str
     window: TimeWindow
     stats: dict[str, FeatureStats]
+    regime_stats: dict[str, dict[str, FeatureStats]] = Field(
+        default_factory=dict,
+        description="Per-regime statistics of the same period, for features whose spread depends on regime",
+    )
     verified_by: str | None = None
     verified_at: AwareDatetime | None = None
+    comment: str = ""
+    superseded_by: str | None = None
     meta: ResultMeta
 
     @model_validator(mode="after")
@@ -199,3 +207,68 @@ class Baseline(ContractModel):
         if self.kind != BaselineKind.VERIFIED_HEALTHY and (self.verified_by or self.verified_at):
             raise ValueError("only VERIFIED_HEALTHY baselines carry verification fields")
         return self
+
+
+class BaselineVerification(ContractModel):
+    """Explicit request to freeze a period as the verified healthy reference (L4-06)."""
+
+    component_id: str
+    lifecycle_id: str
+    feature_ref: str
+    regime_id: str | None = None
+    window: TimeWindow
+    comment: str = Field(min_length=1, max_length=2000, description="Why this period is known to be healthy")
+
+
+class AdaptivePoint(ContractModel):
+    """Adaptive baseline of one feature after a window: exponentially weighted mean and spread."""
+
+    window_end: AwareDatetime
+    lifecycle_id: str
+    mean: float
+    std: float = Field(ge=0)
+    n: int = Field(ge=1)
+
+
+class DegradationPoint(ContractModel):
+    window: TimeWindow
+    lifecycle_id: str
+    regime_id: str | None
+    value: float
+    deviation: float | None = Field(
+        description="(value - reference mean) / reference spread against this lifecycle's verified "
+        "healthy reference; None when the lifecycle has none"
+    )
+    adaptive_mean: float
+
+
+class DegradationSegment(ContractModel):
+    lifecycle_id: str
+    reference_baseline_id: str | None
+    points: list[DegradationPoint]
+
+
+class MaintenanceStep(ContractModel):
+    """Change of the feature across a maintenance event that kept the lifecycle."""
+
+    event_id: str
+    type: str
+    at: AwareDatetime
+    lifecycle_id: str
+    before: float | None = Field(description="Median value of the last windows before the event")
+    after: float | None = Field(description="Median value of the first windows after the event")
+    change: float | None
+
+
+class DegradationHistory(ContractModel):
+    """Long-term history of one feature for a component (L4-05), across maintenance and lifecycles.
+
+    Maintenance keeps a lifecycle and its history continuous; a replacement starts a new segment whose
+    deviations are measured only against that lifecycle's own verified reference."""
+
+    component_id: str
+    feature: str
+    feature_ref: str
+    segments: list[DegradationSegment]
+    steps: list[MaintenanceStep]
+    is_simulated: bool

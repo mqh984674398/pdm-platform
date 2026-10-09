@@ -21,6 +21,8 @@ from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
+from app.monitoring.baselines.verified import BaselineError, BaselinePermissionError
+from app.monitoring.features.store import FeatureConflictError
 from app.monitoring.quality.service import QualityRequestError, UnknownQualitySignalError
 from app.signals.preview import PreviewError, UnknownSignalError
 from app.signals.registry import ConfigConflictError, ConfigNotFoundError
@@ -40,6 +42,9 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (EquipmentConflictError, 409, "equipment_conflict", "与已记录的设备或维护历史冲突，未保存。", "Conflicts with the recorded equipment or maintenance history; nothing was saved."),
     (WorkflowTransitionError, 409, "workflow_transition_refused", "不允许该维护工作流状态转换。", "This maintenance workflow transition is not allowed."),
     (WorkflowPermissionError, 403, "workflow_review_role", "关闭复核需要工程师角色。", "Closing a review requires the engineer role."),
+    (BaselinePermissionError, 403, "baseline_verify_role", "确认健康基准需要工程师角色。", "Verifying a healthy reference requires the engineer role."),
+    (BaselineError, 422, "baseline_refused", "无法建立该基准，未保存。", "The baseline could not be created; nothing was saved."),
+    (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),
     (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),
