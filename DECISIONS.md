@@ -27,3 +27,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 ## D-006 — Visualization downsampling server-side
 - **Date:** 2026-10-09 · **Status:** PROPOSED (T001)
 - **Decision:** Downsampling (e.g. LTTB) happens in the API on request; results are never persisted as algorithm inputs (L2-06).
+
+## D-007 — Local CI-equivalent verification until a GitHub remote exists
+- **Date:** 2026-10-09 · **Status:** PROPOSED (T002) · Needs user awareness, not a gate.
+- **Decision:** No GitHub repository is connected yet. Until one is, `tools/ci_local.sh` (same commands as `.github/workflows/ci.yml`) is the CI verification of record. Its log is stored per task in `contracts/evidence/TXXX/ci_local.log`. The first real CI run after the first push is recorded retroactively in T002 evidence; any failure there reopens T002.
+- **Rationale:** Avoids blocking the dependency chain on repository access while keeping verification real.

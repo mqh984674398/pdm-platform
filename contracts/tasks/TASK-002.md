@@ -1,7 +1,7 @@
 # TASK-002 — Frontend/backend skeleton and test infrastructure
 
 - **ID:** T002
-- **Status:** IN_PROGRESS
+- **Status:** DONE
 - **Phase:** 1 — Contracts and Simulation
 - **Gate:** None
 
@@ -54,4 +54,14 @@ Revert the task branch to the last green commit; record the failure and cause in
 
 ## Evidence
 
-_Filled in by the executing agent with actual commands and results._
+2026-10-09 (Python 3.11.17 and 3.12.3, Node 22.22.0, Playwright 1.56.1 with pre-installed Chromium):
+
+- `tools/ci_local.sh` → exit 0, log `contracts/evidence/T002/ci_local.log`:
+  - contracts check OK; ruff check/format clean; `pytest` 5 passed on 3.11 and on 3.12 (1 third-party Starlette deprecation warning).
+  - frontend: eslint (0 warnings) and prettier clean; `vue-tsc --build` clean; Vitest 2 files / 3 tests passed; `vite build` OK; Playwright 1 passed.
+- AC1: `GET /api/health` → `{"status":"ok","version":"0.1.0","llm_enabled":false,"llm_required":false}` (test_health.py, and live via the frontend preview proxy).
+- AC2: `tests/test_layering.py` enforces ARCHITECTURE §3 import direction, including a probe test that the checker detects violations.
+- AC3: shell route renders; screenshot with live backend `contracts/evidence/T002/shell-with-backend.png`.
+- AC4: CI workflow `.github/workflows/ci.yml` written; it has not run on GitHub yet because no remote exists. Local equivalent used per DECISIONS D-007.
+- AC5: Python 3.11 and 3.12 both pass locally; CI matrix covers both.
+- Alembic: environment wired to `PDM_DATABASE_URL`; upgrade/downgrade verified on a throwaway SQLite DB (`tests/test_migrations.py`). PostgreSQL migration testing starts with the first real migration (T014).

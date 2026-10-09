@@ -6,7 +6,7 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | Task | Title | Phase | Depends on | Gate | Status |
 |---|---|---|---|---|---|
 | [T001](contracts/tasks/TASK-001.md) | Repository audit and Contract setup | 1 | — |  | DONE |
-| [T002](contracts/tasks/TASK-002.md) | Frontend/backend skeleton and test infrastructure | 1 | T001 |  | IN_PROGRESS |
+| [T002](contracts/tasks/TASK-002.md) | Frontend/backend skeleton and test infrastructure | 1 | T001 |  | DONE |
 | [T003](contracts/tasks/TASK-003.md) | Domain, signal, API, and result schemas | 1 | T002 |  | TODO |
 | [T004](contracts/tasks/TASK-004.md) | Deterministic Data/ simulator | 1 | T003 |  | TODO |
 | [T005](contracts/tasks/TASK-005.md) | Golden Cases and scenario fixtures | 1 | T004 |  | TODO |
