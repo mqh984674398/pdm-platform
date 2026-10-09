@@ -1,5 +1,11 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import {
+  createMemoryHistory,
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+} from 'vue-router'
 import ComponentView from '@/views/ComponentView.vue'
+import DataSourceStudioView from '@/views/DataSourceStudioView.vue'
 import DesignView from '@/views/DesignView.vue'
 import MachineView from '@/views/MachineView.vue'
 import OverviewView from '@/views/OverviewView.vue'
@@ -11,6 +17,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   overview: { component: OverviewView },
   machine: { component: MachineView, param: ':id?' },
   component: { component: ComponentView, param: ':id?' },
+  datasource: { component: DataSourceStudioView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {
@@ -36,7 +43,8 @@ export const designRoute: RouteRecordRaw = {
   component: DesignView,
 }
 
+// VITE_ROUTER=memory builds a self-contained demo that does not depend on server URL rewrites.
 export const router = createRouter({
-  history: createWebHistory(),
+  history: import.meta.env.VITE_ROUTER === 'memory' ? createMemoryHistory() : createWebHistory(),
   routes: [...routes, designRoute],
 })

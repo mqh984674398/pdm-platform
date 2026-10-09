@@ -40,6 +40,13 @@
   --health-unknown-soft: #eef0f3;
   --hatch: repeating-linear-gradient(135deg, var(--health-unknown) 0 2px, transparent 2px 5px);
 
+  /* Chart series: categorical, kept clear of the health colors */
+  --chart-1: #0b5cad;
+  --chart-2: #6b4fa3;
+  --chart-3: #0f8a8a;
+  --chart-4: #7d5a2c;
+  --chart-grid: var(--steel-200);
+
   /* Simulated-data marker */
   --sim-ink: #6b4fa3;
   --sim-soft: #efe9fa;
@@ -94,6 +101,11 @@
     --health-critical-soft: #3b1717;
     --health-unknown-soft: #262b31;
     --sim-ink: #b39ae6;
+    --chart-1: #5ea3ec;
+    --chart-2: #b39ae6;
+    --chart-3: #4cc2c2;
+    --chart-4: #d2a76a;
+    --chart-grid: #2c333b;
     --sim-soft: #2a2140;
     color-scheme: dark;
   }
@@ -117,6 +129,11 @@
   --health-critical-soft: #3b1717;
   --health-unknown-soft: #262b31;
   --sim-ink: #b39ae6;
+  --chart-1: #5ea3ec;
+  --chart-2: #b39ae6;
+  --chart-3: #4cc2c2;
+  --chart-4: #d2a76a;
+  --chart-grid: #2c333b;
   --sim-soft: #2a2140;
   color-scheme: dark;
 }

@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import { describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import App from '@/App.vue'
@@ -13,7 +14,7 @@ async function mountApp(path = '/') {
   const router = createRouter({ history: createMemoryHistory(), routes })
   router.push(path)
   await router.isReady()
-  const wrapper = mount(App, { global: { plugins: [router, i18n] } })
+  const wrapper = mount(App, { global: { plugins: [router, i18n, createPinia()] } })
   await flushPromises()
   return wrapper
 }

@@ -1,9 +1,10 @@
 # CURRENT_TASK
 
-- **Assigned task:** T008 — SQL Data Source Studio frontend Demo
+- **Assigned task:** T008 — SQL Data Source Studio frontend Demo (DONE)
 - **Task file:** `contracts/tasks/TASK-008.md`
-- **Status:** IN_PROGRESS
+- **Status:** STOPPED AT GATE G1, awaiting user decision (requested 2026-10-09; silence is not approval)
+- **Gate package:** `contracts/evidence/G1/README.md`
 - **Assigned by:** Principal Agent
-- **Previous task:** T007 DONE (2026-10-09)
+- **Next on approval:** T009
 
 Update this file only when the Principal Agent assigns a new task.

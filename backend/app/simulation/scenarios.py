@@ -25,6 +25,7 @@ from app.simulation.config import SimulationConfig
 from app.simulation.demo_fleet import write_fleet
 from app.simulation.generator import generate
 from app.simulation.golden import DATA_DIR, Expectation, GoldenCase, ScenarioMeta
+from app.simulation.studio_fixture import write_studio
 from app.simulation.writer import read_text, update_manifest, write_dataset
 
 D = 24.0  # hours per day
@@ -1212,6 +1213,7 @@ def build(data_dir: Path) -> dict[str, str]:
     )
     _fixtures(data_dir)
     write_fleet(data_dir)
+    write_studio(data_dir)
     sums = {
         _logical(p).relative_to(data_dir).as_posix(): _content_sha(p)
         for sub in ("scenarios", "golden_cases", "fixtures")
