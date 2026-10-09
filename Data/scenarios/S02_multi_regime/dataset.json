@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s02_multi_regime",
+  "description": "S02 Multiple operating regimes (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5002,
+  "config_sha256": "0bd5a4ca5ed247939a61a03a985948908f6649b6544d55af926fcf1bbf882ae7",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 336.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "8d31cf7a5d04fc5aaa6911756ebb54052e476f8189df041520f86d290e6b4ca9",
+      "bytes": 789364,
+      "rows": 13265,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "7d8f05702738082fa483c0fb5c3dca943c0736da57811714c9c38b8485bd7ee0",
+      "bytes": 1218323,
+      "rows": 13265,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "0d1ad599551f14be9c68f7030dda3e1fe1fd8235ac91eed352d863210c40b0f7",
+      "bytes": 3915,
+      "rows": 56,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "32718a2ecbfba7db5a2f74f6c24e4a3ea28d705f7ae5c70824ec9d23259831f5",
+      "bytes": 19175,
+      "rows": 224,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "13b671131e00a1764371abca2134d75ebc9541ff4102536ea17700d2a555e7aa",
+      "bytes": 6934
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "94d3af925231d128d4a19c6997e7ec4ead7a09eee0ac18b198a2dcce776d5916",
+      "bytes": 2957
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "scenario_id": "S01",
+  "slug": "healthy",
+  "title": {
+    "zh": "稳定健康运行",
+    "en": "Stable healthy operation"
+  },
+  "seed": 5001,
+  "dataset_id": "s01_healthy",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "所有信号在各自工况内平稳，仅有噪声与极轻微老化。",
+    "en": "All signals stable within their regimes; only noise and negligible aging."
+  },
+  "ground_truth": {
+    "zh": "无故障注入；老化率 0.05/1000h。",
+    "en": "No faults injected; aging rate 0.05/1000h."
+  },
+  "expected_health_response": {
+    "zh": "全部部件 NORMAL，不应产生报警。",
+    "en": "All components NORMAL; no alarms."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    },
+    {
+      "zh": "无失效数据：失效概率/RUL 必须返回不支持（NO_FAILURE_EVIDENCE）。",
+      "en": "No failure data: failure probability/RUL must return unsupported (NO_FAILURE_EVIDENCE)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S01-01",
+    "GC-S01-02",
+    "GC-S01-03",
+    "GC-S01-04"
+  ]
+}

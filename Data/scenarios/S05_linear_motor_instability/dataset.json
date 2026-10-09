@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s05_linear_motor_instability",
+  "description": "S05 Linear-motor speed instability (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5005,
+  "config_sha256": "85b4f67a7c2ed01fc2e25bbcd6e4357dc79a876fc9d4a7813c3d14de681c2b68",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 336.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "56b4c0d000e7455d6559ae6fe15f774d0efacc2a3064311efcaedabc4c4d6947",
+      "bytes": 577670,
+      "rows": 9720,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "e546d08550456079d66e4fdc52af7f5a95a2f765608a420a7dae7bf85117aa22",
+      "bytes": 878638,
+      "rows": 9720,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "341e2ab7ff7e61d8d0a46ce961474db086702ed272b7835b3a0afe9824b07fa1",
+      "bytes": 3915,
+      "rows": 56,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "21cc02c194321cba443308f481f3deda0be0b77603e86dd9cd512eaacfb92660",
+      "bytes": 9437,
+      "rows": 112,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "f913990839daff3f4bd5fec258674f8fe9887f8142f2b643c83d96dc9ad2b96c",
+      "bytes": 3585
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "1406b985cb86adb71dde13fe58f1e260e6c1c76c290deea357f5db06c2297cd3",
+      "bytes": 2173
+    }
+  }
+}

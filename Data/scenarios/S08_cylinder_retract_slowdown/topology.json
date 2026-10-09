@@ -1,0 +1,102 @@
+{
+  "is_simulated": true,
+  "machines": [
+    {
+      "machine_id": "M01",
+      "name": {
+        "zh": "模拟设备 S08",
+        "en": "Simulated machine S08"
+      },
+      "line": null,
+      "is_simulated": true
+    }
+  ],
+  "components": [
+    {
+      "component_id": "M01-CY1",
+      "machine_id": "M01",
+      "type": "PNEUMATIC_CYLINDER",
+      "name": {
+        "zh": "压紧气缸",
+        "en": "Clamp cylinder"
+      },
+      "drive_chain_id": null,
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ]
+    }
+  ],
+  "lifecycles": [
+    {
+      "lifecycle_id": "M01-CY1-LC1",
+      "component_id": "M01-CY1",
+      "installed_at": "2026-02-02T00:00:00Z",
+      "retired_at": null,
+      "predecessor_lifecycle_id": null,
+      "status": "ACTIVE",
+      "accumulated_operating_hours": 2.6333,
+      "accumulated_cycles": 0
+    }
+  ],
+  "signals": [
+    {
+      "signal_id": "M01-CY1.extend_time",
+      "name": {
+        "zh": "气缸伸出时间",
+        "en": "Cylinder extension time"
+      },
+      "quantity": "DURATION",
+      "unit": "s",
+      "expected_sampling_s": null,
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "signal_id": "M01-CY1.retract_time",
+      "name": {
+        "zh": "气缸缩回时间",
+        "en": "Cylinder retraction time"
+      },
+      "quantity": "DURATION",
+      "unit": "s",
+      "expected_sampling_s": null,
+      "valid_min": null,
+      "valid_max": null
+    }
+  ],
+  "mappings": [
+    {
+      "signal_id": "M01-CY1.extend_time",
+      "data_source_id": "simulated",
+      "template_id": "sim-telemetry-by-key",
+      "device_id": "SIM-S08",
+      "key_name": "M01_CY1_EXT",
+      "time_field": "ts",
+      "value_field": "value_double",
+      "conversion": {
+        "source_unit": "ms",
+        "target_unit": "s",
+        "scale": 0.001,
+        "offset": 0.0
+      },
+      "component_id": "M01-CY1"
+    },
+    {
+      "signal_id": "M01-CY1.retract_time",
+      "data_source_id": "simulated",
+      "template_id": "sim-telemetry-by-key",
+      "device_id": "SIM-S08",
+      "key_name": "M01_CY1_RET",
+      "time_field": "ts",
+      "value_field": "value_double",
+      "conversion": {
+        "source_unit": "ms",
+        "target_unit": "s",
+        "scale": 0.001,
+        "offset": 0.0
+      },
+      "component_id": "M01-CY1"
+    }
+  ]
+}

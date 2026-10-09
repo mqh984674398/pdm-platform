@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S10",
+  "slug": "lubrication_deterioration",
+  "title": {
+    "zh": "润滑后恶化",
+    "en": "Lubrication deterioration"
+  },
+  "seed": 5010,
+  "dataset_id": "s10_lubrication_deterioration",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第15天润滑后转矩不降反升（如油脂错误或过量）。",
+    "en": "After lubrication on day 15 torque rises instead of falling (e.g., wrong grease or over-greasing)."
+  },
+  "ground_truth": {
+    "zh": "第15天润滑使润滑参数 +0.35。",
+    "en": "Lubrication on day 15 adds +0.35 to the lubrication parameter."
+  },
+  "expected_health_response": {
+    "zh": "维护前 NORMAL；维护后验证失败进入 REVIEW_REQUIRED；健康 WATCH/WARNING。",
+    "en": "NORMAL before; post-maintenance validation fails into REVIEW_REQUIRED; health WATCH/WARNING."
+  },
+  "abstention_cases": [
+    {
+      "zh": "维护后稳定期内不做健康结论（UNKNOWN）。",
+      "en": "No health conclusion during post-maintenance stabilization (UNKNOWN)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S10-01"
+  ]
+}

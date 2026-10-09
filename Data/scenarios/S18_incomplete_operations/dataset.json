@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s18_incomplete_operations",
+  "description": "S18 Incomplete actuator operations (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5018,
+  "config_sha256": "af716e65385603258d38cedb498dd419bd7858181e5636c98f52fb2acc1fcfd1",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 240.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "dc864722c487142b48ddc0d08965c501e8c815368c757638f7bd685510a5ef16",
+      "bytes": 137068,
+      "rows": 2296,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "56fd5262d31deb269b7333e771c3b845e7659dc96e899363f902007bb4f1cff9",
+      "bytes": 219304,
+      "rows": 2296,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "ec6b76dbfe947426f783d815c65e03e6e65ff60d5a974bc6009325ca25ca76c2",
+      "bytes": 2805,
+      "rows": 40,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "fb3c64fe8f6cf1fa95fa4e41407386228920296190bb97e201a56c83ac6f2f2a",
+      "bytes": 7089,
+      "rows": 80,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "b353b528d2c1790d2072d6331fd4455b5b9fc6b37dd48067826a75e7e6993957",
+      "bytes": 3663
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "f43a721f26b9bfb57c37b30609dbf55ecd1b0c3be8872d6fae073741877d332c",
+      "bytes": 1804
+    },
+    "config.json": {
+      "sha256": "35486a6499ea763237e2de102d3cd83897d5f6ea6f659433303c38e271646edf",
+      "bytes": 2273
+    }
+  }
+}

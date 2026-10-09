@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import csv
+import gzip
+import io
 from bisect import bisect_left, bisect_right
 from datetime import datetime
 from pathlib import Path
@@ -25,7 +27,12 @@ class SimulatedAdapter(TimeSeriesAdapter):
         self.data_source_id = data_source_id
         self._source_ref = f"{data_source_id}:{dataset_dir.name}"
         rows: dict[tuple[str, str], list[tuple[datetime, float | None]]] = {}
-        with (dataset_dir / "raw_telemetry.csv").open(encoding="utf-8", newline="") as fh:
+        path = dataset_dir / "raw_telemetry.csv"
+        if path.exists():
+            text = path.read_text(encoding="utf-8")
+        else:
+            text = gzip.decompress((dataset_dir / "raw_telemetry.csv.gz").read_bytes()).decode("utf-8")
+        with io.StringIO(text, newline="") as fh:
             for r in csv.DictReader(fh):
                 ts = datetime.fromisoformat(r["ts"].replace("Z", "+00:00"))
                 value = float(r["value_double"]) if r["value_double"] else None

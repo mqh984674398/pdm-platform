@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S08",
+  "slug": "cylinder_retract_slowdown",
+  "title": {
+    "zh": "气缸缩回变慢",
+    "en": "Cylinder retraction slowdown"
+  },
+  "seed": 5008,
+  "dataset_id": "s08_cylinder_retract_slowdown",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第7–17天缩回时间上升约40%，另一方向不变。",
+    "en": "Days 7–17: retract time rises about 40%; the other direction is unchanged."
+  },
+  "ground_truth": {
+    "zh": "retract 参数线性增加 0.4；extend 不变。",
+    "en": "retract parameter ramps +0.4; extend unchanged."
+  },
+  "expected_health_response": {
+    "zh": "方向特定：受影响方向的证据升级到 WARNING，另一方向证据保持正常。",
+    "en": "Direction-specific: evidence for the affected direction escalates to WARNING; the other direction stays normal."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S08-01"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "scenario_id": "S18",
+  "slug": "incomplete_operations",
+  "title": {
+    "zh": "执行器动作未完成",
+    "en": "Incomplete actuator operations"
+  },
+  "seed": 5018,
+  "dataset_id": "s18_incomplete_operations",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第3–7天约5%气缸动作、约3%真空释放未完成，上报超时值2000ms。",
+    "en": "Days 3–7: about 5% of cylinder operations and 3% of vacuum releases do not complete; the timeout value 2000 ms is reported."
+  },
+  "ground_truth": {
+    "zh": "未完成动作为注入事件；正常动作时间不变。",
+    "en": "Incomplete operations are injected events; completed durations are unchanged."
+  },
+  "expected_health_response": {
+    "zh": "未完成动作被识别并排除出时间统计；可 WATCH 提示动作失败；不得把超时值当作动作时间。",
+    "en": "Incomplete operations are detected and excluded from duration statistics; WATCH allowed for failed operations; timeout values are never treated as durations."
+  },
+  "abstention_cases": [
+    {
+      "zh": "超时值不得作为动作时间；窗口内有效动作不足时弃权（INSUFFICIENT_DATA）。",
+      "en": "Timeout values are never used as durations; abstain when a window has too few completed operations (INSUFFICIENT_DATA)."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "用超时值表示未完成动作是待验证的假设。",
+      "en": "Representing incomplete operations by the timeout value is an assumption to verify."
+    }
+  ],
+  "golden_case_ids": [
+    "GC-S18-01",
+    "GC-S18-02"
+  ]
+}

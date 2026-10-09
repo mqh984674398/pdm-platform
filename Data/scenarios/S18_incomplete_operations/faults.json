@@ -1,0 +1,100 @@
+{
+  "data_faults": [],
+  "incomplete_operations": [
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 270017.626
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 313229.932
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 0,
+      "t_s": 356449.427
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 356442.677
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 356343.029
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 356347.529
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 0,
+      "t_s": 378025.646
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 0,
+      "t_s": 421181.42
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 442838.418
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 442856.418
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 485963.358
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 507556.412
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 529198.159
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 550785.714
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 550857.714
+    },
+    {
+      "component_id": "M01-VC1",
+      "operation": 0,
+      "t_s": 550837.197
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 0,
+      "t_s": 572422.342
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 572413.342
+    },
+    {
+      "component_id": "M01-CY1",
+      "operation": 1,
+      "t_s": 593970.052
+    }
+  ]
+}

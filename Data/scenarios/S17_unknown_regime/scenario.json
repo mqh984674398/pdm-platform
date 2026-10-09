@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S17",
+  "slug": "unknown_regime",
+  "title": {
+    "zh": "未知/不支持工况",
+    "en": "Unknown or unsupported operating regime"
+  },
+  "seed": 5017,
+  "dataset_id": "s17_unknown_regime",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第4–6天运行未登记配方 R-X（更高速度和负载）。",
+    "en": "Days 4–6: unregistered recipe R-X runs (higher speed and load)."
+  },
+  "ground_truth": {
+    "zh": "工况超出已知集合；设备健康。",
+    "en": "Regime outside the known set; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "R-X 期间返回不支持预测（UNSUPPORTED_REGIME）→ UNKNOWN；其余时间 NORMAL。",
+    "en": "During R-X return unsupported prediction (UNSUPPORTED_REGIME) → UNKNOWN; NORMAL otherwise."
+  },
+  "abstention_cases": [
+    {
+      "zh": "未知工况必须弃权（UNSUPPORTED_REGIME），不得用已知工况基线判定。",
+      "en": "Unknown regimes must abstain (UNSUPPORTED_REGIME), never judged against known-regime baselines."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S17-01",
+    "GC-S17-02"
+  ]
+}

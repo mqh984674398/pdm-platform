@@ -1,0 +1,41 @@
+{
+  "scenario_id": "S12",
+  "slug": "component_replacement",
+  "title": {
+    "zh": "部件整体更换",
+    "en": "Complete component replacement"
+  },
+  "seed": 5012,
+  "dataset_id": "s12_component_replacement",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "摩擦持续上升；第21天更换后转矩回到新件水平，生命周期编号变化。",
+    "en": "Friction rises; after replacement on day 21 torque returns to new-part level and the lifecycle id changes."
+  },
+  "ground_truth": {
+    "zh": "摩擦 0→+0.6（0–20天）；第21天更换生成 M01-BS1-LC2；历史保留。",
+    "en": "Friction 0→+0.6 (days 0–20); replacement on day 21 creates M01-BS1-LC2; history preserved."
+  },
+  "expected_health_response": {
+    "zh": "更换前 WARNING/CRITICAL；新生命周期初期无足够基线 → UNKNOWN；建立基线后 NORMAL。",
+    "en": "WARNING/CRITICAL before; UNKNOWN early in the new lifecycle without a baseline; NORMAL once a baseline exists."
+  },
+  "abstention_cases": [
+    {
+      "zh": "新生命周期在建立健康基线前必须弃权（INSUFFICIENT_DATA）。",
+      "en": "The new lifecycle must abstain until a healthy baseline exists (INSUFFICIENT_DATA)."
+    },
+    {
+      "zh": "无失效数据：失效概率/RUL 必须返回不支持（NO_FAILURE_EVIDENCE）。",
+      "en": "No failure data: failure probability/RUL must return unsupported (NO_FAILURE_EVIDENCE)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S12-01"
+  ]
+}

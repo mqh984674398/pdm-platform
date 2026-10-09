@@ -1,7 +1,7 @@
 # TASK-006 — UI design system and bilingual switching
 
 - **ID:** T006
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 2 — High-Fidelity Frontend
 - **Gate:** None
 

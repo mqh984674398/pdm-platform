@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S20",
+  "slug": "source_interruption",
+  "title": {
+    "zh": "数据源中断与恢复",
+    "en": "Data-source interruption and recovery"
+  },
+  "seed": 5020,
+  "dataset_id": "s20_source_interruption",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第3–5天无任何数据，之后恢复。",
+    "en": "Days 3–5: no data at all, then recovery."
+  },
+  "ground_truth": {
+    "zh": "数据源中断48小时；设备健康。",
+    "en": "48-hour data-source interruption; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "中断期间 UNKNOWN（INSUFFICIENT_DATA）；恢复后 NORMAL，恢复时不得误报；增量读取从水位线继续。",
+    "en": "UNKNOWN during the gap (INSUFFICIENT_DATA); NORMAL after recovery with no false alarm; incremental reads resume from the watermark."
+  },
+  "abstention_cases": [
+    {
+      "zh": "中断期间必须弃权（INSUFFICIENT_DATA）。",
+      "en": "Must abstain during the interruption (INSUFFICIENT_DATA)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S20-01",
+    "GC-S20-02"
+  ]
+}

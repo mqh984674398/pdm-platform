@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s09_lubrication_improvement",
+  "description": "S09 Lubrication improvement (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5009,
+  "config_sha256": "925fc2a6f929a9a45c473c60e50b7179ba20ad5903f301ed6f0951a745cf4069",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 720.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "34639e599484bf9670db0a41ea7b3380cd34692a13e21f344e222bd8f2e6189d",
+      "bytes": 838787,
+      "rows": 14160,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "1f88db42ba120375f22694740cbae1f89d040de6eaf11d6034868ca44c4a8dc3",
+      "bytes": 1272845,
+      "rows": 14160,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "09e8cc4a557aac263fb777828c5afaae61345307027386bba66150198780db31",
+      "bytes": 8312,
+      "rows": 120,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "d8b9b877066432ece1367b5ffb16f9b5362732902642b7a08246fc3e1f376599",
+      "bytes": 10065,
+      "rows": 120,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "592da1385763b50c1a26441f4b66fd0e8f85f9d9954eff881e721134b60778d1",
+      "bytes": 2300
+    },
+    "maintenance_events.json": {
+      "sha256": "b31835dd550f71301b3c9c089e291e6a0f904b98b6f48d63583a29d136f86a56",
+      "bytes": 317
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "baaaa595867b5bbb278800d9e36b82619e90b4d31003308fe4743b74aad54526",
+      "bytes": 2049
+    }
+  }
+}

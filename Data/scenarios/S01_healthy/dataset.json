@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s01_healthy",
+  "description": "S01 Stable healthy operation (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5001,
+  "config_sha256": "1afd9c69de5705e554ec4f0141cb439dcd33cb51d26a604a4c0ffe9f66e7fb21",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 336.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "4db4a43fe25ca57449080b8ff6adf83b4c70f080ba8b9300fe224efa8ef61623",
+      "bytes": 784615,
+      "rows": 13198,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "f48962d8d6e9bb47c003ee403d45e46fc65ceb7577e71de7fc223f2215ad950f",
+      "bytes": 1210559,
+      "rows": 13198,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "8c1c4ed7e65962847f0f926af0cc512ea162e5253120d0e67a19a096412e8446",
+      "bytes": 3906,
+      "rows": 56,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "eb60503af82d550911764b0928ab9d73261706a3cc6626251bd246aee3769eb1",
+      "bytes": 19139,
+      "rows": 224,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "483c8f16d276007f8cb233cbd7003ccd0284d4c6ff646a947b2196117ff0b70d",
+      "bytes": 6934
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "09c69cdcf8012931950fe52cd6b7f060ec6145b7991aef62650cc1f9701171f1",
+      "bytes": 2722
+    }
+  }
+}
