@@ -1,7 +1,7 @@
 # TASK-015 — Feature extraction and feature versioning
 
 - **ID:** T015
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 4 — Statistical Monitoring
 - **Gate:** None
 

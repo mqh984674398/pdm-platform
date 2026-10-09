@@ -65,3 +65,7 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T014; no user gate). Part of the G2 review.
 - **Decision:** A component's first lifecycle is installed explicitly; every later lifecycle comes from a REPLACEMENT event, which retires the current one at the event time. Maintenance events are append-only and recorded in time order. Accumulated operation is added per period with a `usage_counted_until` watermark, so no period is counted twice; the simulator does not track this field and its stored datasets are unchanged. Each non-inspection event gets its own workflow; a new event supersedes the open one. Leaving REVIEW_REQUIRED needs an engineer and a review comment. Workflow steps are manual until T018 adds the stabilization and validation checks; the workflow sends no alerts.
 - **Rationale:** Keeps every installation's history intact (L3-06) and makes aging impossible to reset without a replacement (L3-08), while not enabling any maintenance-alerting workflow before G4.
+
+## D-015 — Gate G2 approved
+- **Date:** 2026-10-09 · **Status:** APPROVED by user (Mira, decision card, 2026-10-09T15:32Z)
+- **Decision:** G2 data and domain validation approved with assumptions A1–A5 in `contracts/evidence/G2/README.md` §2 accepted as stated. T015–T018 proceed on these semantics; A1–A3 are rechecked when real IoT data becomes available.

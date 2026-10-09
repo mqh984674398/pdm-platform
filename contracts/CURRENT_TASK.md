@@ -1,10 +1,9 @@
 # CURRENT_TASK
 
-- **Assigned task:** T014 — Component lifecycle and maintenance services (DONE)
-- **Task file:** `contracts/tasks/TASK-014.md`
-- **Status:** STOPPED AT GATE G2, awaiting user decision (requested 2026-10-09; silence is not approval)
-- **Gate package:** `contracts/evidence/G2/README.md`
+- **Assigned task:** T015 — Feature extraction and feature versioning
+- **Task file:** `contracts/tasks/TASK-015.md`
+- **Status:** IN_PROGRESS
 - **Assigned by:** Principal Agent
-- **Next on approval:** T015
+- **Previous task:** T014 DONE (2026-10-09)
 
 Update this file only when the Principal Agent assigns a new task.
