@@ -1,7 +1,7 @@
 # TASK-019 — Advanced interactive time-series charting
 
 - **ID:** T019
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 4 — Statistical Monitoring
 - **Gate:** None
 
