@@ -27,8 +27,8 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T020](contracts/tasks/TASK-020.md) | Full-stack component health dashboard | 4 | T007, T017, T018, T019 | G3 | DONE |
 | [T021](contracts/tasks/TASK-021.md) | Component-specific model routing | 5 | T015, T017 |  | DONE |
 | [T022](contracts/tasks/TASK-022.md) | Decision-tree and XGBoost modeling | 5 | T021, T005 |  | DONE |
-| [T023](contracts/tasks/TASK-023.md) | CNN/LSTM feasibility and optional integration | 5 | T022 |  | IN_PROGRESS |
-| [T024](contracts/tasks/TASK-024.md) | Evidence fusion and maintenance decision engine | 6 | T017, T021, T022 |  | TODO |
+| [T023](contracts/tasks/TASK-023.md) | CNN/LSTM feasibility and optional integration | 5 | T022 |  | DONE |
+| [T024](contracts/tasks/TASK-024.md) | Evidence fusion and maintenance decision engine | 6 | T017, T021, T022 |  | IN_PROGRESS |
 | [T025](contracts/tasks/TASK-025.md) | Historical replay and rapid parameter optimization | 6 | T024, T005 |  | TODO |
 | [T026](contracts/tasks/TASK-026.md) | Model registry, evaluation, and rollback | 6 | T022, T025 |  | TODO |
 | [T027](contracts/tasks/TASK-027.md) | Ollama-only LLM, local RAG, and feedback | 6 | T020, T024 |  | TODO |
