@@ -1,7 +1,7 @@
 # TASK-016 — Healthy/adaptive baselines and degradation monitoring
 
 - **ID:** T016
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 4 — Statistical Monitoring
 - **Gate:** None
 
