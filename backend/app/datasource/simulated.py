@@ -10,6 +10,8 @@ from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
+
 from app.core.schemas import TimeWindow
 from app.datasource.adapter import TimeSeriesAdapter
 from app.datasource.schemas import (
@@ -58,6 +60,7 @@ class SimulatedAdapter(TimeSeriesAdapter):
                 rows.setdefault(pair, []).append((ts, value, seq))  # seq: line order in the file
         self._rows = {k: sorted(v, key=lambda x: x[0]) for k, v in rows.items()}
         self._ts = {k: [t for t, _, _ in v] for k, v in self._rows.items()}
+        self._arrays: dict[tuple[str, str], tuple[np.ndarray, np.ndarray]] = {}
 
     def row_counts(self) -> dict[tuple[str, str], int]:
         """Stored rows per (device, key), duplicates included."""
@@ -103,6 +106,23 @@ class SimulatedAdapter(TimeSeriesAdapter):
         ts = self._ts.get((device_id, key_name), [])
         lo = bisect_right(ts, since)
         return self._slice(device_id, key_name, lo, min(len(ts), lo + limit))
+
+    def query_arrays(
+        self, device_id: str, key_name: str, window: TimeWindow, limit: int
+    ) -> tuple[np.ndarray, np.ndarray]:
+        pair = (device_id, key_name)
+        if pair not in self._arrays:
+            rows = self._rows.get(pair, [])
+            t = np.fromiter((ts.timestamp() for ts, _, _ in rows), dtype=float, count=len(rows))
+            v = np.fromiter((np.nan if x is None else x for _, x, _ in rows), dtype=float, count=len(rows))
+            self._arrays[pair] = (t, v)
+        t, v = self._arrays[pair]
+        lo, hi = (
+            np.searchsorted(t, window.start.timestamp(), "left"),
+            np.searchsorted(t, window.end.timestamp(), "left"),
+        )
+        hi = min(hi, lo + limit)
+        return t[lo:hi], v[lo:hi]
 
     def _slice(self, device_id: str, key_name: str, lo: int, hi: int) -> list[RawTelemetryRow]:
         return [

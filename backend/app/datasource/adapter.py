@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+import numpy as np
+
 from app.core.schemas import TimeWindow
 from app.datasource.schemas import RawTelemetryRow, SourceMetadata, SourceSchema
 
@@ -34,3 +36,13 @@ class TimeSeriesAdapter(ABC):
         self, device_id: str, key_name: str, since: datetime, limit: int
     ) -> list[RawTelemetryRow]:
         """Rows with ``ts > since`` ordered by ts ascending, at most ``limit`` (watermark reads, L1-03)."""
+
+    def query_arrays(
+        self, device_id: str, key_name: str, window: TimeWindow, limit: int
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Same rows as ``query_range`` as arrays: epoch seconds and values (nan = null). Adapters may
+        override this with a faster path; the bounds are the same."""
+        rows = self.query_range(device_id, key_name, window, limit)
+        t = np.fromiter((r.ts.timestamp() for r in rows), dtype=float, count=len(rows))
+        v = np.fromiter((np.nan if r.value is None else r.value for r in rows), dtype=float, count=len(rows))
+        return t, v

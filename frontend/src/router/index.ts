@@ -4,10 +4,13 @@ import {
   createWebHistory,
   type RouteRecordRaw,
 } from 'vue-router'
+import AnalysisView from '@/views/AnalysisView.vue'
+import BaselinesView from '@/views/BaselinesView.vue'
 import ComponentView from '@/views/ComponentView.vue'
 import DataSourceStudioView from '@/views/DataSourceStudioView.vue'
 import DesignView from '@/views/DesignView.vue'
 import MachineView from '@/views/MachineView.vue'
+import MaintenanceView from '@/views/MaintenanceView.vue'
 import OverviewView from '@/views/OverviewView.vue'
 import PlaceholderView from '@/views/PlaceholderView.vue'
 import { NAV } from './nav'
@@ -18,6 +21,9 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   machine: { component: MachineView, param: ':id?' },
   component: { component: ComponentView, param: ':id?' },
   datasource: { component: DataSourceStudioView },
+  analysis: { component: AnalysisView },
+  baselines: { component: BaselinesView },
+  maintenance: { component: MaintenanceView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {

@@ -66,6 +66,7 @@ export default {
   },
   common: {
     loadFailed: '数据加载失败，请刷新页面重试。',
+    utc: '（UTC）',
   },
   overview: {
     summary: '健康概况',
@@ -109,6 +110,42 @@ export default {
     ADJUSTMENT: '调整',
     PARTIAL_REPAIR: '部分维修',
     REPLACEMENT: '整体更换',
+  },
+  charts: {
+    downsampled: '已降采样显示',
+    fullResolution: '全分辨率',
+    shownOf: '显示 {shown} / {total} 点',
+    allPoints: '共 {total} 点',
+    export: '导出 CSV',
+    loading: '正在加载曲线…',
+  },
+  analysis: {
+    lede: '查看任意信号的完整历史，框选或滚轮缩放后自动加载更细的数据。',
+    noSignals: '该部件没有已配置的信号。',
+    pick: '选择部件',
+    zoomHint: '滚轮或拖动下方滑块缩放；缩小范围后显示原始数据。',
+  },
+  baselines: {
+    lede: '把每个窗口的特征与工程师确认的健康参考和自适应基线放在一起对比。',
+    windows: '特征窗口',
+    adaptive: '自适应基线',
+    reference: '健康参考',
+    feature: '特征',
+    noReference: '该生命周期还没有工程师确认的健康参考。',
+    verifiedBy: '{lifecycle}：{start} 至 {end}，由 {user} 确认',
+    legend: '阴影带为健康参考均值 ±2σ；竖线为维护事件。',
+  },
+  maintenance: {
+    lede: '维护事件及维护后的稳定、验证与效果评估。',
+    none: '该部件没有维护记录。',
+    noWorkflow: '尚未开始维护后验证。',
+    states: {
+      MAINTENANCE_EVENT: '维护事件',
+      STABILIZATION: '稳定期',
+      POST_MAINTENANCE_VALIDATION: '维护后验证',
+      NORMAL_MONITORING: '正常监测',
+      REVIEW_REQUIRED: '需复核',
+    },
   },
   home: {
     backendOk: '后端服务正常 · 版本 {version}',

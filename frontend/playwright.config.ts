@@ -16,7 +16,7 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:4173', locale: 'zh-CN', launchOptions: { executablePath } },
   webServer: [
     {
-      // Fresh demo database on every run, so saved versions start at 1.
+      // Fresh demo database on every run; it seeds one signal-config version (the T019 bench signal).
       command: `${python} ../backend/scripts/demo_server.py --db test-results/e2e-demo.db --port ${API_PORT}`,
       url: `http://127.0.0.1:${API_PORT}/api/health`,
       reuseExistingServer: false,

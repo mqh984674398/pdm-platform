@@ -794,6 +794,60 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/timeseries/{signal_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Chart Series */
+    get: operations['chart_series_api_timeseries__signal_id__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/timeseries/{signal_id}/extent': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Series Extent
+     * @description Earliest and latest timestamps of the signal's source, to set the chart's full range.
+     */
+    get: operations['series_extent_api_timeseries__signal_id__extent_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/timeseries/{signal_id}/export': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Export Series */
+    get: operations['export_series_api_timeseries__signal_id__export_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -5649,6 +5703,115 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['Alarm']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  chart_series_api_timeseries__signal_id__get: {
+    parameters: {
+      query: {
+        start: string
+        end: string
+        max_points?: number
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        signal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisualizationSeries']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  series_extent_api_timeseries__signal_id__extent_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        signal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeWindow'] | null
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  export_series_api_timeseries__signal_id__export_get: {
+    parameters: {
+      query: {
+        start: string
+        end: string
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        signal_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': unknown
         }
       }
       /** @description Validation Error */

@@ -50,9 +50,9 @@ test('ordinary user completes the full data source workflow without SQL', async 
   await expect(page.getByTestId('save-version')).toBeDisabled()
   await page.getByTestId('version-comment').fill('Bring in SIM-S13 drive and clamp signals')
   await page.getByTestId('save-version').click()
-  await expect(page.getByTestId('saved-status')).toHaveText('Saved as version 1')
+  await expect(page.getByTestId('saved-status')).toHaveText('Saved as version 2')
   const rows = page.getByTestId('version-history').locator('tbody tr')
-  await expect(rows).toHaveCount(1)
+  await expect(rows).toHaveCount(2)
   await expect(rows.first()).toContainText('Bring in SIM-S13')
   await expect(rows.first()).toContainText('sha256:')
 
@@ -62,10 +62,12 @@ test('ordinary user completes the full data source workflow without SQL', async 
   })
   const { version, content } = await resp.json()
   expect(version.comment).toBe('Bring in SIM-S13 drive and clamp signals')
-  expect(content.mappings.map((m: { device_id: string }) => m.device_id)).toEqual(
-    Array(4).fill('SIM-S13'),
-  )
-  expect(content.signals).toHaveLength(4)
+  // the demo server seeds the SIM-BENCH chart signal (T019); this save adds SIM-S13 next to it
+  expect(content.mappings.map((m: { device_id: string }) => m.device_id)).toEqual([
+    'SIM-BENCH',
+    ...Array(4).fill('SIM-S13'),
+  ])
+  expect(content.signals).toHaveLength(5)
   expect(content.visualizations.map((v: { chart: string }) => v.chart)).toContain('HISTOGRAM')
 })
 

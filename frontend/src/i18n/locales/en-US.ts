@@ -68,6 +68,7 @@ const en: typeof zh = {
   },
   common: {
     loadFailed: 'Data failed to load. Refresh the page to try again.',
+    utc: 'UTC',
   },
   overview: {
     summary: 'Health summary',
@@ -112,6 +113,42 @@ const en: typeof zh = {
     ADJUSTMENT: 'Adjustment',
     PARTIAL_REPAIR: 'Partial repair',
     REPLACEMENT: 'Replacement',
+  },
+  charts: {
+    downsampled: 'Downsampled',
+    fullResolution: 'Full resolution',
+    shownOf: 'Showing {shown} of {total} points',
+    allPoints: '{total} points',
+    export: 'Export CSV',
+    loading: 'Loading chart…',
+  },
+  analysis: {
+    lede: 'See the full history of any signal. Zoom in and finer data loads automatically.',
+    noSignals: 'This component has no configured signals.',
+    pick: 'Choose a component',
+    zoomHint: 'Scroll or drag the slider to zoom; narrow ranges show raw data.',
+  },
+  baselines: {
+    lede: 'Compare each window with the engineer-verified healthy reference and the adaptive baseline.',
+    windows: 'Feature windows',
+    adaptive: 'Adaptive baseline',
+    reference: 'Healthy reference',
+    feature: 'Feature',
+    noReference: 'No engineer-verified healthy reference for this lifecycle yet.',
+    verifiedBy: '{lifecycle}: {start} to {end}, verified by {user}',
+    legend: 'Shaded band: healthy reference mean ±2σ. Vertical lines: maintenance events.',
+  },
+  maintenance: {
+    lede: 'Maintenance events and the stabilization, validation and impact assessment after each.',
+    none: 'No maintenance recorded for this component.',
+    noWorkflow: 'Post-maintenance validation has not started.',
+    states: {
+      MAINTENANCE_EVENT: 'Maintenance event',
+      STABILIZATION: 'Stabilization',
+      POST_MAINTENANCE_VALIDATION: 'Post-maintenance validation',
+      NORMAL_MONITORING: 'Normal monitoring',
+      REVIEW_REQUIRED: 'Review required',
+    },
   },
   home: {
     backendOk: 'Backend running · version {version}',
