@@ -11,8 +11,8 @@ test('navigates all screens and switches language without reload', async ({ page
   expect(await page.evaluate(() => (window as unknown as { __mark: number }).__mark)).toBe(marker)
   await page.locator('[data-nav="alarms"]').click()
   await expect(page.locator('h1')).toHaveText('Alarm review')
-  for (const name of ['models', 'assistant']) {
-    await page.locator(`[data-nav="${name}"]`).click()
-    await expect(page.getByTestId('placeholder')).toBeVisible()
-  }
+  await page.locator('[data-nav="models"]').click()
+  await expect(page.locator('h1')).toHaveText('Model versions')
+  await page.locator('[data-nav="assistant"]').click()
+  await expect(page.getByTestId('placeholder')).toBeVisible()
 })

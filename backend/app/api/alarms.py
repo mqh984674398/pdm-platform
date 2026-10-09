@@ -14,11 +14,11 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_session
 from app.core.security import Principal, Role, require
+from app.decision.fleet import FleetHealthService
 from app.equipment.lifecycle import EquipmentStore
 from app.monitoring.alarms.service import AlarmService
 from app.monitoring.baselines.verified import BaselineService
 from app.monitoring.features.store import FeatureStore
-from app.monitoring.rules.definitions import DEFAULT_RULES
 from app.monitoring.rules.engine import evaluate
 from app.monitoring.rules.settings import RuleSettings
 from app.monitoring.schemas import (
@@ -61,9 +61,8 @@ def evaluate_alarms(body: AlarmEvaluationRequest, who: Engineer, db: DB) -> Alar
         if ref is not None:
             refs[lc] = ref
     settings = RuleSettings(db)
-    evals = evaluate(
-        vectors, refs, DEFAULT_RULES, settings.disabled(), rules_version=settings.config_version()
-    )
+    svc = FleetHealthService(db)  # rule set in force: registry champion or the default
+    evals = evaluate(vectors, refs, svc.config.rules, settings.disabled(), rules_version=svc.rules_version())
     raised, updated = AlarmService(db).sync(evals, who)
     db.commit()
     return AlarmEvaluationResult(

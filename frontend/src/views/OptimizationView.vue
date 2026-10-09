@@ -2,6 +2,7 @@
 /** Parameter optimization comparison (UI-10, T025): champion vs candidates scored on replay. */
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import type { CandidateResult, OptimizationRun } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
@@ -15,6 +16,20 @@ const run = ref<OptimizationRun | null>(null)
 const busy = ref(false)
 const failed = ref(false)
 const selected = ref<string | null>(null)
+const proposed = ref<string | null>(null)
+const proposeFailed = ref<string | null>(null)
+
+async function propose(id: string) {
+  proposeFailed.value = null
+  try {
+    proposed.value = (
+      await monitoringApi.proposeConfig(id, `Recommended by ${run.value?.run_id}`)
+    ).version_id
+  } catch (e) {
+    proposeFailed.value =
+      e instanceof MonitoringApiError && e.body ? e.body.message.en : t('optimization.failed')
+  }
+}
 
 onMounted(async () => {
   try {
@@ -96,6 +111,20 @@ const caseRows = computed(() => {
               ? t('optimization.recommendedNote', { id: run.recommended })
               : t('optimization.noRecommendation')
           }}
+        </p>
+        <p v-if="run.recommended" class="propose">
+          <button
+            v-if="!proposed"
+            type="button"
+            data-testid="opt-propose"
+            @click="propose(run.recommended)"
+          >
+            {{ t('optimization.propose', { id: run.recommended }) }}
+          </button>
+          <RouterLink v-else to="/models" data-testid="opt-proposed">{{
+            t('optimization.proposed', { id: proposed })
+          }}</RouterLink>
+          <span v-if="proposeFailed" class="error" role="alert">{{ proposeFailed }}</span>
         </p>
         <div class="scroll">
           <table data-testid="opt-table">
@@ -225,6 +254,9 @@ h1 {
 }
 .verdict {
   font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
+}
+.propose {
   margin-bottom: var(--space-3);
 }
 .scroll {

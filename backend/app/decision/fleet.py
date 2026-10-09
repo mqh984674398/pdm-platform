@@ -22,6 +22,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.core.schemas import LocalizedText, ResultMeta, TimeWindow
+from app.decision.config import active as active_config
 from app.decision.fusion import FusionInput, FusionResult, Preconditions, fuse, recommend
 from app.decision.schemas import (
     ComponentHealthReport,
@@ -122,8 +123,13 @@ class FleetHealthService:
         self.maintenance = MaintenanceService(session)
         self.alarms = AlarmService(session)
         self.settings = RuleSettings(session)
+        self.config = active_config(session)
 
     # --- evaluation -----------------------------------------------------------------------------
+
+    def rules_version(self) -> str:
+        """Rule set in force (registry champion or default) plus the count of enable/disable changes."""
+        return f"{self.config.rules.ref}+{self.settings.config_version().rsplit('+', 1)[1]}"
 
     def _evaluate(self, component_id: str) -> tuple[list[WindowEvaluation], dict[str, Baseline]]:
         vectors = self.features.vectors(component_id)
@@ -135,9 +141,9 @@ class FleetHealthService:
         evals = evaluate(
             vectors,
             refs,
-            DEFAULT_RULES,
+            self.config.rules,
             self.settings.disabled(),
-            rules_version=self.settings.config_version(),
+            rules_version=self.rules_version(),
         )
         return sorted(evals, key=lambda e: e.window.end), refs
 
@@ -179,7 +185,8 @@ class FleetHealthService:
                 history=mine,
                 pre=Preconditions(stale_hours=stale),
                 is_simulated=self.equipment.is_simulated(component_id),
-            )
+            ),
+            self.config.policy,
         )
         d = result.decision
         reason = NORMAL if d.health_state == H.NORMAL else _join(d.reasons)
@@ -207,13 +214,12 @@ class FleetHealthService:
                 list(hist),
                 is_simulated=sim,
             )
-            out.append(fuse(inp))
+            out.append(fuse(inp, self.config.policy))
         return out
 
-    @staticmethod
-    def _trend(component: ComponentInstance, evals: Sequence[WindowEvaluation]) -> list[HealthTrend]:
+    def _trend(self, component: ComponentInstance, evals: Sequence[WindowEvaluation]) -> list[HealthTrend]:
         out = []
-        for r in DEFAULT_RULES.rules:
+        for r in self.config.rules.rules:
             if r.kind != RuleKind.STATISTICAL or component.type not in r.component_types:
                 continue
             pts = [
@@ -288,7 +294,7 @@ class FleetHealthService:
                     is_simulated=m.is_simulated,
                 )
             )
-        version = self.settings.config_version()
+        version = self.rules_version()
         basis = _t(BASIS.zh.format(rules=version), BASIS.en.format(rules=version))
         return FleetOverview(
             machines=machines,
@@ -308,7 +314,7 @@ class FleetHealthService:
         as_of = max(ends) if ends else None
         a = self._assess(component_id, evals, refs, as_of)
         sim = self.equipment.is_simulated(component_id)
-        version = self.settings.config_version()
+        version = self.rules_version()
         latest = a.latest
         computed = as_of or datetime.now(UTC)
         window = latest.window if latest else TimeWindow(start=computed - timedelta(hours=1), end=computed)

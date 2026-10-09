@@ -916,6 +916,142 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/registry/kinds': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Kinds */
+    get: operations['kinds_api_registry_kinds_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/versions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Versions */
+    get: operations['versions_api_registry_versions_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/models': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Trained Models */
+    get: operations['trained_models_api_registry_models_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/decision-config/candidates': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Propose Config */
+    post: operations['propose_config_api_registry_decision_config_candidates_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/models/candidates': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Propose Trained Model */
+    post: operations['propose_trained_model_api_registry_models_candidates_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/versions/{version_id}/promote': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Promote */
+    post: operations['promote_api_registry_versions__version_id__promote_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/versions/{version_id}/reject': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Reject */
+    post: operations['reject_api_registry_versions__version_id__reject_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/registry/rollback': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Rollback */
+    post: operations['rollback_api_registry_rollback_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1344,6 +1480,11 @@ export interface components {
       /** Nullable */
       nullable: boolean
     }
+    /** Comment */
+    Comment: {
+      /** Comment */
+      comment: string
+    }
     /**
      * ComponentAging
      * @description Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08).
@@ -1487,6 +1628,13 @@ export interface components {
      */
     ComponentType:
       'BALL_SCREW' | 'LINEAR_MOTOR' | 'VACUUM_CUP' | 'PNEUMATIC_CYLINDER' | 'CAM' | 'GEAR'
+    /** ConfigProposal */
+    ConfigProposal: {
+      /** Comment */
+      comment: string
+      /** Candidate Id */
+      candidate_id: string
+    }
     /** ConnectionCheck */
     ConnectionCheck: {
       /**
@@ -1780,6 +1928,46 @@ export interface components {
       reference_baseline_id: string | null
       /** Points */
       points: components['schemas']['DegradationPoint'][]
+    }
+    /**
+     * DeploymentStatus
+     * @enum {string}
+     */
+    DeploymentStatus: 'CANDIDATE' | 'CHAMPION' | 'RETIRED' | 'REJECTED'
+    /** DeploymentVersion */
+    DeploymentVersion: {
+      /** Version Id */
+      version_id: string
+      /** Kind */
+      kind: string
+      /** Number */
+      number: number
+      status: components['schemas']['DeploymentStatus']
+      /** Payload */
+      payload: {
+        [key: string]: unknown
+      }
+      /** Evaluation */
+      evaluation: {
+        [key: string]: unknown
+      } | null
+      /** Created By */
+      created_by: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Decided By */
+      decided_by: string | null
+      /** Decided At */
+      decided_at: string | null
+      /** Comment */
+      comment: string
+      /** Previous Version Id */
+      previous_version_id: string | null
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * DeviceConfigChange
@@ -2255,6 +2443,16 @@ export interface components {
      * @enum {string}
      */
     ImpactOutcome: 'IMPROVED' | 'PARTIAL' | 'NO_CHANGE' | 'DETERIORATED' | 'UNKNOWN'
+    /** KindSummary */
+    KindSummary: {
+      /** Kind */
+      kind: string
+      champion: components['schemas']['DeploymentVersion'] | null
+      /** Candidates */
+      candidates: number
+      /** Versions */
+      versions: number
+    }
     /**
      * KnownRegime
      * @description A regime established from a reference period. Matching uses speed features only.
@@ -2535,6 +2733,13 @@ export interface components {
       | 'POST_MAINTENANCE_VALIDATION'
       | 'NORMAL_MONITORING'
       | 'REVIEW_REQUIRED'
+    /** ModelProposal */
+    ModelProposal: {
+      /** Comment */
+      comment: string
+      /** Model Id */
+      model_id: string
+    }
     /**
      * MonitoringLevel
      * @description Level from deterministic rules for one window. NORMAL means no rule fired.
@@ -3127,6 +3332,13 @@ export interface components {
       data_window: components['schemas']['TimeWindow']
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** Rollback */
+    Rollback: {
+      /** Comment */
+      comment: string
+      /** Kind */
+      kind: string
     }
     /** RuleChange */
     RuleChange: {
@@ -6222,6 +6434,288 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['OptimizationRun']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  kinds_api_registry_kinds_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['KindSummary'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  versions_api_registry_versions_get: {
+    parameters: {
+      query: {
+        kind: string
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  trained_models_api_registry_models_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': string[]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  propose_config_api_registry_decision_config_candidates_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ConfigProposal']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  propose_trained_model_api_registry_models_candidates_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ModelProposal']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  promote_api_registry_versions__version_id__promote_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        version_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['Comment']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  reject_api_registry_versions__version_id__reject_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        version_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['Comment']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  rollback_api_registry_rollback_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['Rollback']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeploymentVersion']
         }
       }
       /** @description Validation Error */

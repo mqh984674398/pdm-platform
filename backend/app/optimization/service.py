@@ -1,7 +1,8 @@
 """Champion/challenger evaluation on historical replay and the regression suite (T025, OPT-04).
 
-The champion is the current rule set and aging policy. Each candidate is replayed over the stored
-feature history of every suite component and scored window by window against the expectations.
+The champion is the decision configuration in force (registry champion, or the shipped defaults).
+Each candidate is replayed over the stored feature history of every suite component and scored
+window by window against the expectations.
 The run only recommends; promotion (with approval and rollback) belongs to the model registry (T026).
 """
 
@@ -13,12 +14,12 @@ from sqlalchemy.orm import Session
 
 from app.core import audit
 from app.core.security import Principal
-from app.decision.aging import DEFAULT_POLICY, AgingPolicy
+from app.decision.aging import AgingPolicy
+from app.decision.config import active
 from app.decision.schemas import HealthState
 from app.equipment.lifecycle import EquipmentStore
 from app.monitoring.baselines.verified import BaselineService
 from app.monitoring.features.store import FeatureStore
-from app.monitoring.rules.definitions import DEFAULT_RULES
 from app.monitoring.rules.settings import RuleSettings
 from app.monitoring.schemas import RuleSet
 from app.optimization.candidates import Candidate, check_safety, generate
@@ -114,7 +115,8 @@ class OptimizationService:
         )
 
     def run(self, who: Principal, n: int = 12, seed: int = 0) -> OptimizationRun:
-        champion, policy = DEFAULT_RULES, DEFAULT_POLICY
+        cfg = active(self.session)
+        champion, policy = cfg.rules, cfg.policy
         base = self._result(None, champion, policy)
         results = [self._result(c, champion, policy) for c in generate(champion, policy, n, seed)]
         better = [

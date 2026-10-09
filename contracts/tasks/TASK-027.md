@@ -1,7 +1,7 @@
 # TASK-027 — Ollama-only LLM, local RAG, and feedback
 
 - **ID:** T027
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 6 — Optimization and Local LLM
 - **Gate:** None
 

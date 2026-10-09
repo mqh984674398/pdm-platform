@@ -13,6 +13,7 @@ from app.api import (
     optimization,
     quality,
     query,
+    registry,
     signals,
     studio,
     timeseries,
@@ -42,6 +43,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(timeseries.router, prefix="/api")
     app.include_router(fleet.router, prefix="/api")
     app.include_router(optimization.router, prefix="/api")
+    app.include_router(registry.router, prefix="/api")
     return app
 
 

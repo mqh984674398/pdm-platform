@@ -1,7 +1,7 @@
 # TASK-026 — Model registry, evaluation, and rollback
 
 - **ID:** T026
-- **Status:** IN_PROGRESS
+- **Status:** DONE
 - **Phase:** 6 — Optimization and Local LLM
 - **Gate:** None
 

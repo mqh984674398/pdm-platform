@@ -13,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import StaleDataError
 
 from app.api.studio import UnknownDeviceError
+from app.core.registry import RegistryError, RegistryNotFoundError, RegistryPermissionError
 from app.core.schemas import ApiError, LocalizedText
 from app.datasource.query_service.registry import TemplateConflictError, TemplateNotFoundError
 from app.datasource.query_service.service import ParameterError
@@ -28,6 +29,7 @@ from app.monitoring.quality.service import QualityRequestError, UnknownQualitySi
 from app.monitoring.rules.settings import RuleNotFoundError, RulePermissionError
 from app.optimization.candidates import SafetyChangeError
 from app.optimization.service import NoRunError, NoSuiteError
+from app.prediction.models.registry import ModelRegistryError
 from app.signals.preview import PreviewError, UnknownSignalError
 from app.signals.registry import ConfigConflictError, ConfigNotFoundError
 
@@ -54,6 +56,10 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (BaselineError, 422, "baseline_refused", "无法建立该基准，未保存。", "The baseline could not be created; nothing was saved."),
     (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),
     (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
+    (RegistryNotFoundError, 404, "unknown_version", "未找到该版本。", "Version not found."),
+    (RegistryPermissionError, 403, "registry_role", "晋升需要管理员角色；提交、拒绝和回滚需要工程师角色。", "Promotion requires the administrator role; proposing, rejecting and rolling back require the engineer role."),
+    (RegistryError, 409, "registry_refused", "注册表拒绝了该操作，未保存。", "The registry refused this action; nothing was saved."),
+    (ModelRegistryError, 404, "unknown_model", "未找到该模型或其文件校验失败。", "Model not found or its file failed verification."),
     (NoSuiteError, 409, "no_regression_suite", "没有可用于回放评估的回归用例（Golden Case）。", "No regression suite (Golden Cases) is available for replay."),
     (NoRunError, 404, "no_optimization_run", "还没有参数优化运行。", "No optimization run yet."),
     (SafetyChangeError, 422, "safety_rule_change", "候选配置修改了安全规则，已拒绝。", "The candidate changes a safety rule and was refused."),

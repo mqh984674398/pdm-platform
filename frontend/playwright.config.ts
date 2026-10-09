@@ -14,6 +14,12 @@ export default defineConfig({
   testDir: 'tests/e2e',
   outputDir: 'test-results',
   use: { baseURL: 'http://127.0.0.1:4173', locale: 'zh-CN', launchOptions: { executablePath } },
+  // Promoting a configuration changes health for every component, so the registry test runs alone,
+  // after everything else, on the shared demo server.
+  projects: [
+    { name: 'main', testIgnore: /models\.spec\.ts/ },
+    { name: 'registry', testMatch: /models\.spec\.ts/, dependencies: ['main'] },
+  ],
   webServer: [
     {
       // Fresh demo database on every run; it seeds one signal-config version (the T019 bench signal).
