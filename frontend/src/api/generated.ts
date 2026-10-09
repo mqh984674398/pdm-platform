@@ -1749,6 +1749,24 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** FeatureImpact */
+    FeatureImpact: {
+      /** Feature Id */
+      feature_id: string
+      outcome: components['schemas']['ImpactOutcome']
+      /**
+       * Change
+       * @description Post minus pre, robust units, weighted by post windows
+       */
+      change: number | null
+      /**
+       * Post Level
+       * @description Median post value against the regime reference
+       */
+      post_level: number | null
+      /** Regimes */
+      regimes: components['schemas']['RegimeComparison'][]
+    }
     /**
      * FeatureSchema
      * @description Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.
@@ -1920,6 +1938,63 @@ export interface components {
      * @enum {string}
      */
     HealthState: 'NORMAL' | 'WATCH' | 'WARNING' | 'CRITICAL' | 'UNKNOWN'
+    /** ImpactConfig */
+    ImpactConfig: {
+      /**
+       * Pre Hours
+       * @description Period before the event used for comparison
+       * @default 72
+       */
+      pre_hours: number
+      /**
+       * Stabilization Hours
+       * @description Excluded after the event (L3-07)
+       * @default 4
+       */
+      stabilization_hours: number
+      /**
+       * Validation Hours
+       * @description Period after stabilization compared
+       * @default 36
+       */
+      validation_hours: number
+      /**
+       * Max Validation Hours
+       * @description Validation waits this long for comparable data, then asks for review
+       * @default 120
+       */
+      max_validation_hours: number
+      /**
+       * Min Pre Windows
+       * @description Per regime, before the event
+       * @default 3
+       */
+      min_pre_windows: number
+      /**
+       * Min Post Windows
+       * @description In total across compatible regimes, after
+       * @default 3
+       */
+      min_post_windows: number
+      /**
+       * Effect
+       * @description Median change, in robust units, that counts as an effect
+       * @default 2
+       */
+      effect: number
+      /**
+       * Elevated
+       * @description Post level above which an improvement is partial
+       * @default 3
+       */
+      elevated: number
+    }
+    /**
+     * ImpactOutcome
+     * @description Effect of a maintenance event on regime-normalized behavior (L3-07).
+     * @enum {string}
+     */
+    ImpactOutcome: 'IMPROVED' | 'PARTIAL' | 'NO_CHANGE' | 'DETERIORATED' | 'UNKNOWN'
     /**
      * KnownRegime
      * @description A regime established from a reference period. Matching uses speed features only.
@@ -2090,6 +2165,27 @@ export interface components {
      */
     MaintenanceEventType:
       'LUBRICATION' | 'INSPECTION' | 'ADJUSTMENT' | 'PARTIAL_REPAIR' | 'REPLACEMENT'
+    /** MaintenanceImpact */
+    MaintenanceImpact: {
+      /** Component Id */
+      component_id: string
+      /**
+       * Event Time
+       * Format: date-time
+       */
+      event_time: string
+      pre: components['schemas']['TimeWindow']
+      post: components['schemas']['TimeWindow']
+      /** Catalog Id */
+      catalog_id: string
+      config: components['schemas']['ImpactConfig']
+      outcome: components['schemas']['ImpactOutcome']
+      /** Features */
+      features: components['schemas']['FeatureImpact'][]
+      reason: components['schemas']['LocalizedText']
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** MaintenanceRecordResult */
     MaintenanceRecordResult: {
       event: components['schemas']['MaintenanceEvent']
@@ -2689,6 +2785,19 @@ export interface components {
       regimes: components['schemas']['KnownRegime'][]
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** RegimeComparison */
+    RegimeComparison: {
+      /** Regime Id */
+      regime_id: string
+      /** Pre Windows */
+      pre_windows: number
+      /** Post Windows */
+      post_windows: number
+      /** Pre Median */
+      pre_median: number
+      /** Post Median */
+      post_median: number
     }
     /**
      * RegimeStatus

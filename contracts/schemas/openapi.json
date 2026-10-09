@@ -6692,6 +6692,58 @@
         "title": "FeatureExtraction",
         "type": "object"
       },
+      "FeatureImpact": {
+        "additionalProperties": false,
+        "properties": {
+          "feature_id": {
+            "title": "Feature Id",
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/ImpactOutcome"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Post minus pre, robust units, weighted by post windows",
+            "title": "Change"
+          },
+          "post_level": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Median post value against the regime reference",
+            "title": "Post Level"
+          },
+          "regimes": {
+            "items": {
+              "$ref": "#/components/schemas/RegimeComparison"
+            },
+            "title": "Regimes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "feature_id",
+          "outcome",
+          "change",
+          "post_level",
+          "regimes"
+        ],
+        "title": "FeatureImpact",
+        "type": "object"
+      },
       "FeatureSchema": {
         "additionalProperties": false,
         "description": "Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.\n\nA published version is immutable: changing a definition needs a new version.",
@@ -7097,6 +7149,91 @@
           "UNKNOWN"
         ],
         "title": "HealthState",
+        "type": "string"
+      },
+      "ImpactConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "pre_hours": {
+            "default": 72.0,
+            "description": "Period before the event used for comparison",
+            "exclusiveMinimum": 0,
+            "title": "Pre Hours",
+            "type": "number"
+          },
+          "stabilization_hours": {
+            "default": 4.0,
+            "description": "Excluded after the event (L3-07)",
+            "minimum": 0,
+            "title": "Stabilization Hours",
+            "type": "number"
+          },
+          "validation_hours": {
+            "default": 36.0,
+            "description": "Period after stabilization compared",
+            "exclusiveMinimum": 0,
+            "title": "Validation Hours",
+            "type": "number"
+          },
+          "max_validation_hours": {
+            "default": 120.0,
+            "description": "Validation waits this long for comparable data, then asks for review",
+            "exclusiveMinimum": 0,
+            "title": "Max Validation Hours",
+            "type": "number"
+          },
+          "min_pre_windows": {
+            "default": 3,
+            "description": "Per regime, before the event",
+            "minimum": 1,
+            "title": "Min Pre Windows",
+            "type": "integer"
+          },
+          "min_post_windows": {
+            "default": 3,
+            "description": "In total across compatible regimes, after",
+            "minimum": 1,
+            "title": "Min Post Windows",
+            "type": "integer"
+          },
+          "effect": {
+            "default": 2.0,
+            "description": "Median change, in robust units, that counts as an effect",
+            "exclusiveMinimum": 0,
+            "title": "Effect",
+            "type": "number"
+          },
+          "elevated": {
+            "default": 3.0,
+            "description": "Post level above which an improvement is partial",
+            "exclusiveMinimum": 0,
+            "title": "Elevated",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pre_hours",
+          "stabilization_hours",
+          "validation_hours",
+          "max_validation_hours",
+          "min_pre_windows",
+          "min_post_windows",
+          "effect",
+          "elevated"
+        ],
+        "title": "ImpactConfig",
+        "type": "object"
+      },
+      "ImpactOutcome": {
+        "description": "Effect of a maintenance event on regime-normalized behavior (L3-07).",
+        "enum": [
+          "IMPROVED",
+          "PARTIAL",
+          "NO_CHANGE",
+          "DETERIORATED",
+          "UNKNOWN"
+        ],
+        "title": "ImpactOutcome",
         "type": "string"
       },
       "KnownRegime": {
@@ -7514,6 +7651,64 @@
         ],
         "title": "MaintenanceEventType",
         "type": "string"
+      },
+      "MaintenanceImpact": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "event_time": {
+            "format": "date-time",
+            "title": "Event Time",
+            "type": "string"
+          },
+          "pre": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "post": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "catalog_id": {
+            "title": "Catalog Id",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ImpactConfig"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/ImpactOutcome"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureImpact"
+            },
+            "title": "Features",
+            "type": "array"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "component_id",
+          "event_time",
+          "pre",
+          "post",
+          "catalog_id",
+          "config",
+          "outcome",
+          "features",
+          "reason",
+          "is_simulated"
+        ],
+        "title": "MaintenanceImpact",
+        "type": "object"
       },
       "MaintenanceRecordResult": {
         "additionalProperties": false,
@@ -8968,6 +9163,40 @@
           "is_simulated"
         ],
         "title": "RegimeCatalog",
+        "type": "object"
+      },
+      "RegimeComparison": {
+        "additionalProperties": false,
+        "properties": {
+          "regime_id": {
+            "title": "Regime Id",
+            "type": "string"
+          },
+          "pre_windows": {
+            "title": "Pre Windows",
+            "type": "integer"
+          },
+          "post_windows": {
+            "title": "Post Windows",
+            "type": "integer"
+          },
+          "pre_median": {
+            "title": "Pre Median",
+            "type": "number"
+          },
+          "post_median": {
+            "title": "Post Median",
+            "type": "number"
+          }
+        },
+        "required": [
+          "regime_id",
+          "pre_windows",
+          "post_windows",
+          "pre_median",
+          "post_median"
+        ],
+        "title": "RegimeComparison",
         "type": "object"
       },
       "RegimeStatus": {

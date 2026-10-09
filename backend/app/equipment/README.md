@@ -85,3 +85,14 @@ MAINTENANCE_EVENT → STABILIZATION → POST_MAINTENANCE_VALIDATION → NORMAL_M
 nothing is recorded. Closing REVIEW_REQUIRED is a human review: engineer role and a comment. A new event
 supersedes the component's open workflow. Stabilization and validation are moved by people until T018
 automates the checks. The workflow only tracks state; it sends no alerts.
+
+## Maintenance impact (`maintenance_impact/`, T018)
+
+`analyze_impact` compares condition-normalized residuals (cruise torque, actuator duration medians)
+in the 72 h before an event with the period after stabilization, only within regimes seen on both
+sides (at least 3 windows before). Outcomes: IMPROVED, PARTIAL (improved but still at least 3 robust
+units above the reference), NO_CHANGE, DETERIORATED (change at least +2), UNKNOWN (fewer than 3
+comparable windows after). `ImpactService.advance` drives the workflow: stabilization, then validation, then
+NORMAL_MONITORING (IMPROVED or NO_CHANGE) or REVIEW_REQUIRED (PARTIAL, DETERIORATED, or still UNKNOWN
+after 120 h). Settings are in `ImpactConfig`.
+

@@ -91,3 +91,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
   - Machines without speed signals get regimes from operation intervals (G2 A2). Axis feature sets moved to 1.1.0 with `speed_ripple`.
 - **Rationale:** Meets L4-07 and L6-03 with results that are explainable and reproducible. It keeps official alerting off until the user approves it (contract constraint).
 
+## D-019 — Maintenance impact decides the workflow except for reviews
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification in T018; no user gate). Part of the G3 review.
+- **Decision:** After a maintenance event, the system moves the workflow through stabilization (4 h) and validation (36 h, extended up to 120 h while comparable data is missing). It compares condition-normalized torque and actuator-duration residuals before and after, only within regimes seen on both sides. IMPROVED or NO_CHANGE closes to NORMAL_MONITORING. PARTIAL, DETERIORATED, or still UNKNOWN at the maximum goes to REVIEW_REQUIRED. Leaving REVIEW_REQUIRED remains a human step (engineer and comment, D-014). Analyses are audited and stored; no alert is sent.
+- **Rationale:** L3-07 and L3-08: an effect is judged only under comparable conditions, and a doubtful outcome is always seen by a person.
+

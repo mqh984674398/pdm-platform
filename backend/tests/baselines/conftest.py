@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session, sessionmaker
 import app.core.audit  # noqa: F401  (registers tables)
 import app.equipment.lifecycle  # noqa: F401
 import app.equipment.maintenance  # noqa: F401
+import app.equipment.maintenance_impact.service  # noqa: F401
 import app.monitoring.alarms.service  # noqa: F401
 import app.monitoring.baselines.verified  # noqa: F401
 import app.monitoring.features.store  # noqa: F401

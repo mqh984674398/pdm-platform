@@ -350,3 +350,59 @@ class MaintenanceRecordResult(ContractModel):
     lifecycles: list[ComponentLifecycle] = Field(description="Lifecycles the event touched")
     workflow: MaintenanceWorkflow | None
     superseded: list[str] = Field(default_factory=list, description="Open workflows this event replaced")
+
+
+class ImpactOutcome(StrEnum):
+    """Effect of a maintenance event on regime-normalized behavior (L3-07)."""
+
+    IMPROVED = "IMPROVED"
+    PARTIAL = "PARTIAL"  # improved, but still well above the regime reference
+    NO_CHANGE = "NO_CHANGE"
+    DETERIORATED = "DETERIORATED"
+    UNKNOWN = "UNKNOWN"  # not enough comparable data before or after
+
+
+class ImpactConfig(ContractModel):
+    pre_hours: float = Field(default=72.0, gt=0, description="Period before the event used for comparison")
+    stabilization_hours: float = Field(default=4.0, ge=0, description="Excluded after the event (L3-07)")
+    validation_hours: float = Field(default=36.0, gt=0, description="Period after stabilization compared")
+    max_validation_hours: float = Field(
+        default=120.0,
+        gt=0,
+        description="Validation waits this long for comparable data, then asks for review",
+    )
+    min_pre_windows: int = Field(default=3, ge=1, description="Per regime, before the event")
+    min_post_windows: int = Field(default=3, ge=1, description="In total across compatible regimes, after")
+    effect: float = Field(
+        default=2.0, gt=0, description="Median change, in robust units, that counts as an effect"
+    )
+    elevated: float = Field(default=3.0, gt=0, description="Post level above which an improvement is partial")
+
+
+class RegimeComparison(ContractModel):
+    regime_id: str
+    pre_windows: int
+    post_windows: int
+    pre_median: float
+    post_median: float
+
+
+class FeatureImpact(ContractModel):
+    feature_id: str
+    outcome: ImpactOutcome
+    change: float | None = Field(description="Post minus pre, robust units, weighted by post windows")
+    post_level: float | None = Field(description="Median post value against the regime reference")
+    regimes: list[RegimeComparison]
+
+
+class MaintenanceImpact(ContractModel):
+    component_id: str
+    event_time: AwareDatetime
+    pre: TimeWindow
+    post: TimeWindow
+    catalog_id: str
+    config: ImpactConfig
+    outcome: ImpactOutcome
+    features: list[FeatureImpact]
+    reason: LocalizedText
+    is_simulated: bool

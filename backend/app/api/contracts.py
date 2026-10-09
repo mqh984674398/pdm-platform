@@ -91,6 +91,10 @@ CONTRACT_MODELS = [
     eq.MaintenanceWorkflow,
     eq.WorkflowTransitionRequest,
     eq.MaintenanceRecordResult,
+    eq.ImpactConfig,
+    eq.RegimeComparison,
+    eq.FeatureImpact,
+    eq.MaintenanceImpact,
     mon.DataQualityReport,
     mon.FlaggedSpan,
     mon.AlignmentReport,
@@ -136,7 +140,7 @@ CONTRACT_MODELS = [
 ]
 
 # Enums not reachable from any model above still need a generated type.
-CONTRACT_ENUMS = [eq.OperatingState, eq.MaintenanceWorkflowState]
+CONTRACT_ENUMS = [eq.OperatingState, eq.MaintenanceWorkflowState, eq.ImpactOutcome]
 
 
 def build_openapi(app: FastAPI) -> dict[str, Any]:
