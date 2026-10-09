@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import errors, health, quality, query, signals, studio
+from app.api import equipment, errors, health, quality, query, signals, studio
 from app.core.config import get_settings
 from app.datasource.query_service.service import QueryService
 from app.datasource.query_service.sources import DataSourceRegistry
@@ -23,6 +23,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(signals.router, prefix="/api")
     app.include_router(studio.router, prefix="/api")
     app.include_router(quality.router, prefix="/api")
+    app.include_router(equipment.router, prefix="/api")
     return app
 
 

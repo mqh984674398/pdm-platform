@@ -435,6 +435,212 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/machines': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Machines */
+    get: operations['list_machines_api_machines_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machines/{machine_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Machine */
+    put: operations['put_machine_api_machines__machine_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machines/{machine_id}/components': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Components */
+    get: operations['list_components_api_machines__machine_id__components_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Component */
+    get: operations['get_component_api_components__component_id__get']
+    /** Put Component */
+    put: operations['put_component_api_components__component_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/lifecycles': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Lifecycles */
+    get: operations['list_lifecycles_api_components__component_id__lifecycles_get']
+    put?: never
+    /** Install */
+    post: operations['install_api_components__component_id__lifecycles_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/lifecycles/{lifecycle_id}/usage': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Record Usage */
+    post: operations['record_usage_api_lifecycles__lifecycle_id__usage_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/aging': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Aging */
+    get: operations['aging_api_components__component_id__aging_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/maintenance-events': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Events */
+    get: operations['list_events_api_components__component_id__maintenance_events_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/maintenance-events': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Record Event */
+    post: operations['record_event_api_maintenance_events_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/maintenance-workflows': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Workflows */
+    get: operations['list_workflows_api_maintenance_workflows_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/maintenance-workflows/{workflow_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Workflow */
+    get: operations['get_workflow_api_maintenance_workflows__workflow_id__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/maintenance-workflows/{workflow_id}/transitions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Transition */
+    post: operations['transition_api_maintenance_workflows__workflow_id__transitions_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -697,6 +903,39 @@ export interface components {
       /** Nullable */
       nullable: boolean
     }
+    /**
+     * ComponentAging
+     * @description Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08).
+     */
+    ComponentAging: {
+      /** Component Id */
+      component_id: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /**
+       * Installed At
+       * Format: date-time
+       */
+      installed_at: string
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string
+      /** Calendar Hours */
+      calendar_hours: number
+      /** Operating Hours */
+      operating_hours: number
+      /** Cycles */
+      cycles: number
+      /** Maintenance Since Install */
+      maintenance_since_install: number
+      /**
+       * Last Maintenance At
+       * @default null
+       */
+      last_maintenance_at: string | null
+    }
     /** ComponentInstance */
     ComponentInstance: {
       /** Component Id */
@@ -709,6 +948,38 @@ export interface components {
        * Drive Chain Id
        * @description Components sharing a drive chain (scenario S19) share this id
        * @default null
+       */
+      drive_chain_id: string | null
+      /** Signal Ids */
+      signal_ids: string[]
+    }
+    /** ComponentInstance */
+    'ComponentInstance-Input': {
+      /** Component Id */
+      component_id: string
+      /** Machine Id */
+      machine_id: string
+      type: components['schemas']['ComponentType']
+      name: components['schemas']['LocalizedText']
+      /**
+       * Drive Chain Id
+       * @description Components sharing a drive chain (scenario S19) share this id
+       */
+      drive_chain_id?: string | null
+      /** Signal Ids */
+      signal_ids?: string[]
+    }
+    /** ComponentInstance */
+    'ComponentInstance-Output': {
+      /** Component Id */
+      component_id: string
+      /** Machine Id */
+      machine_id: string
+      type: components['schemas']['ComponentType']
+      name: components['schemas']['LocalizedText']
+      /**
+       * Drive Chain Id
+       * @description Components sharing a drive chain (scenario S19) share this id
        */
       drive_chain_id: string | null
       /** Signal Ids */
@@ -749,6 +1020,12 @@ export interface components {
        * @default 0
        */
       accumulated_cycles: number
+      /**
+       * Usage Counted Until
+       * @description Operation up to this time is included in the accumulated values
+       * @default null
+       */
+      usage_counted_until: string | null
     }
     /**
      * ComponentType
@@ -1278,6 +1555,22 @@ export interface components {
       role: ('device' | 'key' | 'time' | 'value') | null
     }
     /**
+     * LifecycleInstall
+     * @description First installation of a component (later lifecycles come only from REPLACEMENT events).
+     */
+    LifecycleInstall: {
+      /**
+       * Installed At
+       * Format: date-time
+       */
+      installed_at: string
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+    }
+    /**
      * LifecycleStatus
      * @enum {string}
      */
@@ -1301,6 +1594,26 @@ export interface components {
        * Line
        * @default null
        */
+      line: string | null
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** Machine */
+    'Machine-Input': {
+      /** Machine Id */
+      machine_id: string
+      name: components['schemas']['LocalizedText']
+      /** Line */
+      line?: string | null
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** Machine */
+    'Machine-Output': {
+      /** Machine Id */
+      machine_id: string
+      name: components['schemas']['LocalizedText']
+      /** Line */
       line: string | null
       /** Is Simulated */
       is_simulated: boolean
@@ -1364,12 +1677,78 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** MaintenanceEventCreate */
+    MaintenanceEventCreate: {
+      /** Component Id */
+      component_id: string
+      type: components['schemas']['MaintenanceEventType']
+      /**
+       * Performed At
+       * Format: date-time
+       */
+      performed_at: string
+      /**
+       * Notes
+       * @default
+       */
+      notes: string
+    }
     /**
      * MaintenanceEventType
      * @enum {string}
      */
     MaintenanceEventType:
       'LUBRICATION' | 'INSPECTION' | 'ADJUSTMENT' | 'PARTIAL_REPAIR' | 'REPLACEMENT'
+    /** MaintenanceRecordResult */
+    MaintenanceRecordResult: {
+      event: components['schemas']['MaintenanceEvent']
+      /**
+       * Lifecycles
+       * @description Lifecycles the event touched
+       */
+      lifecycles: components['schemas']['ComponentLifecycle'][]
+      workflow: components['schemas']['MaintenanceWorkflow'] | null
+      /**
+       * Superseded
+       * @description Open workflows this event replaced
+       */
+      superseded: string[]
+    }
+    /**
+     * MaintenanceWorkflow
+     * @description Post-maintenance workflow of one maintenance event (L3-07).
+     */
+    MaintenanceWorkflow: {
+      /** Workflow Id */
+      workflow_id: string
+      /** Component Id */
+      component_id: string
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Event Id */
+      event_id: string
+      state: components['schemas']['MaintenanceWorkflowState']
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /**
+       * Superseded By
+       * @description Workflow of a later event that replaced it
+       * @default null
+       */
+      superseded_by: string | null
+      /** Transitions */
+      transitions: components['schemas']['WorkflowTransition'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * MaintenanceWorkflowState
      * @enum {string}
@@ -2483,6 +2862,30 @@ export interface components {
       | 'MODEL_UNAVAILABLE'
       | 'NO_FAILURE_EVIDENCE'
       | 'COMPONENT_TEMPLATE_ONLY'
+    /**
+     * UsageRecord
+     * @description Operation of a lifecycle in (usage_counted_until, until], e.g. from derived RUNNING time.
+     */
+    UsageRecord: {
+      /**
+       * Until
+       * Format: date-time
+       */
+      until: string
+      /** Operating Hours */
+      operating_hours: number
+      /**
+       * Cycles
+       * @default 0
+       */
+      cycles: number
+      /**
+       * Source
+       * @description How the usage was derived
+       * @default
+       */
+      source: string
+    }
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -2579,6 +2982,37 @@ export interface components {
        */
       base_version: number | null
       item: components['schemas']['VisualizationTemplate']
+    }
+    /** WorkflowTransition */
+    WorkflowTransition: {
+      from_state: components['schemas']['MaintenanceWorkflowState'] | null
+      to_state: components['schemas']['MaintenanceWorkflowState']
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string
+      /** By */
+      by: string
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+    }
+    /** WorkflowTransitionRequest */
+    WorkflowTransitionRequest: {
+      target: components['schemas']['MaintenanceWorkflowState']
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /**
+       * @description Refuse if the workflow moved on since the caller looked
+       * @default null
+       */
+      expected_state: components['schemas']['MaintenanceWorkflowState'] | null
     }
     /**
      * FeatureStats
@@ -3699,6 +4133,505 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['QualityResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_machines_api_machines_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Machine-Output'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_machine_api_machines__machine_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['Machine-Input']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Machine-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_components_api_machines__machine_id__components_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentInstance-Output'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_component_api_components__component_id__get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentInstance-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_component_api_components__component_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ComponentInstance-Input']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentInstance-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_lifecycles_api_components__component_id__lifecycles_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentLifecycle'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  install_api_components__component_id__lifecycles_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LifecycleInstall']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentLifecycle']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  record_usage_api_lifecycles__lifecycle_id__usage_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        lifecycle_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UsageRecord']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentLifecycle']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  aging_api_components__component_id__aging_get: {
+    parameters: {
+      query?: {
+        at?: string | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentAging']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_events_api_components__component_id__maintenance_events_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MaintenanceEvent'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  record_event_api_maintenance_events_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MaintenanceEventCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MaintenanceRecordResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_workflows_api_maintenance_workflows_get: {
+    parameters: {
+      query?: {
+        component_id?: string | null
+        open?: boolean
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MaintenanceWorkflow'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_workflow_api_maintenance_workflows__workflow_id__get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        workflow_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MaintenanceWorkflow']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  transition_api_maintenance_workflows__workflow_id__transitions_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        workflow_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WorkflowTransitionRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MaintenanceWorkflow']
         }
       }
       /** @description Validation Error */

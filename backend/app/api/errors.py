@@ -10,6 +10,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import StaleDataError
 
 from app.api.studio import UnknownDeviceError
 from app.core.schemas import ApiError, LocalizedText
@@ -18,6 +19,8 @@ from app.datasource.query_service.service import ParameterError
 from app.datasource.query_service.sources import UnknownSourceError
 from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
+from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
+from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
 from app.monitoring.quality.service import QualityRequestError, UnknownQualitySignalError
 from app.signals.preview import PreviewError, UnknownSignalError
 from app.signals.registry import ConfigConflictError, ConfigNotFoundError
@@ -33,6 +36,11 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (UnknownQualitySignalError, 404, "unknown_signal", "未找到该信号。", "Signal not found."),
     (QualityRequestError, 422, "invalid_quality_request", "质量检查请求无效。", "The quality request is invalid."),
     (PreviewError, 422, "invalid_preview", "预览请求无效。", "The preview request is invalid."),
+    (EquipmentNotFoundError, 404, "unknown_equipment", "未找到该设备、部件、生命周期或工作流。", "Machine, component, lifecycle or workflow not found."),
+    (EquipmentConflictError, 409, "equipment_conflict", "与已记录的设备或维护历史冲突，未保存。", "Conflicts with the recorded equipment or maintenance history; nothing was saved."),
+    (WorkflowTransitionError, 409, "workflow_transition_refused", "不允许该维护工作流状态转换。", "This maintenance workflow transition is not allowed."),
+    (WorkflowPermissionError, 403, "workflow_review_role", "关闭复核需要工程师角色。", "Closing a review requires the engineer role."),
+    (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),
     (TemplateConflictError, 409, "template_conflict", "查询模板冲突。", "Query template conflict."),

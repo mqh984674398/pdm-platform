@@ -55,3 +55,33 @@ edge is incomplete because its start or end was not observed.
 
 Verification: `pytest tests/equipment`; `python scripts/operations_sweep.py` lists states, regimes
 and cycles for every simulated scenario.
+
+## Topology and lifecycles (`lifecycle.py`, T014)
+
+Machines, components, lifecycles, maintenance events and workflows are stored in the application
+database (migration `0003`); every change writes an audit row in the same transaction.
+
+- A component gets its first lifecycle with `POST /api/components/{id}/lifecycles`. Every later
+  installation comes from a REPLACEMENT event: the installed lifecycle is retired at the event time and
+  `<component>-LC<n+1>` starts with `predecessor_lifecycle_id` pointing back. Retired lifecycles, their
+  events and their accumulated operation stay readable.
+- Accumulated operation is added with `POST /api/lifecycles/{id}/usage` for the period since
+  `usage_counted_until`, so each period is counted once. `running_hours()` gives the derived RUNNING
+  time from T013 states; on S12 it is within 5 % of the simulator's count per lifecycle.
+- `GET /api/components/{id}/aging?at=` reports calendar and operating age of the lifecycle installed
+  at that time. Lubrication, adjustment, partial repair and inspection never reset it (L3-08).
+
+## Maintenance events and workflow (`maintenance.py`, T014)
+
+`POST /api/maintenance-events` (maintenance role) records an event in time order, never in the future
+or before the current installation. Every event except INSPECTION starts a workflow:
+
+```
+MAINTENANCE_EVENT → STABILIZATION → POST_MAINTENANCE_VALIDATION → NORMAL_MONITORING
+                                                               ↘ REVIEW_REQUIRED → NORMAL_MONITORING
+```
+
+`POST /api/maintenance-workflows/{id}/transitions` moves one step; any other move is refused (409) and
+nothing is recorded. Closing REVIEW_REQUIRED is a human review: engineer role and a comment. A new event
+supersedes the component's open workflow. Stabilization and validation are moved by people until T018
+automates the checks. The workflow only tracks state; it sends no alerts.

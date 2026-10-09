@@ -56,6 +56,9 @@ class ComponentLifecycle(ContractModel):
     status: LifecycleStatus
     accumulated_operating_hours: float = Field(default=0, ge=0)
     accumulated_cycles: int = Field(default=0, ge=0)
+    usage_counted_until: AwareDatetime | None = Field(
+        default=None, description="Operation up to this time is included in the accumulated values"
+    )
 
     @model_validator(mode="after")
     def _retired_consistent(self) -> ComponentLifecycle:
@@ -272,3 +275,78 @@ WORKFLOW_TRANSITIONS: dict[MaintenanceWorkflowState, frozenset[MaintenanceWorkfl
 def can_transition(current: MaintenanceWorkflowState, target: MaintenanceWorkflowState) -> bool:
     """Workflow rule from L3-07. REVIEW_REQUIRED leaves only by human review or new maintenance."""
     return target in WORKFLOW_TRANSITIONS[current]
+
+
+class LifecycleInstall(ContractModel):
+    """First installation of a component (later lifecycles come only from REPLACEMENT events)."""
+
+    installed_at: AwareDatetime
+    comment: str = Field(default="", max_length=500)
+
+
+class UsageRecord(ContractModel):
+    """Operation of a lifecycle in (usage_counted_until, until], e.g. from derived RUNNING time."""
+
+    until: AwareDatetime
+    operating_hours: float = Field(ge=0)
+    cycles: int = Field(default=0, ge=0)
+    source: str = Field(default="", max_length=200, description="How the usage was derived")
+
+
+class ComponentAging(ContractModel):
+    """Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08)."""
+
+    component_id: str
+    lifecycle_id: str
+    installed_at: AwareDatetime
+    at: AwareDatetime
+    calendar_hours: float = Field(ge=0)
+    operating_hours: float = Field(ge=0)
+    cycles: int = Field(ge=0)
+    maintenance_since_install: int = Field(ge=0)
+    last_maintenance_at: AwareDatetime | None = None
+
+
+class MaintenanceEventCreate(ContractModel):
+    component_id: str
+    type: MaintenanceEventType
+    performed_at: AwareDatetime
+    notes: str = Field(default="", max_length=2000)
+
+
+class WorkflowTransition(ContractModel):
+    from_state: MaintenanceWorkflowState | None
+    to_state: MaintenanceWorkflowState
+    at: AwareDatetime
+    by: str
+    comment: str = ""
+
+
+class MaintenanceWorkflow(ContractModel):
+    """Post-maintenance workflow of one maintenance event (L3-07)."""
+
+    workflow_id: str
+    component_id: str
+    lifecycle_id: str
+    event_id: str
+    state: MaintenanceWorkflowState
+    started_at: AwareDatetime
+    updated_at: AwareDatetime
+    superseded_by: str | None = Field(default=None, description="Workflow of a later event that replaced it")
+    transitions: list[WorkflowTransition] = Field(default_factory=list)
+    is_simulated: bool
+
+
+class WorkflowTransitionRequest(ContractModel):
+    target: MaintenanceWorkflowState
+    comment: str = Field(default="", max_length=500)
+    expected_state: MaintenanceWorkflowState | None = Field(
+        default=None, description="Refuse if the workflow moved on since the caller looked"
+    )
+
+
+class MaintenanceRecordResult(ContractModel):
+    event: MaintenanceEvent
+    lifecycles: list[ComponentLifecycle] = Field(description="Lifecycles the event touched")
+    workflow: MaintenanceWorkflow | None
+    superseded: list[str] = Field(default_factory=list, description="Open workflows this event replaced")

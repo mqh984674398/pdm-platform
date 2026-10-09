@@ -94,7 +94,10 @@ def write_dataset(result: SimulationResult, out_dir: Path, compress_csv: bool = 
                 "is_simulated": True,
                 "machines": _models(result.machines),
                 "components": _models(result.components),
-                "lifecycles": _models(result.lifecycles),
+                # the simulator does not track usage periods (T014 field), so stored datasets stay unchanged
+                "lifecycles": [
+                    lc.model_dump(mode="json", exclude={"usage_counted_until"}) for lc in result.lifecycles
+                ],
                 "signals": _models(result.signals),
                 "mappings": _models(result.mappings),
             }
