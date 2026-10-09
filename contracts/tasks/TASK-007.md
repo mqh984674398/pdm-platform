@@ -1,7 +1,7 @@
 # TASK-007 — Machine dashboard and component status map
 
 - **ID:** T007
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 2 — High-Fidelity Frontend
 - **Gate:** None
 

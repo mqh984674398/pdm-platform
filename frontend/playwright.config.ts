@@ -6,7 +6,7 @@ const executablePath = process.env.PW_CHROMIUM_PATH || undefined
 export default defineConfig({
   testDir: 'tests/e2e',
   outputDir: 'test-results',
-  use: { baseURL: 'http://127.0.0.1:4173', launchOptions: { executablePath } },
+  use: { baseURL: 'http://127.0.0.1:4173', locale: 'zh-CN', launchOptions: { executablePath } },
   webServer: {
     command: 'npm run preview',
     url: 'http://127.0.0.1:4173',

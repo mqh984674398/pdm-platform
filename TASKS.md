@@ -10,8 +10,8 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T003](contracts/tasks/TASK-003.md) | Domain, signal, API, and result schemas | 1 | T002 |  | DONE |
 | [T004](contracts/tasks/TASK-004.md) | Deterministic Data/ simulator | 1 | T003 |  | DONE |
 | [T005](contracts/tasks/TASK-005.md) | Golden Cases and scenario fixtures | 1 | T004 |  | DONE |
-| [T006](contracts/tasks/TASK-006.md) | UI design system and bilingual switching | 2 | T002 |  | IN_PROGRESS |
-| [T007](contracts/tasks/TASK-007.md) | Machine dashboard and component status map | 2 | T003, T005, T006 |  | TODO |
+| [T006](contracts/tasks/TASK-006.md) | UI design system and bilingual switching | 2 | T002 |  | DONE |
+| [T007](contracts/tasks/TASK-007.md) | Machine dashboard and component status map | 2 | T003, T005, T006 |  | IN_PROGRESS |
 | [T008](contracts/tasks/TASK-008.md) | SQL Data Source Studio frontend Demo | 2 | T003, T005, T006 | G1 | TODO |
 | [T009](contracts/tasks/TASK-009.md) | Time-series database adapter | 3 | T003 |  | TODO |
 | [T010](contracts/tasks/TASK-010.md) | Secure read-only SQL query service | 3 | T009 |  | TODO |

@@ -1,7 +1,7 @@
 # TASK-006 — UI design system and bilingual switching
 
 - **ID:** T006
-- **Status:** IN_PROGRESS
+- **Status:** DONE
 - **Phase:** 2 — High-Fidelity Frontend
 - **Gate:** None
 
@@ -50,4 +50,13 @@ Revert the task branch to the last green commit; record the failure and cause in
 
 ## Evidence
 
-_Filled in by the executing agent with actual commands and results._
+2026-10-09:
+
+- `tools/ci_local.sh` → exit 0 (log `contracts/evidence/T006/ci_local.log`): Vitest 11 passed, vue-tsc clean, eslint/prettier clean, build OK, Playwright 1 passed; backend 60 passed on 3.11/3.12.
+- AC1: tokens in `frontend/src/theme/tokens.css` (health colors per ISO 3864 conventions; UNKNOWN rendered as a hatch meaning "no evidence"), typography (bundled IBM Plex Sans for offline LAN use, CJK via system fonts), spacing, motion with reduced-motion support; light/dark/system themes.
+- AC2: app shell with all 12 interfaces in the navigation (`app.spec.ts` checks 12 routes); placeholders name the delivering task.
+- AC3: runtime zh-CN/en-US switch (`app.spec.ts` switches without remount; E2E asserts no page reload via a window marker); `i18n.spec.ts` checks identical key sets and scans every `.vue` template for hard-coded text (negative probe confirmed it fails on raw text).
+- AC4: `SimBadge` component (dashed violet plate with warning glyph).
+- AC5: screenshots at 1280 px and 820 px (tablet; sidebar becomes an overlay), visible `:focus-visible` ring. Evidence: `design-zh-light.png`, `design-en-dark.png`, `datasource-en-light.png`, `tablet-zh-light.png`.
+- Design reference page at `/_design` (not in navigation).
+- Tools used: frontend-design skill (design direction), Playwright (screenshots/E2E).

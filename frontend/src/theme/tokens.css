@@ -1,0 +1,129 @@
+/*
+ * Design tokens — industrial instrument panel with macOS-grade interaction.
+ * Health colors follow ISO 3864 safety-color conventions; UNKNOWN is a hatch, not a color,
+ * because it means "no evidence", not a fifth severity.
+ */
+:root {
+  /* Surfaces: brushed steel, light by default for well-lit shop floors */
+  --steel-50: #f4f6f8;
+  --steel-100: #eceff2;
+  --steel-200: #dfe4e9;
+  --steel-300: #c9d0d7;
+  --steel-500: #7d8792;
+  --steel-700: #4a535d;
+  --ink: #1d232a;
+  --ink-soft: #4a535d;
+  --ink-faint: #737d88;
+
+  --bg: var(--steel-100);
+  --surface: #ffffff;
+  --surface-inset: var(--steel-50);
+  --sidebar: rgb(236 239 242 / 82%);
+  --line: var(--steel-200);
+  --line-strong: var(--steel-300);
+
+  /* Interaction: ISO safety blue */
+  --accent: #0b5cad;
+  --accent-soft: #e3eefa;
+  --focus-ring: 0 0 0 3px rgb(11 92 173 / 35%);
+
+  /* Health states */
+  --health-normal: #2a8a4a;
+  --health-normal-soft: #e2f3e7;
+  --health-watch: #c99a00;
+  --health-watch-soft: #fdf4d3;
+  --health-warning: #d9661a;
+  --health-warning-soft: #fde8da;
+  --health-critical: #c32a2a;
+  --health-critical-soft: #fadede;
+  --health-unknown: #8a94a0;
+  --health-unknown-soft: #eef0f3;
+  --hatch: repeating-linear-gradient(135deg, var(--health-unknown) 0 2px, transparent 2px 5px);
+
+  /* Simulated-data marker */
+  --sim-ink: #6b4fa3;
+  --sim-soft: #efe9fa;
+
+  /* Type */
+  --font-ui:
+    'IBM Plex Sans', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC',
+    system-ui, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+
+  /* Space, radius, depth */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-control: 7px;
+  --radius-panel: 12px;
+  --shadow-panel: 0 0 0 1px var(--line), 0 1px 2px rgb(29 35 42 / 6%);
+  --shadow-raised: 0 0 0 1px var(--line), 0 8px 24px rgb(29 35 42 / 12%);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur: 220ms;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #15191e;
+    --surface: #1d2228;
+    --surface-inset: #181c21;
+    --sidebar: rgb(24 28 33 / 85%);
+    --line: #2c333b;
+    --line-strong: #3a434d;
+    --ink: #e6eaee;
+    --ink-soft: #b2bac3;
+    --ink-faint: #8a94a0;
+    --accent: #4d97e6;
+    --accent-soft: #1a2c40;
+    --health-normal-soft: #16301f;
+    --health-watch-soft: #33290a;
+    --health-warning-soft: #3a2212;
+    --health-critical-soft: #3b1717;
+    --health-unknown-soft: #262b31;
+    --sim-ink: #b39ae6;
+    --sim-soft: #2a2140;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #15191e;
+  --surface: #1d2228;
+  --surface-inset: #181c21;
+  --sidebar: rgb(24 28 33 / 85%);
+  --line: #2c333b;
+  --line-strong: #3a434d;
+  --ink: #e6eaee;
+  --ink-soft: #b2bac3;
+  --ink-faint: #8a94a0;
+  --accent: #4d97e6;
+  --accent-soft: #1a2c40;
+  --health-normal-soft: #16301f;
+  --health-watch-soft: #33290a;
+  --health-warning-soft: #3a2212;
+  --health-critical-soft: #3b1717;
+  --health-unknown-soft: #262b31;
+  --sim-ink: #b39ae6;
+  --sim-soft: #2a2140;
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+  }
+}

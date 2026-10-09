@@ -17,13 +17,16 @@
     "gen:types": "openapi-typescript ../contracts/schemas/openapi.json -o src/api/generated.ts && prettier -w src/api/generated.ts"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
     "vue": "^3.5.43",
+    "vue-i18n": "^11.4.13",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^22.20.5",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/compiler-sfc": "^3.5.43",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.5.1",
     "eslint": "^9.39.5",
