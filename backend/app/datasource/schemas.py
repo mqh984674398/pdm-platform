@@ -71,3 +71,18 @@ class RawTelemetryRow(ContractModel):
     value: float | None
     source_ref: str = Field(description="Data source id plus template/version that produced the row")
     is_simulated: bool
+
+
+class DeviceKeys(ContractModel):
+    device_id: str
+    key_names: list[str]
+
+
+class SourceMetadata(ContractModel):
+    """Result of read-only metadata discovery (L1-04)."""
+
+    data_source_id: str
+    devices: list[DeviceKeys]
+    earliest_ts: AwareDatetime | None
+    latest_ts: AwareDatetime | None
+    is_simulated: bool

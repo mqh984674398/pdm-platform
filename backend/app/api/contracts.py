@@ -29,6 +29,8 @@ CONTRACT_MODELS = [
     ds.QueryParameter,
     ds.QueryTemplate,
     ds.RawTelemetryRow,
+    ds.DeviceKeys,
+    ds.SourceMetadata,
     sig.UnitConversion,
     sig.SignalDefinition,
     sig.SignalMapping,

@@ -1,7 +1,7 @@
 # TASK-005 — Golden Cases and scenario fixtures
 
 - **ID:** T005
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 1 — Contracts and Simulation
 - **Gate:** None
 

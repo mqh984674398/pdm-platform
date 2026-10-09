@@ -1,0 +1,24 @@
+[
+  {
+    "event_id": "SIM-ME-0001",
+    "component_id": "M01-BS1",
+    "lifecycle_id": "M01-BS1-LC1",
+    "type": "LUBRICATION",
+    "performed_at": "2026-01-06T12:30:00Z",
+    "performed_by": "sim-technician",
+    "notes": "simulated maintenance event",
+    "new_lifecycle_id": null,
+    "is_simulated": true
+  },
+  {
+    "event_id": "SIM-ME-0002",
+    "component_id": "M02-CY1",
+    "lifecycle_id": "M02-CY1-LC1",
+    "type": "REPLACEMENT",
+    "performed_at": "2026-01-07T00:12:00Z",
+    "performed_by": "sim-technician",
+    "notes": "simulated maintenance event",
+    "new_lifecycle_id": "M02-CY1-LC2",
+    "is_simulated": true
+  }
+]

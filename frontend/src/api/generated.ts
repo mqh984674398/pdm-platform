@@ -384,6 +384,13 @@ export interface components {
       /** Higher Is Worse */
       higher_is_worse: boolean
     }
+    /** DeviceKeys */
+    DeviceKeys: {
+      /** Device Id */
+      device_id: string
+      /** Key Names */
+      key_names: string[]
+    }
     /**
      * EligibilityCondition
      * @description A declarative precondition checked before the operator's output may be used (L6-01).
@@ -1017,6 +1024,22 @@ export interface components {
        * @default null
        */
       component_id: string | null
+    }
+    /**
+     * SourceMetadata
+     * @description Result of read-only metadata discovery (L1-04).
+     */
+    SourceMetadata: {
+      /** Data Source Id */
+      data_source_id: string
+      /** Devices */
+      devices: components['schemas']['DeviceKeys'][]
+      /** Earliest Ts */
+      earliest_ts: string | null
+      /** Latest Ts */
+      latest_ts: string | null
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * TimeWindow

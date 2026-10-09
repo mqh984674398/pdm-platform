@@ -905,6 +905,28 @@
         "title": "DegradationIndicatorResult",
         "type": "object"
       },
+      "DeviceKeys": {
+        "additionalProperties": false,
+        "properties": {
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "key_names": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Key Names",
+            "type": "array"
+          }
+        },
+        "required": [
+          "device_id",
+          "key_names"
+        ],
+        "title": "DeviceKeys",
+        "type": "object"
+      },
       "EligibilityCondition": {
         "additionalProperties": false,
         "description": "A declarative precondition checked before the operator's output may be used (L6-01).",
@@ -2410,6 +2432,60 @@
           "component_id"
         ],
         "title": "SignalMapping",
+        "type": "object"
+      },
+      "SourceMetadata": {
+        "additionalProperties": false,
+        "description": "Result of read-only metadata discovery (L1-04).",
+        "properties": {
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "devices": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceKeys"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "earliest_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earliest Ts"
+          },
+          "latest_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Ts"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_source_id",
+          "devices",
+          "earliest_ts",
+          "latest_ts",
+          "is_simulated"
+        ],
+        "title": "SourceMetadata",
         "type": "object"
       },
       "TimeWindow": {

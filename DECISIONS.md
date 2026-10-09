@@ -32,3 +32,7 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-09 · **Status:** PROPOSED (T002) · Needs user awareness, not a gate.
 - **Decision:** No GitHub repository is connected yet. Until one is, `tools/ci_local.sh` (same commands as `.github/workflows/ci.yml`) is the CI verification of record. Its log is stored per task in `contracts/evidence/TXXX/ci_local.log`. The first real CI run after the first push is recorded retroactively in T002 evidence; any failure there reopens T002.
 - **Rationale:** Avoids blocking the dependency chain on repository access while keeping verification real.
+
+## D-008 — Simulator lives outside the runtime layers
+- **Date:** 2026-10-09 · **Status:** APPROVED by Principal Agent (scope clarification within T004)
+- **Decision:** The generator is `backend/app/simulation/` (composition-level, like `app/api`), because it builds L1–L3 objects (raw rows, topology, maintenance events) and placing it in `app/datasource` would break the layer import rule. Only the simulated adapter, which reads raw rows, lives in L1 (`app/datasource/simulated.py`). Layers must not import `app.simulation` (enforced by `tests/test_layering.py`).

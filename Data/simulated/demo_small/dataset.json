@@ -1,0 +1,54 @@
+{
+  "dataset_id": "demo_small",
+  "description": "Two simulated machines over 3 days with all supported component types, multiple recipes, mild aging, one lubrication event, and one replacement.",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 20261009,
+  "config_sha256": "5c2e0c7ce90686a98b656cee56ae15403b7c7343aba096c4064f94b1fb60d656",
+  "start": "2026-01-05T00:00:00+00:00",
+  "duration_hours": 72.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv": {
+      "sha256": "0cf324ad453aea9c916d731b73adba76bd6881ac7c742a78bd62d50a82d2fccb",
+      "bytes": 1145823,
+      "rows": 19329
+    },
+    "normalized.csv": {
+      "sha256": "df506121a81c1d2497ea1d1adf9df8172e8d8d3d1f290cfa1be94d1e1dee71b7",
+      "bytes": 1757946,
+      "rows": 19329
+    },
+    "truth_windows.csv": {
+      "sha256": "5310e01cea6716b9104091f0885460582cac63c7730e47f4370d6ad362269b8e",
+      "bytes": 1688,
+      "rows": 24
+    },
+    "truth_components.csv": {
+      "sha256": "ddcec4a5c260f3b9c1815a02928e7a79b8992bfc734b91673e7d9f3265c99a84",
+      "bytes": 6273,
+      "rows": 72
+    },
+    "topology.json": {
+      "sha256": "d6cd961c2e994581f634eb46e24d7b31ffddf54f151bff66c3f34684b69094d0",
+      "bytes": 12545
+    },
+    "maintenance_events.json": {
+      "sha256": "e695fa9f7ba087c14cb7cb93fd390a7980a3fa8975dfa526924751a531f73e8c",
+      "bytes": 640
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "c0256e57f5eff8fa0f03e685dd2addccd16bd1afaafb721fda6ed2d871d4ae9f",
+      "bytes": 4843
+    }
+  }
+}
