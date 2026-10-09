@@ -5759,6 +5759,13 @@
             "title": "Evidence",
             "type": "array"
           },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
@@ -5767,6 +5774,7 @@
         "required": [
           "decision",
           "evidence",
+          "recommendations",
           "is_simulated"
         ],
         "title": "ComponentHealthReport",

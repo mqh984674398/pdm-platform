@@ -125,6 +125,7 @@ class ComponentHealthReport(ContractModel):
 
     decision: Decision
     evidence: list[Evidence]
+    recommendations: list[Recommendation] = Field(default_factory=list)
     is_simulated: bool
 
 

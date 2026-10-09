@@ -1309,6 +1309,8 @@ export interface components {
       decision: components['schemas']['Decision']
       /** Evidence */
       evidence: components['schemas']['Evidence'][]
+      /** Recommendations */
+      recommendations: components['schemas']['Recommendation'][]
       /** Is Simulated */
       is_simulated: boolean
     }

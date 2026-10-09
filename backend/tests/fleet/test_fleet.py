@@ -110,7 +110,8 @@ def test_health_report_carries_the_evidence_trail(env):
     assert {"STATISTIC", "RULE"} <= sources
     assert d["evidence_ids"] == [e["evidence_id"] for e in rep["evidence"]]
     assert any("demo-engineer (SIMULATED)" in e["summary"]["en"] for e in rep["evidence"])
-    assert d["meta"]["is_simulated"] and d["meta"]["model_version"].startswith("pdm-rules@")
+    assert d["meta"]["is_simulated"] and d["meta"]["model_version"] == "evidence-fusion@1.0.0"
+    assert "pdm-rules@" in d["meta"]["config_version"]
     impact = client.get("/api/components/A10-BS1/health").json()["evidence"]
     assert any(e["source"] == "MAINTENANCE" and "DETERIORATED" in e["summary"]["en"] for e in impact)
 

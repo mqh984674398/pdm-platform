@@ -1,4 +1,4 @@
-"""G3 review data (T020): replay the SIMULATED demo fleet and compare computed levels with the Golden Cases.
+"""Golden Case comparison (T020 G3; fused levels added in T024) on the replayed SIMULATED demo fleet.
 
 For every demo machine, the pipeline stores features, the demo engineer's verified references, alarms
 and workflows in a scratch SQLite database. Each feature window's rule level is then compared with
@@ -48,6 +48,7 @@ def main(out: Path) -> None:
                 for case in (c for c in golden if c["scenario_id"] == m.scenario_id):
                     cid = case["component_id"].replace("M01-", f"{m.machine_id}-")
                     evals, refs = svc._evaluate(cid)
+                    fused = svc.window_decisions(cid)
                     spans = []
                     for exp in case["expectations"]:
                         span = [
@@ -59,6 +60,13 @@ def main(out: Path) -> None:
                         ]
                         levels = [e.level.value for e in span]
                         ok = sum(lv in exp["allowed_health"] for lv in levels)
+                        flv = [
+                            r.decision.health_state.value
+                            for r in fused
+                            if exp["start_h"]
+                            <= (r.decision.meta.data_window.start - m.t0).total_seconds() / 3600
+                            < exp["end_h"]
+                        ]
                         spans.append(
                             {
                                 "start_h": exp["start_h"],
@@ -68,6 +76,8 @@ def main(out: Path) -> None:
                                 "windows": len(levels),
                                 "within": ok,
                                 "levels": {lv: levels.count(lv) for lv in sorted(set(levels))},
+                                "fused_within": sum(lv in exp["allowed_health"] for lv in flv),
+                                "fused_levels": {lv: flv.count(lv) for lv in sorted(set(flv))},
                                 "note": exp.get("note"),
                             }
                         )
@@ -111,12 +121,18 @@ def main(out: Path) -> None:
     out.write_text(json.dumps(report, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     graded = [s for c in cases for s in c["spans"] if not s["must_abstain"]]
     total, within = sum(s["windows"] for s in graded), sum(s["within"] for s in graded)
-    print(f"wrote {out}: {len(cases)} cases, {within}/{total} graded windows within the allowed levels")
+    fw = sum(s["fused_within"] for s in graded)
+    print(
+        f"wrote {out}: {len(cases)} cases, {within}/{total} graded windows within the allowed levels "
+        f"(rules only), {fw}/{total} after evidence fusion"
+    )
     for c in cases:
         for s in c["spans"]:
             if not s["must_abstain"] and s["windows"] and s["within"] < s["windows"]:
-                print(f"  {c['case_id']} {c['component_id']} {s['start_h']}-{s['end_h']} h: "
-                      f"allowed {s['allowed']}, got {s['levels']}")  # fmt: skip
+                print(
+                    f"  {c['case_id']} {c['component_id']} {s['start_h']}-{s['end_h']} h: "
+                    f"allowed {s['allowed']}, got {s['levels']}"
+                )
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # TASK-024 — Evidence fusion and maintenance decision engine
 
 - **ID:** T024
-- **Status:** IN_PROGRESS
+- **Status:** DONE
 - **Phase:** 6 — Optimization and Local LLM
 - **Gate:** None
 

@@ -1,7 +1,7 @@
 # TASK-025 — Historical replay and rapid parameter optimization
 
 - **ID:** T025
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 6 — Optimization and Local LLM
 - **Gate:** None
 

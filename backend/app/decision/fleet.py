@@ -22,6 +22,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.core.schemas import LocalizedText, ResultMeta, TimeWindow
+from app.decision.fusion import FusionInput, FusionResult, Preconditions, fuse, recommend
 from app.decision.schemas import (
     ComponentHealthReport,
     Decision,
@@ -38,7 +39,7 @@ from app.equipment.lifecycle import EquipmentStore
 from app.equipment.maintenance import MaintenanceService
 from app.equipment.maintenance_impact.service import ImpactService
 from app.equipment.schemas import ComponentInstance, LifecycleStatus, MaintenanceWorkflowState
-from app.monitoring.alarms.service import OPEN, AlarmService, evidence_id
+from app.monitoring.alarms.service import OPEN, AlarmService
 from app.monitoring.baselines.verified import BaselineService
 from app.monitoring.features.definitions import FEATURE_SETS
 from app.monitoring.features.store import FeatureStore
@@ -97,9 +98,19 @@ def _hit_text(e: WindowEvaluation) -> LocalizedText:
     return _t("；".join(parts_zh), "; ".join(parts_en))
 
 
+def _join(reasons: Sequence[LocalizedText]) -> LocalizedText:
+    return _t("；".join(r.zh for r in reasons), "; ".join(r.en for r in reasons))
+
+
 class _Assessment:
-    def __init__(self, health: HealthState, reason: LocalizedText, latest: WindowEvaluation | None):
-        self.health, self.reason, self.latest = health, reason, latest
+    def __init__(
+        self,
+        health: HealthState,
+        reason: LocalizedText,
+        latest: WindowEvaluation | None,
+        fusion: FusionResult | None = None,
+    ):
+        self.health, self.reason, self.latest, self.fusion = health, reason, latest, fusion
 
 
 class FleetHealthService:
@@ -152,12 +163,52 @@ class FleetHealthService:
         if not usable:
             return _Assessment(H.UNKNOWN, NOT_EVALUATED, latest)
         latest = usable[-1]  # a window in an unknown regime does not hide the last evaluated one
+        stale = None
         if as_of is not None:
             gap = (as_of - latest.window.end).total_seconds() / 3600
             if gap > STALE_HOURS:
-                return _Assessment(H.UNKNOWN, _stale(gap), latest)
-        health = H(latest.level.value)
-        return _Assessment(health, NORMAL if health == H.NORMAL else _hit_text(latest), latest)
+                stale = gap
+        comp = self.equipment.component(component_id)
+        result = fuse(
+            FusionInput(
+                component_id=component_id,
+                component_type=comp.type,
+                lifecycle_id=active.lifecycle_id,
+                installed_at=active.installed_at,
+                evaluation=latest,
+                history=mine,
+                pre=Preconditions(stale_hours=stale),
+                is_simulated=self.equipment.is_simulated(component_id),
+            )
+        )
+        d = result.decision
+        reason = NORMAL if d.health_state == H.NORMAL else _join(d.reasons)
+        return _Assessment(d.health_state, reason, latest, result)
+
+    def window_decisions(self, component_id: str) -> list[FusionResult]:
+        """Fused decision for every evaluated window, using only the history up to that window."""
+        comp = self.equipment.component(component_id)
+        evals, refs = self._evaluate(component_id)
+        lcs = {lc.lifecycle_id: lc for lc in self.equipment.lifecycles(component_id)}
+        sim = self.equipment.is_simulated(component_id)
+        out, seen = [], {}
+        for e in evals:
+            hist = seen.setdefault(e.lifecycle_id, [])
+            hist.append(e)
+            if not e.evaluated or e.lifecycle_id not in refs:
+                continue
+            lc = lcs.get(e.lifecycle_id)
+            inp = FusionInput(
+                component_id,
+                comp.type,
+                e.lifecycle_id,
+                lc.installed_at if lc else None,
+                e,
+                list(hist),
+                is_simulated=sim,
+            )
+            out.append(fuse(inp))
+        return out
 
     @staticmethod
     def _trend(component: ComponentInstance, evals: Sequence[WindowEvaluation]) -> list[HealthTrend]:
@@ -275,19 +326,8 @@ class FleetHealthService:
         feature_ref = latest.feature_ref if latest else component_type_ref(comp)
         evidence: list[Evidence] = []
         if latest:
-            for h in latest.hits:
-                src = EvidenceSource.STATISTIC if h.kind == RuleKind.STATISTICAL else EvidenceSource.RULE
-                one = WindowEvaluation.model_validate({**latest.model_dump(), "hits": [h.model_dump()]})
-                evidence.append(
-                    Evidence(
-                        evidence_id=evidence_id(h.rule_id, latest),
-                        source=src,
-                        result_ref=evidence_id(h.rule_id, latest),
-                        summary=_hit_text(one),
-                        eligible=True,
-                        meta=meta(feature_ref, latest.window),
-                    )
-                )
+            if a.fusion is not None:
+                evidence += a.fusion.evidence
             ref = refs.get(latest.lifecycle_id)
             if ref is not None:
                 evidence.append(
@@ -345,16 +385,24 @@ class FleetHealthService:
                     meta=meta(feature_ref, imp.post, "maintenance-impact@1.0.0"),
                 )
             )
-        decision = Decision(
-            decision_id=f"HD-{component_id}-{window.end:%Y%m%dT%H%M%SZ}",
-            component_id=component_id,
-            lifecycle_id=latest.lifecycle_id if latest else "",
-            health_state=a.health,
-            reasons=[a.reason],
-            evidence_ids=[e.evidence_id for e in evidence],
-            meta=meta(feature_ref, window),
+        ids = [e.evidence_id for e in evidence]
+        if a.fusion is not None and a.health == a.fusion.decision.health_state:
+            decision = a.fusion.decision.model_copy(update={"evidence_ids": ids})
+            recommendations = a.fusion.recommendations
+        else:
+            decision = Decision(
+                decision_id=f"HD-{component_id}-{window.end:%Y%m%dT%H%M%SZ}",
+                component_id=component_id,
+                lifecycle_id=latest.lifecycle_id if latest else "",
+                health_state=a.health,
+                reasons=[a.reason],
+                evidence_ids=ids,
+                meta=meta(feature_ref, window),
+            )
+            recommendations = recommend(decision, comp.type, evidence, {})
+        return ComponentHealthReport(
+            decision=decision, evidence=evidence, recommendations=recommendations, is_simulated=sim
         )
-        return ComponentHealthReport(decision=decision, evidence=evidence, is_simulated=sim)
 
 
 def component_type_ref(comp: ComponentInstance) -> str:

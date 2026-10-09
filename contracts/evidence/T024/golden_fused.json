@@ -1,0 +1,1427 @@
+{
+ "is_simulated": true,
+ "rules_version": "pdm-rules@1.0.0+0",
+ "machines": [
+  {
+   "machine_id": "A01",
+   "scenario_id": "S01",
+   "windows": 148,
+   "references": 4,
+   "alarms_raised": 0,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A02",
+   "scenario_id": "S04",
+   "windows": 172,
+   "references": 2,
+   "alarms_raised": 1,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A03",
+   "scenario_id": "S03",
+   "windows": 396,
+   "references": 2,
+   "alarms_raised": 3,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A04",
+   "scenario_id": "S07",
+   "windows": 62,
+   "references": 1,
+   "alarms_raised": 1,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A05",
+   "scenario_id": "S12",
+   "windows": 123,
+   "references": 2,
+   "alarms_raised": 1,
+   "workflows": {
+    "WF-A05-SIM-ME-0001": "NORMAL_MONITORING"
+   }
+  },
+  {
+   "machine_id": "A06",
+   "scenario_id": "S19",
+   "windows": 183,
+   "references": 3,
+   "alarms_raised": 2,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A07",
+   "scenario_id": "S20",
+   "windows": 34,
+   "references": 2,
+   "alarms_raised": 0,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A08",
+   "scenario_id": "S05",
+   "windows": 76,
+   "references": 2,
+   "alarms_raised": 1,
+   "workflows": {}
+  },
+  {
+   "machine_id": "A09",
+   "scenario_id": "S09",
+   "windows": 88,
+   "references": 1,
+   "alarms_raised": 1,
+   "workflows": {
+    "WF-A09-SIM-ME-0001": "NORMAL_MONITORING"
+   }
+  },
+  {
+   "machine_id": "A10",
+   "scenario_id": "S10",
+   "windows": 95,
+   "references": 1,
+   "alarms_raised": 1,
+   "workflows": {
+    "WF-A10-SIM-ME-0001": "REVIEW_REQUIRED"
+   }
+  },
+  {
+   "machine_id": "A11",
+   "scenario_id": "S11",
+   "windows": 136,
+   "references": 1,
+   "alarms_raised": 2,
+   "workflows": {
+    "WF-A11-SIM-ME-0001": "REVIEW_REQUIRED"
+   }
+  }
+ ],
+ "current": [
+  {
+   "machine_id": "A01",
+   "component_id": "A01-BS1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A01",
+   "component_id": "A01-CY1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A01",
+   "component_id": "A01-LM1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A01",
+   "component_id": "A01-VC1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A02",
+   "component_id": "A02-BS1",
+   "health": "CRITICAL",
+   "reason": {
+    "zh": "统计规则 ST-TORQUE：torque_cruise_residual 偏离健康参考 71.42（CRITICAL 阈值 25）",
+    "en": "Statistical rule ST-TORQUE: torque_cruise_residual 71.42 from the healthy reference (CRITICAL threshold 25)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A02",
+   "component_id": "A02-LM1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A03",
+   "component_id": "A03-BS1",
+   "health": "WATCH",
+   "reason": {
+    "zh": "统计规则 ST-TORQUE：torque_cruise_residual 偏离健康参考 9.80（WARNING 阈值 8）；缓慢稳定漂移，符合正常老化（安装 119 天，每天 0.10），最高按“关注”处理",
+    "en": "Statistical rule ST-TORQUE: torque_cruise_residual 9.80 from the healthy reference (WARNING threshold 8); Slow, steady drift consistent with normal aging (119 days installed, 0.10/day); graded WATCH at most"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A03",
+   "component_id": "A03-CY1",
+   "health": "WATCH",
+   "reason": {
+    "zh": "统计规则 ST-EXTEND：extend_residual 偏离健康参考 9.71（WARNING 阈值 8）；缓慢稳定漂移，符合正常老化（安装 120 天，每天 0.08），最高按“关注”处理；统计规则 ST-RETRACT：retract_residual 偏离健康参考 13.95（WARNING 阈值 8）；缓慢稳定漂移，符合正常老化（安装 120 天，每天 0.12），最高按“关注”处理",
+    "en": "Statistical rule ST-EXTEND: extend_residual 9.71 from the healthy reference (WARNING threshold 8); Slow, steady drift consistent with normal aging (120 days installed, 0.08/day); graded WATCH at most; Statistical rule ST-RETRACT: retract_residual 13.95 from the healthy reference (WARNING threshold 8); Slow, steady drift consistent with normal aging (120 days installed, 0.12/day); graded WATCH at most"
+   },
+   "open_alarms": 2
+  },
+  {
+   "machine_id": "A04",
+   "component_id": "A04-CY1",
+   "health": "CRITICAL",
+   "reason": {
+    "zh": "统计规则 ST-EXTEND：extend_residual 偏离健康参考 48.36（CRITICAL 阈值 25）",
+    "en": "Statistical rule ST-EXTEND: extend_residual 48.36 from the healthy reference (CRITICAL threshold 25)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A05",
+   "component_id": "A05-BS1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A06",
+   "component_id": "A06-BS1",
+   "health": "CRITICAL",
+   "reason": {
+    "zh": "统计规则 ST-TORQUE：torque_cruise_residual 偏离健康参考 41.52（CRITICAL 阈值 25）",
+    "en": "Statistical rule ST-TORQUE: torque_cruise_residual 41.52 from the healthy reference (CRITICAL threshold 25)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A06",
+   "component_id": "A06-BS2",
+   "health": "CRITICAL",
+   "reason": {
+    "zh": "统计规则 ST-TORQUE：torque_cruise_residual 偏离健康参考 68.17（CRITICAL 阈值 25）",
+    "en": "Statistical rule ST-TORQUE: torque_cruise_residual 68.17 from the healthy reference (CRITICAL threshold 25)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A06",
+   "component_id": "A06-LM1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A07",
+   "component_id": "A07-BS1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A07",
+   "component_id": "A07-CY1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A08",
+   "component_id": "A08-BS1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 0
+  },
+  {
+   "machine_id": "A08",
+   "component_id": "A08-LM1",
+   "health": "CRITICAL",
+   "reason": {
+    "zh": "统计规则 ST-RIPPLE：speed_ripple 偏离健康参考 17.96（CRITICAL 阈值 25）",
+    "en": "Statistical rule ST-RIPPLE: speed_ripple 17.96 from the healthy reference (CRITICAL threshold 25)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A09",
+   "component_id": "A09-BS1",
+   "health": "NORMAL",
+   "reason": {
+    "zh": "所有规则均在健康参考范围内",
+    "en": "All rules within the verified healthy reference"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A10",
+   "component_id": "A10-BS1",
+   "health": "WARNING",
+   "reason": {
+    "zh": "统计规则 ST-TORQUE：torque_cruise_residual 偏离健康参考 12.73（WARNING 阈值 8）",
+    "en": "Statistical rule ST-TORQUE: torque_cruise_residual 12.73 from the healthy reference (WARNING threshold 8)"
+   },
+   "open_alarms": 1
+  },
+  {
+   "machine_id": "A11",
+   "component_id": "A11-CY1",
+   "health": "WATCH",
+   "reason": {
+    "zh": "统计规则 ST-EXTEND：extend_residual 偏离健康参考 236.40（WATCH 阈值 12）；统计规则 ST-RETRACT：retract_residual 偏离健康参考 5.34（WARNING 阈值 8）；缓慢稳定漂移，符合正常老化（安装 40 天，每天 0.07），最高按“关注”处理",
+    "en": "Statistical rule ST-EXTEND: extend_residual 236.40 from the healthy reference (WATCH threshold 12); Statistical rule ST-RETRACT: retract_residual 5.34 from the healthy reference (WARNING threshold 8); Slow, steady drift consistent with normal aging (40 days installed, 0.07/day); graded WATCH at most"
+   },
+   "open_alarms": 2
+  }
+ ],
+ "golden": [
+  {
+   "case_id": "GC-S01-01",
+   "machine_id": "A01",
+   "scenario_id": "S01",
+   "component_id": "A01-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 336.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 37,
+     "within": 37,
+     "levels": {
+      "NORMAL": 37
+     },
+     "fused_within": 37,
+     "fused_levels": {
+      "NORMAL": 37
+     },
+     "note": {
+      "zh": "全程正常",
+      "en": "Normal throughout"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S01-02",
+   "machine_id": "A01",
+   "scenario_id": "S01",
+   "component_id": "A01-LM1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 336.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 37,
+     "within": 37,
+     "levels": {
+      "NORMAL": 37
+     },
+     "fused_within": 37,
+     "fused_levels": {
+      "NORMAL": 37
+     },
+     "note": {
+      "zh": "全程正常",
+      "en": "Normal throughout"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S01-03",
+   "machine_id": "A01",
+   "scenario_id": "S01",
+   "component_id": "A01-VC1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 336.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 37,
+     "within": 37,
+     "levels": {
+      "NORMAL": 37
+     },
+     "fused_within": 37,
+     "fused_levels": {
+      "NORMAL": 37
+     },
+     "note": {
+      "zh": "全程正常",
+      "en": "Normal throughout"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S01-04",
+   "machine_id": "A01",
+   "scenario_id": "S01",
+   "component_id": "A01-CY1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 336.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 37,
+     "within": 37,
+     "levels": {
+      "NORMAL": 37
+     },
+     "fused_within": 37,
+     "fused_levels": {
+      "NORMAL": 37
+     },
+     "note": {
+      "zh": "全程正常",
+      "en": "Normal throughout"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S04-01",
+   "machine_id": "A02",
+   "scenario_id": "S04",
+   "component_id": "A02-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 240.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 15,
+     "within": 15,
+     "levels": {
+      "NORMAL": 15
+     },
+     "fused_within": 15,
+     "fused_levels": {
+      "NORMAL": 15
+     },
+     "note": {
+      "zh": "漂移前",
+      "en": "Before drift"
+     }
+    },
+    {
+     "start_h": 288.0,
+     "end_h": 528.0,
+     "allowed": [
+      "WATCH",
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 32,
+     "within": 32,
+     "levels": {
+      "CRITICAL": 20,
+      "WARNING": 12
+     },
+     "fused_within": 32,
+     "fused_levels": {
+      "CRITICAL": 20,
+      "WARNING": 12
+     },
+     "note": {
+      "zh": "漂移中",
+      "en": "During drift"
+     }
+    },
+    {
+     "start_h": 528.0,
+     "end_h": 720.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 29,
+     "within": 29,
+     "levels": {
+      "CRITICAL": 29
+     },
+     "fused_within": 29,
+     "fused_levels": {
+      "CRITICAL": 29
+     },
+     "note": {
+      "zh": "漂移充分发展",
+      "en": "Drift fully developed"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S04-02",
+   "machine_id": "A02",
+   "scenario_id": "S04",
+   "component_id": "A02-LM1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 720.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 86,
+     "within": 86,
+     "levels": {
+      "NORMAL": 86
+     },
+     "fused_within": 86,
+     "fused_levels": {
+      "NORMAL": 86
+     },
+     "note": {
+      "zh": "无影响",
+      "en": "Unaffected"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S03-01",
+   "machine_id": "A03",
+   "scenario_id": "S03",
+   "component_id": "A03-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 1440.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 86,
+     "within": 57,
+     "levels": {
+      "NORMAL": 57,
+      "WATCH": 29
+     },
+     "fused_within": 57,
+     "fused_levels": {
+      "NORMAL": 57,
+      "WATCH": 29
+     },
+     "note": {
+      "zh": "老化初期",
+      "en": "Early aging"
+     }
+    },
+    {
+     "start_h": 1440.0,
+     "end_h": 2880.0,
+     "allowed": [
+      "NORMAL",
+      "WATCH"
+     ],
+     "must_abstain": null,
+     "windows": 102,
+     "within": 39,
+     "levels": {
+      "CRITICAL": 4,
+      "WARNING": 59,
+      "WATCH": 39
+     },
+     "fused_within": 101,
+     "fused_levels": {
+      "CRITICAL": 1,
+      "WATCH": 101
+     },
+     "note": {
+      "zh": "老化后期可提示关注",
+      "en": "Late aging may be WATCH"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S03-02",
+   "machine_id": "A03",
+   "scenario_id": "S03",
+   "component_id": "A03-CY1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 1440.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 91,
+     "within": 51,
+     "levels": {
+      "NORMAL": 51,
+      "WATCH": 40
+     },
+     "fused_within": 51,
+     "fused_levels": {
+      "NORMAL": 51,
+      "WATCH": 40
+     },
+     "note": {
+      "zh": "老化初期",
+      "en": "Early aging"
+     }
+    },
+    {
+     "start_h": 1440.0,
+     "end_h": 2880.0,
+     "allowed": [
+      "NORMAL",
+      "WATCH"
+     ],
+     "must_abstain": null,
+     "windows": 107,
+     "within": 25,
+     "levels": {
+      "WARNING": 82,
+      "WATCH": 25
+     },
+     "fused_within": 107,
+     "fused_levels": {
+      "WATCH": 107
+     },
+     "note": {
+      "zh": "老化后期可提示关注",
+      "en": "Late aging may be WATCH"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S07-01",
+   "machine_id": "A04",
+   "scenario_id": "S07",
+   "component_id": "A04-CY1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 168.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 11,
+     "within": 11,
+     "levels": {
+      "NORMAL": 11
+     },
+     "fused_within": 11,
+     "fused_levels": {
+      "NORMAL": 11
+     },
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 216.0,
+     "end_h": 360.0,
+     "allowed": [
+      "WATCH",
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 21,
+     "within": 21,
+     "levels": {
+      "CRITICAL": 10,
+      "WARNING": 11
+     },
+     "fused_within": 21,
+     "fused_levels": {
+      "CRITICAL": 10,
+      "WARNING": 11
+     },
+     "note": {
+      "zh": "变慢中",
+      "en": "Slowing down"
+     }
+    },
+    {
+     "start_h": 360.0,
+     "end_h": 504.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 24,
+     "within": 24,
+     "levels": {
+      "CRITICAL": 24
+     },
+     "fused_within": 24,
+     "fused_levels": {
+      "CRITICAL": 24
+     },
+     "note": {
+      "zh": "明显变慢",
+      "en": "Clearly slower"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S12-01",
+   "machine_id": "A05",
+   "scenario_id": "S12",
+   "component_id": "A05-BS1",
+   "spans": [
+    {
+     "start_h": 336.0,
+     "end_h": 504.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 19,
+     "within": 5,
+     "levels": {
+      "WARNING": 5,
+      "WATCH": 14
+     },
+     "fused_within": 5,
+     "fused_levels": {
+      "WARNING": 5,
+      "WATCH": 14
+     },
+     "note": {
+      "zh": "更换前劣化",
+      "en": "Degraded before replacement"
+     }
+    },
+    {
+     "start_h": 504.0,
+     "end_h": 576.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 10,
+     "within": 0,
+     "levels": {
+      "NORMAL": 10
+     },
+     "fused_within": 0,
+     "fused_levels": {
+      "NORMAL": 10
+     },
+     "note": {
+      "zh": "新件无基线",
+      "en": "New part without baseline"
+     }
+    },
+    {
+     "start_h": 672.0,
+     "end_h": 960.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 38,
+     "within": 38,
+     "levels": {
+      "NORMAL": 38
+     },
+     "fused_within": 38,
+     "fused_levels": {
+      "NORMAL": 38
+     },
+     "note": {
+      "zh": "新件正常",
+      "en": "New part normal"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S19-01",
+   "machine_id": "A06",
+   "scenario_id": "S19",
+   "component_id": "A06-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 168.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 9,
+     "within": 9,
+     "levels": {
+      "NORMAL": 9
+     },
+     "fused_within": 9,
+     "fused_levels": {
+      "NORMAL": 9
+     },
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 216.0,
+     "end_h": 360.0,
+     "allowed": [
+      "WATCH",
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 19,
+     "within": 19,
+     "levels": {
+      "CRITICAL": 8,
+      "WARNING": 10,
+      "WATCH": 1
+     },
+     "fused_within": 19,
+     "fused_levels": {
+      "CRITICAL": 8,
+      "WARNING": 10,
+      "WATCH": 1
+     },
+     "note": {
+      "zh": "上升中",
+      "en": "Rising"
+     }
+    },
+    {
+     "start_h": 360.0,
+     "end_h": 504.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 20,
+     "within": 20,
+     "levels": {
+      "CRITICAL": 20
+     },
+     "fused_within": 20,
+     "fused_levels": {
+      "CRITICAL": 20
+     },
+     "note": {
+      "zh": "明显异常",
+      "en": "Clearly abnormal"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S19-02",
+   "machine_id": "A06",
+   "scenario_id": "S19",
+   "component_id": "A06-BS2",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 168.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 10,
+     "within": 10,
+     "levels": {
+      "NORMAL": 10
+     },
+     "fused_within": 10,
+     "fused_levels": {
+      "NORMAL": 10
+     },
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 216.0,
+     "end_h": 360.0,
+     "allowed": [
+      "WATCH",
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 21,
+     "within": 21,
+     "levels": {
+      "CRITICAL": 12,
+      "WARNING": 9
+     },
+     "fused_within": 21,
+     "fused_levels": {
+      "CRITICAL": 12,
+      "WARNING": 9
+     },
+     "note": {
+      "zh": "上升中",
+      "en": "Rising"
+     }
+    },
+    {
+     "start_h": 360.0,
+     "end_h": 504.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 20,
+     "within": 20,
+     "levels": {
+      "CRITICAL": 20
+     },
+     "fused_within": 20,
+     "fused_levels": {
+      "CRITICAL": 20
+     },
+     "note": {
+      "zh": "明显异常",
+      "en": "Clearly abnormal"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S19-03",
+   "machine_id": "A06",
+   "scenario_id": "S19",
+   "component_id": "A06-LM1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 504.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 61,
+     "within": 61,
+     "levels": {
+      "NORMAL": 61
+     },
+     "fused_within": 61,
+     "fused_levels": {
+      "NORMAL": 61
+     },
+     "note": {
+      "zh": "无影响",
+      "en": "Unaffected"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S20-01",
+   "machine_id": "A07",
+   "scenario_id": "S20",
+   "component_id": "A07-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 72.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 0,
+     "within": 0,
+     "levels": {},
+     "fused_within": 0,
+     "fused_levels": {},
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 72.0,
+     "end_h": 120.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 0,
+     "within": 0,
+     "levels": {},
+     "fused_within": 0,
+     "fused_levels": {},
+     "note": {
+      "zh": "中断",
+      "en": "Interrupted"
+     }
+    },
+    {
+     "start_h": 124.80000000000001,
+     "end_h": 240.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 14,
+     "within": 14,
+     "levels": {
+      "NORMAL": 14
+     },
+     "fused_within": 14,
+     "fused_levels": {
+      "NORMAL": 14
+     },
+     "note": {
+      "zh": "恢复",
+      "en": "Recovered"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S20-02",
+   "machine_id": "A07",
+   "scenario_id": "S20",
+   "component_id": "A07-CY1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 72.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 0,
+     "within": 0,
+     "levels": {},
+     "fused_within": 0,
+     "fused_levels": {},
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 72.0,
+     "end_h": 120.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 0,
+     "within": 0,
+     "levels": {},
+     "fused_within": 0,
+     "fused_levels": {},
+     "note": {
+      "zh": "中断",
+      "en": "Interrupted"
+     }
+    },
+    {
+     "start_h": 124.80000000000001,
+     "end_h": 240.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 17,
+     "within": 17,
+     "levels": {
+      "NORMAL": 17
+     },
+     "fused_within": 17,
+     "fused_levels": {
+      "NORMAL": 17
+     },
+     "note": {
+      "zh": "恢复",
+      "en": "Recovered"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S05-01",
+   "machine_id": "A08",
+   "scenario_id": "S05",
+   "component_id": "A08-LM1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 168.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 12,
+     "within": 12,
+     "levels": {
+      "NORMAL": 12
+     },
+     "fused_within": 12,
+     "fused_levels": {
+      "NORMAL": 12
+     },
+     "note": {
+      "zh": "正常",
+      "en": "Normal"
+     }
+    },
+    {
+     "start_h": 192.0,
+     "end_h": 336.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 22,
+     "within": 22,
+     "levels": {
+      "CRITICAL": 22
+     },
+     "fused_within": 22,
+     "fused_levels": {
+      "CRITICAL": 22
+     },
+     "note": {
+      "zh": "波动增大",
+      "en": "Ripple increased"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S05-02",
+   "machine_id": "A08",
+   "scenario_id": "S05",
+   "component_id": "A08-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 336.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 35,
+     "within": 35,
+     "levels": {
+      "NORMAL": 35
+     },
+     "fused_within": 35,
+     "fused_levels": {
+      "NORMAL": 35
+     },
+     "note": {
+      "zh": "无影响",
+      "en": "Unaffected"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S09-01",
+   "machine_id": "A09",
+   "scenario_id": "S09",
+   "component_id": "A09-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 144.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 6,
+     "within": 6,
+     "levels": {
+      "NORMAL": 6
+     },
+     "fused_within": 6,
+     "fused_levels": {
+      "NORMAL": 6
+     },
+     "note": {
+      "zh": "润滑良好",
+      "en": "Well lubricated"
+     }
+    },
+    {
+     "start_h": 240.0,
+     "end_h": 360.0,
+     "allowed": [
+      "WATCH",
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 15,
+     "within": 14,
+     "levels": {
+      "NORMAL": 1,
+      "WARNING": 5,
+      "WATCH": 9
+     },
+     "fused_within": 14,
+     "fused_levels": {
+      "NORMAL": 1,
+      "WARNING": 5,
+      "WATCH": 9
+     },
+     "note": {
+      "zh": "润滑不足",
+      "en": "Under-lubricated"
+     }
+    },
+    {
+     "start_h": 360.0,
+     "end_h": 384.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 3,
+     "within": 0,
+     "levels": {
+      "WARNING": 3
+     },
+     "fused_within": 0,
+     "fused_levels": {
+      "WARNING": 3
+     },
+     "note": {
+      "zh": "稳定期",
+      "en": "Stabilization"
+     }
+    },
+    {
+     "start_h": 408.0,
+     "end_h": 720.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 44,
+     "within": 40,
+     "levels": {
+      "NORMAL": 40,
+      "WATCH": 4
+     },
+     "fused_within": 40,
+     "fused_levels": {
+      "NORMAL": 40,
+      "WATCH": 4
+     },
+     "note": {
+      "zh": "润滑后正常",
+      "en": "Normal after lubrication"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S10-01",
+   "machine_id": "A10",
+   "scenario_id": "S10",
+   "component_id": "A10-BS1",
+   "spans": [
+    {
+     "start_h": 0.0,
+     "end_h": 360.0,
+     "allowed": [
+      "NORMAL"
+     ],
+     "must_abstain": null,
+     "windows": 39,
+     "within": 39,
+     "levels": {
+      "NORMAL": 39
+     },
+     "fused_within": 39,
+     "fused_levels": {
+      "NORMAL": 39
+     },
+     "note": {
+      "zh": "维护前正常",
+      "en": "Normal before maintenance"
+     }
+    },
+    {
+     "start_h": 360.0,
+     "end_h": 384.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 3,
+     "within": 0,
+     "levels": {
+      "CRITICAL": 1,
+      "NORMAL": 1,
+      "WARNING": 1
+     },
+     "fused_within": 0,
+     "fused_levels": {
+      "CRITICAL": 1,
+      "NORMAL": 1,
+      "WARNING": 1
+     },
+     "note": {
+      "zh": "稳定期",
+      "en": "Stabilization"
+     }
+    },
+    {
+     "start_h": 408.0,
+     "end_h": 720.0,
+     "allowed": [
+      "WATCH",
+      "WARNING"
+     ],
+     "must_abstain": null,
+     "windows": 44,
+     "within": 22,
+     "levels": {
+      "CRITICAL": 22,
+      "WARNING": 22
+     },
+     "fused_within": 22,
+     "fused_levels": {
+      "CRITICAL": 22,
+      "WARNING": 22
+     },
+     "note": {
+      "zh": "维护后变差",
+      "en": "Worse after maintenance"
+     }
+    }
+   ]
+  },
+  {
+   "case_id": "GC-S11-01",
+   "machine_id": "A11",
+   "scenario_id": "S11",
+   "component_id": "A11-CY1",
+   "spans": [
+    {
+     "start_h": 336.0,
+     "end_h": 504.0,
+     "allowed": [
+      "WARNING",
+      "CRITICAL"
+     ],
+     "must_abstain": null,
+     "windows": 26,
+     "within": 26,
+     "levels": {
+      "WARNING": 26
+     },
+     "fused_within": 26,
+     "fused_levels": {
+      "WARNING": 26
+     },
+     "note": {
+      "zh": "维修前劣化",
+      "en": "Degraded before repair"
+     }
+    },
+    {
+     "start_h": 504.0,
+     "end_h": 528.0,
+     "allowed": [
+      "UNKNOWN"
+     ],
+     "must_abstain": "INSUFFICIENT_DATA",
+     "windows": 3,
+     "within": 0,
+     "levels": {
+      "WARNING": 3
+     },
+     "fused_within": 0,
+     "fused_levels": {
+      "WARNING": 3
+     },
+     "note": {
+      "zh": "稳定期",
+      "en": "Stabilization"
+     }
+    },
+    {
+     "start_h": 552.0,
+     "end_h": 960.0,
+     "allowed": [
+      "WATCH"
+     ],
+     "must_abstain": null,
+     "windows": 67,
+     "within": 60,
+     "levels": {
+      "WARNING": 7,
+      "WATCH": 60
+     },
+     "fused_within": 67,
+     "fused_levels": {
+      "WATCH": 67
+     },
+     "note": {
+      "zh": "部分恢复",
+      "en": "Partially recovered"
+     }
+    }
+   ]
+  }
+ ]
+}
