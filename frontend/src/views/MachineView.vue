@@ -52,8 +52,8 @@ function selectComponent(id: string) {
       <p class="sub">
         {{
           t('machine.snapshot', {
-            scenario: lt(machine.scenario_title),
-            time: fmtDate(machine.snapshot_at),
+            source: machine.line ?? '',
+            time: machine.as_of ? fmtDate(machine.as_of) : '',
           })
         }}
       </p>

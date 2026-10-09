@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import fleetJson from '@data/fixtures/demo_fleet.json'
 import type { Fleet } from '@/api/fleet'
 import MachineMap from '@/components/fleet/MachineMap.vue'
@@ -62,8 +62,48 @@ describe('machine map', () => {
   })
 })
 
+/** The T007 fixture in the shape of GET /api/fleet (T020). */
+function apiFleet() {
+  const src = fleetJson as unknown as {
+    machines: {
+      machine_id: string
+      name: unknown
+      scenario_id: string
+      snapshot_at: string
+      components: Record<string, unknown>[]
+    }[]
+  }
+  return {
+    is_simulated: true,
+    rules_version: 'pdm-rules@1.0.0+settings.0',
+    health_basis: { zh: '规则计算（模拟数据）', en: 'Computed by the rules (simulated data)' },
+    machines: src.machines.map((m) => ({
+      machine_id: m.machine_id,
+      name: m.name,
+      line: `SIM-${m.scenario_id}`,
+      as_of: m.snapshot_at,
+      is_simulated: true,
+      components: m.components.map((c) => ({
+        ...c,
+        machine_id: m.machine_id,
+        last_window_end: m.snapshot_at,
+        open_alarms: 0,
+        trend: [],
+        is_simulated: true,
+      })),
+    })),
+  }
+}
+
+afterEach(() => vi.unstubAllGlobals())
+
 describe('overview', () => {
-  it('lists every simulated machine and labels the health basis', async () => {
+  it('lists every simulated machine from the fleet API and labels the health basis', async () => {
+    const calls: string[] = []
+    vi.stubGlobal('fetch', async (url: string) => {
+      calls.push(url)
+      return new Response(JSON.stringify(apiFleet()), { status: 200 })
+    })
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/:p(.*)*', component: { template: '<div />' } }],
@@ -73,6 +113,7 @@ describe('overview', () => {
     await flushPromises()
     const tiles = w.findAll('[data-machine]').map((t) => t.attributes('data-machine'))
     expect([...tiles].sort()).toEqual(fleet.machines.map((m) => m.machine_id).sort())
-    expect(w.find('[data-testid="demo-notice"]').text()).toContain('Golden Case')
+    expect(calls).toEqual(['/api/fleet'])
+    expect(w.find('[data-testid="demo-notice"]').text()).toContain('规则计算')
   })
 })

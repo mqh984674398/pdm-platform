@@ -6,8 +6,10 @@ import type {
   Alarm,
   ApiError,
   Baseline,
+  ComponentHealthReport,
   ComponentInstance,
   DegradationHistory,
+  FleetOverview,
   Machine,
   MaintenanceEvent,
   MaintenanceWorkflow,
@@ -36,7 +38,7 @@ function url(path: string, query?: Query): string {
   return qs ? `${path}?${qs}` : path
 }
 
-export function createMonitoringApi(fetchImpl: typeof fetch = fetch.bind(globalThis)) {
+export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(...a)) {
   const headers = { 'X-PDM-User': UI_USER.user, 'X-PDM-Role': UI_USER.role }
 
   async function call<T>(path: string, init: RequestInit = {}, query?: Query): Promise<T> {
@@ -53,6 +55,9 @@ export function createMonitoringApi(fetchImpl: typeof fetch = fetch.bind(globalT
 
   return {
     signalConfig: () => call<SignalConfigState>('/api/signal-config'),
+    fleet: () => call<FleetOverview>('/api/fleet'),
+    health: (componentId: string) =>
+      call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),
     machines: () => call<Machine[]>('/api/machines'),
     components: (machineId: string) =>
       call<ComponentInstance[]>(`/api/machines/${encodeURIComponent(machineId)}/components`),

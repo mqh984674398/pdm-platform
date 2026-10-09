@@ -848,6 +848,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/fleet': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Fleet Overview */
+    get: operations['fleet_overview_api_fleet_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/health': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Component Health */
+    get: operations['component_health_api_components__component_id__health_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1266,6 +1300,17 @@ export interface components {
        * @default null
        */
       last_maintenance_at: string | null
+    }
+    /**
+     * ComponentHealthReport
+     * @description Current health decision of a component with its evidence trail (L6-04).
+     */
+    ComponentHealthReport: {
+      decision: components['schemas']['Decision']
+      /** Evidence */
+      evidence: components['schemas']['Evidence'][]
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /** ComponentInstance */
     ComponentInstance: {
@@ -1970,6 +2015,65 @@ export interface components {
       /** Flags */
       flags: components['schemas']['QualityFlag'][]
     }
+    /**
+     * FleetComponent
+     * @description One component on the dashboard: its current health output and what it is based on (UI-02/03).
+     */
+    FleetComponent: {
+      /** Component Id */
+      component_id: string
+      /** Machine Id */
+      machine_id: string
+      type: components['schemas']['ComponentType']
+      name: components['schemas']['LocalizedText']
+      /** Drive Chain Id */
+      drive_chain_id: string | null
+      health: components['schemas']['HealthState']
+      reason: components['schemas']['LocalizedText']
+      /** Lifecycle Id */
+      lifecycle_id: string | null
+      /** Last Window End */
+      last_window_end: string | null
+      /** Open Alarms */
+      open_alarms: number
+      /** Lifecycles */
+      lifecycles: components['schemas']['ComponentLifecycle'][]
+      /** Maintenance */
+      maintenance: components['schemas']['MaintenanceEvent'][]
+      /** Signals */
+      signals: components['schemas']['SignalDefinition'][]
+      /** Trend */
+      trend: components['schemas']['HealthTrend'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** FleetMachine */
+    FleetMachine: {
+      /** Machine Id */
+      machine_id: string
+      name: components['schemas']['LocalizedText']
+      /** Line */
+      line: string | null
+      /**
+       * As Of
+       * @description Newest evaluated window of the machine
+       */
+      as_of: string | null
+      /** Components */
+      components: components['schemas']['FleetComponent'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** FleetOverview */
+    FleetOverview: {
+      /** Machines */
+      machines: components['schemas']['FleetMachine'][]
+      health_basis: components['schemas']['LocalizedText']
+      /** Rules Version */
+      rules_version: string
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -1992,6 +2096,30 @@ export interface components {
      * @enum {string}
      */
     HealthState: 'NORMAL' | 'WATCH' | 'WARNING' | 'CRITICAL' | 'UNKNOWN'
+    /**
+     * HealthTrend
+     * @description Persistent deviation of one statistical rule from the verified healthy reference, per window.
+     */
+    HealthTrend: {
+      /** Rule Id */
+      rule_id: string
+      name: components['schemas']['LocalizedText']
+      /** Feature */
+      feature: string
+      /**
+       * Unit
+       * @default deviation
+       */
+      unit: string
+      /** Watch */
+      watch: number | null
+      /** Warning */
+      warning: number | null
+      /** Critical */
+      critical: number | null
+      /** Points */
+      points: components['schemas']['TrendPoint'][]
+    }
     /** ImpactConfig */
     ImpactConfig: {
       /**
@@ -2932,6 +3060,12 @@ export interface components {
       value: number
       /** Threshold */
       threshold: number
+      /**
+       * Basis
+       * @description What value is: 'persistent' (median deviation), 'cusum' (CUSUM statistic, threshold cusum_h) or 'raw' (safety rules). When value is below threshold the level is held (hysteresis).
+       * @default persistent
+       */
+      basis: string
     }
     /**
      * RuleKind
@@ -3476,6 +3610,16 @@ export interface components {
        * Format: date-time
        */
       end: string
+    }
+    /** TrendPoint */
+    TrendPoint: {
+      /**
+       * Ts
+       * Format: date-time
+       */
+      ts: string
+      /** Value */
+      value: number
     }
     /**
      * UnitConversion
@@ -5812,6 +5956,72 @@ export interface operations {
         }
         content: {
           'application/json': unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  fleet_overview_api_fleet_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FleetOverview']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  component_health_api_components__component_id__health_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentHealthReport']
         }
       }
       /** @description Validation Error */

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test('overview to machine map to component history', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('[data-machine]')).toHaveCount(8)
+  await expect(page.locator('[data-machine]')).toHaveCount(11)
   await expect(page.getByTestId('demo-notice')).toBeVisible()
 
   await page.locator('[data-machine="A02"]').click()

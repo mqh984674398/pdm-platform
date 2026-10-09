@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { getFleet, type Fleet, type FleetMachine } from '@/api/fleet'
+import { getFleet, refreshFleet, type Fleet, type FleetMachine } from '@/api/fleet'
 import { HEALTH_RANK, worstHealth } from '@/theme/health'
 
 const fleet = ref<Fleet | null>(null)
@@ -10,14 +10,19 @@ export function machineHealth(m: FleetMachine) {
   return worstHealth(m.components.map((c) => c.health))
 }
 
-export function useFleet() {
-  loading ??= getFleet()
+function load(p: Promise<Fleet>): Promise<void> {
+  return p
     .then((f) => {
       fleet.value = f
+      error.value = null
     })
     .catch((e) => {
       error.value = e
     })
+}
+
+export function useFleet() {
+  loading ??= load(getFleet())
   const machines = computed(() =>
     [...(fleet.value?.machines ?? [])].sort(
       (a, b) =>
@@ -34,5 +39,7 @@ export function useFleet() {
     }
     return null
   }
-  return { fleet, machines, error, ready: () => loading!, findMachine, findComponent }
+  /** Fetch the overview again (health is recomputed by the backend). */
+  const reload = () => (loading = load(refreshFleet()))
+  return { fleet, machines, error, ready: () => loading!, reload, findMachine, findComponent }
 }

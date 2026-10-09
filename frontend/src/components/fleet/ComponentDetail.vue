@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
-import type { FleetComponent } from '@/api/fleet'
+import type { FleetComponent, HealthTrend } from '@/api/fleet'
 import HealthBadge from '@/components/base/HealthBadge.vue'
 import { useLocalized } from '@/composables/useLocalized'
 import TrendSparkline from './TrendSparkline.vue'
@@ -10,17 +10,8 @@ defineProps<{ component: FleetComponent; compact?: boolean }>()
 const { t } = useI18n()
 const { lt, fmtDate } = useLocalized()
 
-function signalName(c: FleetComponent, id: string) {
-  return lt(c.signals.find((s) => s.signal_id === id)?.name)
-}
-function last(points: [string, number][]) {
-  return points[points.length - 1]?.[1]
-}
-function fmt(v: number | undefined, unit: string) {
-  if (v === undefined) return ''
-  return unit === 's'
-    ? `${(v * 1000).toFixed(0)} ms`
-    : `${v.toFixed(2)} ${unit === '%' ? '%' : unit}`
+function last(tr: HealthTrend) {
+  return tr.points[tr.points.length - 1]?.value
 }
 </script>
 
@@ -33,18 +24,29 @@ function fmt(v: number | undefined, unit: string) {
       </div>
       <HealthBadge :state="component.health" />
     </header>
-    <p class="reason">{{ lt(component.reason) }}</p>
+    <p class="reason" data-testid="health-reason">{{ lt(component.reason) }}</p>
+    <RouterLink
+      v-if="component.open_alarms"
+      :to="`/alarms?c=${component.component_id}`"
+      class="alarms"
+      data-testid="open-alarms"
+      >{{ t('component.openAlarms', { n: component.open_alarms }) }}</RouterLink
+    >
 
     <section v-if="component.trend.length">
       <h3>{{ t('component.trend') }}</h3>
-      <div v-for="tr in component.trend" :key="tr.signal_id" class="trend">
+      <div v-for="tr in component.trend" :key="tr.rule_id" class="trend" :data-trend="tr.rule_id">
         <div class="trend-head">
-          <span>{{ signalName(component, tr.signal_id) }}</span>
-          <span class="value">{{ fmt(last(tr.points), tr.unit) }}</span>
+          <span>{{ lt(tr.name) }}</span>
+          <span class="value">{{ last(tr)?.toFixed(1) }}</span>
         </div>
-        <TrendSparkline :points="tr.points" :label="signalName(component, tr.signal_id)" />
+        <TrendSparkline
+          :points="tr.points.map((p) => [p.ts, p.value] as [string, number])"
+          :label="lt(tr.name)"
+          :thresholds="[tr.watch, tr.warning].filter((x): x is number => x !== null)"
+        />
       </div>
-      <p class="note">{{ t('component.bandNote', { regime: component.trend_regime ?? '' }) }}</p>
+      <p class="note">{{ t('component.bandNote') }}</p>
     </section>
     <p v-else class="empty">{{ t('component.noTelemetry') }}</p>
 
@@ -99,6 +101,9 @@ h3 {
   font-size: var(--text-sm);
   color: var(--ink-soft);
   margin-bottom: var(--space-2);
+}
+.alarms {
+  font-size: var(--text-sm);
 }
 .reason {
   padding: var(--space-3);

@@ -32,7 +32,7 @@ const attention = computed(() =>
     <div class="head">
       <div>
         <h3>{{ lt(machine.name) }}</h3>
-        <p class="sub">{{ lt(machine.scenario_title) }}</p>
+        <p class="sub">{{ machine.line }}</p>
       </div>
       <HealthBadge :state="worst" />
     </div>
@@ -55,7 +55,7 @@ const attention = computed(() =>
         t('overview.attention', { n: attention.length })
       }}</template>
       <template v-else>{{ t('overview.noAttention') }}</template>
-      <span class="time">{{ fmtDate(machine.snapshot_at) }}</span>
+      <span v-if="machine.as_of" class="time">{{ fmtDate(machine.as_of) }}</span>
     </p>
   </RouterLink>
 </template>

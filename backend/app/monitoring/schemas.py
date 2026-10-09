@@ -346,6 +346,11 @@ class RuleHit(ContractModel):
     feature: str
     value: float = Field(description="Persistent deviation (STATISTICAL) or raw value (SAFETY)")
     threshold: float
+    basis: str = Field(
+        default="persistent",
+        description="What value is: 'persistent' (median deviation), 'cusum' (CUSUM statistic, threshold "
+        "cusum_h) or 'raw' (safety rules). When value is below threshold the level is held (hysteresis).",
+    )
 
 
 class WindowEvaluation(ContractModel):

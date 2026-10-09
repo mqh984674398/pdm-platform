@@ -1,4 +1,4 @@
-"""Run the API against the simulated Studio source with a fresh demo database (T011).
+"""Run the API against simulated sources with a fresh demo database (T011, T019, T020).
 
 Used by the frontend end-to-end tests and for local demos. It never touches a configured production
 database: the database is a new SQLite file, recreated on every start.
@@ -64,6 +64,11 @@ def main() -> None:
         max_rows=2_000_000,
     )
     sources.add(bench, SimulatedAdapter(bench_dir, "sim-bench"))
+    # T020: the SIMULATED demo fleet, replayed through features, rules, alarms and workflows
+    from app.simulation.demo_pipeline import add_demo_source, demo_machines, run_pipeline
+
+    fleet = demo_machines(DATA)
+    add_demo_source(sources, fleet)
     seed = Principal(user_id="demo-seed", role=Role.ADMIN)
     with Session(get_engine()) as session:
         registry = TemplateRegistry(session)
@@ -102,6 +107,8 @@ def main() -> None:
             seed,
         )
         session.commit()
+        for r in run_pipeline(session, sources, fleet):
+            print(f"demo {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms, {r.workflows}")
 
     from app.main import create_app
 

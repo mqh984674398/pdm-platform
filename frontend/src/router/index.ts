@@ -4,6 +4,7 @@ import {
   createWebHistory,
   type RouteRecordRaw,
 } from 'vue-router'
+import AlarmsView from '@/views/AlarmsView.vue'
 import AnalysisView from '@/views/AnalysisView.vue'
 import BaselinesView from '@/views/BaselinesView.vue'
 import ComponentView from '@/views/ComponentView.vue'
@@ -24,6 +25,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   analysis: { component: AnalysisView },
   baselines: { component: BaselinesView },
   maintenance: { component: MaintenanceView },
+  alarms: { component: AlarmsView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {

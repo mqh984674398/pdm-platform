@@ -81,6 +81,8 @@ def evaluate(
         z: dict[str, list[float]] = {rid: [] for rid in chosen}
         held: dict[str, list[MonitoringLevel]] = {r.rule_id: [] for r in active}
         last_hit: dict[str, RuleHit] = {}
+        cus_state: dict[str, float] = {}
+        ew_state: dict[str, float] = {}
         for v in vs:
             hits, stats, missing = [], {}, []
 
@@ -105,19 +107,18 @@ def evaluate(
                         continue
                     zs = z[r.rule_id]
                     zs.append(deviation(x, st))
-                    persistent = running_median(zs, rules.persistence)[-1]
-                    cus = cusum_upper(zs, rules.cusum_k)[-1]
-                    stats |= {
-                        f"{r.rule_id}:z": zs[-1],
-                        f"{r.rule_id}:ewma": ewma(zs, rules.ewma_lambda)[-1],
-                        f"{r.rule_id}:cusum": cus,
-                    }
-                    lvl, value = L.NORMAL, persistent if persistent is not None else 0.0
+                    # one step of each sequential statistic (same values as over the whole series)
+                    persistent = running_median(zs[-rules.persistence :], rules.persistence)[-1]
+                    cus = cusum_upper([zs[-1]], rules.cusum_k, cus_state.get(r.rule_id, 0.0))[-1]
+                    ew = ewma([zs[-1]], rules.ewma_lambda, ew_state.get(r.rule_id, 0.0))[-1]
+                    cus_state[r.rule_id], ew_state[r.rule_id] = cus, ew
+                    stats |= {f"{r.rule_id}:z": zs[-1], f"{r.rule_id}:ewma": ew, f"{r.rule_id}:cusum": cus}
+                    lvl, value, basis = L.NORMAL, persistent if persistent is not None else 0.0, "persistent"
                     if persistent is not None:
                         stats[f"{r.rule_id}:persistent"] = persistent
                         lvl = level_for(persistent, r)
                     if lvl == L.NORMAL and cus >= rules.cusum_h:
-                        lvl, value = L.WATCH, cus
+                        lvl, value, basis = L.WATCH, cus, "cusum"
                     feature = f
                 else:
                     if r.rule_id == "SF-TORQUE-LIMIT":
@@ -140,7 +141,7 @@ def evaluate(
                                 hits.append(last_hit[r.rule_id])
                             continue
                         value, feature = max(present)
-                    lvl = level_for(value, r)
+                    lvl, basis = level_for(value, r), "raw"
                 held[r.rule_id].append(lvl)
                 final = _held(held[r.rule_id], rules.hold)
                 last_hit.pop(r.rule_id, None)
@@ -151,7 +152,10 @@ def evaluate(
                         level=final,
                         feature=feature,
                         value=value,
-                        threshold=_threshold(r, final),
+                        threshold=rules.cusum_h
+                        if basis == "cusum" and final == L.WATCH
+                        else _threshold(r, final),
+                        basis=basis,
                     )
                     hits.append(last_hit[r.rule_id])
             level = max((h.level for h in hits), key=ORDER.index, default=L.NORMAL)

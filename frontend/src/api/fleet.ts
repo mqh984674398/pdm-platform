@@ -1,56 +1,29 @@
 /**
- * Fleet view model for the dashboard demo. Until the backend health APIs exist (T020), data comes
- * from the simulated fixture Data/fixtures/demo_fleet.json. Shapes reuse generated contract types.
+ * Fleet health from the backend (T020): GET /api/fleet computes each component's health from stored
+ * features, verified references and the rules. Shapes are the generated contract types.
  */
-import type {
-  ComponentLifecycle,
-  ComponentType,
-  HealthState,
-  LocalizedText,
-  MaintenanceEvent,
-  SignalDefinition,
-} from './contracts'
+import type { components } from './generated'
+import { monitoringApi } from './monitoring'
 
-export interface TrendSeries {
-  signal_id: string
-  unit: string
-  points: [string, number][]
-}
-
-export interface FleetComponent {
-  component_id: string
-  source_component_id: string | null
-  type: ComponentType
-  name: LocalizedText
-  drive_chain_id: string | null
-  health: HealthState
-  reason: LocalizedText
-  lifecycle_id: string | null
-  lifecycles: ComponentLifecycle[]
-  maintenance: MaintenanceEvent[]
-  signals: SignalDefinition[]
-  trend_regime?: string
-  trend: TrendSeries[]
-}
-
-export interface FleetMachine {
-  machine_id: string
-  name: LocalizedText
-  scenario_id: string
-  scenario_title: LocalizedText
-  snapshot_at: string
-  components: FleetComponent[]
-}
-
-export interface Fleet {
-  is_simulated: boolean
-  health_basis: LocalizedText
-  machines: FleetMachine[]
-}
+type S = components['schemas']
+export type Fleet = S['FleetOverview']
+export type FleetMachine = S['FleetMachine']
+export type FleetComponent = S['FleetComponent']
+export type HealthTrend = S['HealthTrend']
+export type ComponentHealthReport = S['ComponentHealthReport']
 
 let cache: Promise<Fleet> | null = null
 
 export function getFleet(): Promise<Fleet> {
-  cache ??= import('@data/fixtures/demo_fleet.json').then((m) => m.default as unknown as Fleet)
+  cache ??= monitoringApi.fleet().catch((e) => {
+    cache = null // a later visit retries
+    throw e
+  })
   return cache
+}
+
+/** Forget the cached overview, e.g. after an alarm was acknowledged or resolved. */
+export function refreshFleet(): Promise<Fleet> {
+  cache = null
+  return getFleet()
 }

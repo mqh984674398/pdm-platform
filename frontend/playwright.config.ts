@@ -20,7 +20,7 @@ export default defineConfig({
       command: `${python} ../backend/scripts/demo_server.py --db test-results/e2e-demo.db --port ${API_PORT}`,
       url: `http://127.0.0.1:${API_PORT}/api/health`,
       reuseExistingServer: false,
-      timeout: 60_000,
+      timeout: 180_000,
     },
     {
       command: 'npm run preview',

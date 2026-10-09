@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-/** History sparkline with the early-period reference band (first 20% of points). */
-const props = defineProps<{ points: [string, number][]; label: string }>()
+/**
+ * History sparkline. With ``thresholds`` (T020: deviation from the verified reference) it draws them
+ * as dashed lines; without, the early-period band (first 20% of points) as before.
+ */
+const props = defineProps<{ points: [string, number][]; label: string; thresholds?: number[] }>()
 const W = 320
 const H = 72
 const geo = computed(() => {
   const ys = props.points.map((p) => p[1])
   if (ys.length < 2) return null
-  const min = Math.min(...ys)
-  const max = Math.max(...ys)
+  const marks = props.thresholds ?? []
+  const min = Math.min(...ys, ...(marks.length ? [0] : []))
+  const max = Math.max(...ys, ...marks)
   const pad = (max - min) * 0.12 || Math.abs(max) * 0.05 || 1
   const lo = min - pad
   const hi = max + pad
@@ -20,7 +24,10 @@ const geo = computed(() => {
   const sd = Math.sqrt(ref.reduce((a, b) => a + (b - mean) ** 2, 0) / ref.length)
   return {
     line: ys.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' '),
-    band: { y: y(mean + 2 * sd), h: Math.max(1, y(mean - 2 * sd) - y(mean + 2 * sd)) },
+    band: marks.length
+      ? null
+      : { y: y(mean + 2 * sd), h: Math.max(1, y(mean - 2 * sd) - y(mean + 2 * sd)) },
+    marks: marks.map((m) => y(m)),
     last: { x: x(ys.length - 1), y: y(ys[ys.length - 1]) },
   }
 })
@@ -35,7 +42,17 @@ const geo = computed(() => {
     :aria-label="label"
     preserveAspectRatio="none"
   >
-    <rect x="0" :y="geo.band.y" :width="W" :height="geo.band.h" class="band" />
+    <rect v-if="geo.band" x="0" :y="geo.band.y" :width="W" :height="geo.band.h" class="band" />
+    <line
+      v-for="(my, i) in geo.marks"
+      :key="i"
+      x1="0"
+      :x2="W"
+      :y1="my"
+      :y2="my"
+      class="mark"
+      vector-effect="non-scaling-stroke"
+    />
     <polyline :points="geo.line" class="line" vector-effect="non-scaling-stroke" />
     <circle :cx="geo.last.x" :cy="geo.last.y" r="3" class="dot" />
   </svg>
@@ -55,6 +72,11 @@ const geo = computed(() => {
   fill: none;
   stroke: var(--accent);
   stroke-width: 1.6;
+}
+.mark {
+  stroke: var(--ink-faint);
+  stroke-dasharray: 4 3;
+  stroke-width: 1;
 }
 .dot {
   fill: var(--accent);

@@ -24,7 +24,7 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T017](contracts/tasks/TASK-017.md) | Statistical rules and alarm-event engine | 4 | T016 |  | DONE |
 | [T018](contracts/tasks/TASK-018.md) | Maintenance stabilization and impact analysis | 4 | T014, T016, T017 |  | DONE |
 | [T019](contracts/tasks/TASK-019.md) | Advanced interactive time-series charting | 4 | T006, T011, T016 |  | DONE |
-| [T020](contracts/tasks/TASK-020.md) | Full-stack component health dashboard | 4 | T007, T017, T018, T019 | G3 | TODO |
+| [T020](contracts/tasks/TASK-020.md) | Full-stack component health dashboard | 4 | T007, T017, T018, T019 | G3 | DONE |
 | [T021](contracts/tasks/TASK-021.md) | Component-specific model routing | 5 | T015, T017 |  | TODO |
 | [T022](contracts/tasks/TASK-022.md) | Decision-tree and XGBoost modeling | 5 | T021, T005 |  | TODO |
 | [T023](contracts/tasks/TASK-023.md) | CNN/LSTM feasibility and optional integration | 5 | T022 |  | TODO |

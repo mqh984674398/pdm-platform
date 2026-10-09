@@ -5,6 +5,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import PanelBox from '@/components/base/PanelBox.vue'
 import ComponentDetail from '@/components/fleet/ComponentDetail.vue'
 import DemoNotice from '@/components/fleet/DemoNotice.vue'
+import EvidenceTrail from '@/components/fleet/EvidenceTrail.vue'
 import { useFleet } from '@/composables/useFleet'
 import { useLocalized } from '@/composables/useLocalized'
 import { healthVar } from '@/theme/health'
@@ -58,6 +59,7 @@ const found = computed(() => {
           >
         </p>
         <ComponentDetail :component="found.component" />
+        <EvidenceTrail class="evidence" :component-id="found.component.component_id" />
       </PanelBox>
     </div>
   </div>
@@ -110,6 +112,9 @@ h1 {
 }
 .dot.unknown {
   background: var(--hatch), var(--health-unknown-soft);
+}
+.evidence {
+  margin-top: var(--space-4);
 }
 .crumb {
   font-size: var(--text-sm);

@@ -135,6 +135,12 @@ CONTRACT_MODELS = [
     dec.Evidence,
     dec.Decision,
     dec.Recommendation,
+    dec.TrendPoint,
+    dec.HealthTrend,
+    dec.FleetComponent,
+    dec.FleetMachine,
+    dec.FleetOverview,
+    dec.ComponentHealthReport,
     dec.Alarm,
     fb.Feedback,
 ]

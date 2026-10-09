@@ -9,17 +9,18 @@ import numpy as np
 Z_CLIP = 6.0  # single windows cannot dominate EWMA and CUSUM
 
 
-def ewma(z: Sequence[float], lam: float) -> list[float]:
-    out, m = [], 0.0
+def ewma(z: Sequence[float], lam: float, start: float = 0.0) -> list[float]:
+    out, m = [], start
     for x in z:
         m = lam * float(np.clip(x, -Z_CLIP, Z_CLIP)) + (1 - lam) * m
         out.append(m)
     return out
 
 
-def cusum_upper(z: Sequence[float], k: float) -> list[float]:
-    """Upper CUSUM of clipped deviations: accumulates sustained shifts above ``k``."""
-    out, s = [], 0.0
+def cusum_upper(z: Sequence[float], k: float, start: float = 0.0) -> list[float]:
+    """Upper CUSUM of clipped deviations: accumulates sustained shifts above ``k``. ``start``
+    continues a series from its previous value."""
+    out, s = [], start
     for x in z:
         s = max(0.0, s + float(np.clip(x, -Z_CLIP, Z_CLIP)) - k)
         out.append(s)
