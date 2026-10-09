@@ -1,7 +1,7 @@
 # TASK-003 — Domain, signal, API, and result schemas
 
 - **ID:** T003
-- **Status:** TODO
+- **Status:** DONE
 - **Phase:** 1 — Contracts and Simulation
 - **Gate:** None
 
@@ -55,4 +55,13 @@ Revert the task branch to the last green commit; record the failure and cause in
 
 ## Evidence
 
-_Filled in by the executing agent with actual commands and results._
+2026-10-09:
+
+- `tools/ci_local.sh` → exit 0 (log `contracts/evidence/T003/ci_local.log`): pytest 25 passed on Python 3.11 and 3.12; schema drift check OK; Vitest 4 passed; vue-tsc clean; build OK; Playwright 1 passed.
+- AC1: `test_enum_values_match_requirements` parses REQUIREMENTS.md L3-02, L6-04, L3-07 and compares enum values in order; baseline kinds tested.
+- AC2: `PredictionResult` discriminated union on `kind`; `test_kinds_are_not_interchangeable`, `test_union_members_cover_every_output_kind_plus_unsupported`; frontend `contracts.spec.ts` exhaustive switch type-checks.
+- AC3: `test_union_accepts_unsupported_prediction`.
+- AC4: `test_every_result_schema_carries_result_meta`, `test_simulated_flag_is_required_wherever_data_is_carried`.
+- AC5: `test_operator_spec_declares_all_l5_02_fields`.
+- AC6: `tools/check_schema_drift.sh` passes; negative test (renamed a field without regenerating) → exit 1. Wired into `ci.yml` and `tools/ci_local.sh`.
+- Schema docs: `contracts/schemas/README.md`; generated `contracts/schemas/openapi.json` (67 component schemas).

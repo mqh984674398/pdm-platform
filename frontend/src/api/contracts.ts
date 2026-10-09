@@ -1,0 +1,25 @@
+// Readable aliases over the generated OpenAPI types. Do not hand-write contract shapes here.
+import type { components } from './generated'
+
+type S = components['schemas']
+
+export type LocalizedText = S['LocalizedText']
+export type ResultMeta = S['ResultMeta']
+export type Machine = S['Machine']
+export type ComponentInstance = S['ComponentInstance']
+export type ComponentType = S['ComponentType']
+export type ComponentLifecycle = S['ComponentLifecycle']
+export type MaintenanceEvent = S['MaintenanceEvent']
+export type OperatingState = S['OperatingState']
+export type MaintenanceWorkflowState = S['MaintenanceWorkflowState']
+export type HealthState = S['HealthState']
+export type Decision = S['Decision']
+export type Alarm = S['Alarm']
+export type PredictionResult = S['PredictionResult']
+export type UnsupportedPrediction = S['UnsupportedPrediction']
+export type SignalDefinition = S['SignalDefinition']
+export type SignalMapping = S['SignalMapping']
+export type QueryTemplate = S['QueryTemplate']
+export type DataSourceConfig = S['DataSourceConfig']
+export type DataQualityReport = S['DataQualityReport']
+export type VisualizationSeries = S['VisualizationSeries']

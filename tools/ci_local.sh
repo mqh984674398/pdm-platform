@@ -10,6 +10,7 @@ for py in "${PY311:-}" "${PY312:-}"; do
   echo "== backend ($("$py" --version))"
   (cd backend && "$py" -m ruff check . && "$py" -m ruff format --check . && "$py" -m pytest)
 done
+echo "== schema drift"; tools/check_schema_drift.sh "${PY312:-${PY311:-python3}}"
 echo "== frontend"
 (cd frontend && npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e)
 echo "== ALL CHECKS PASSED"

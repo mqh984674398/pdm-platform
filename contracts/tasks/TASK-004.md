@@ -1,7 +1,7 @@
 # TASK-004 — Deterministic Data/ simulator
 
 - **ID:** T004
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 1 — Contracts and Simulation
 - **Gate:** None
 

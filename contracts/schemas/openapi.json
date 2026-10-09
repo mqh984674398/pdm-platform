@@ -1,0 +1,2659 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Industrial Predictive Maintenance Platform",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccelerationPhase": {
+        "enum": [
+          "ACCELERATING",
+          "CONSTANT",
+          "DECELERATING",
+          "STANDSTILL",
+          "UNKNOWN"
+        ],
+        "title": "AccelerationPhase",
+        "type": "string"
+      },
+      "Alarm": {
+        "additionalProperties": false,
+        "properties": {
+          "alarm_id": {
+            "title": "Alarm Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/AlarmSeverity"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AlarmStatus"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "raised_at": {
+            "format": "date-time",
+            "title": "Raised At",
+            "type": "string"
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Acknowledged At"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Resolved At"
+          },
+          "message": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "alarm_id",
+          "component_id",
+          "lifecycle_id",
+          "severity",
+          "status",
+          "rule_id",
+          "raised_at",
+          "acknowledged_at",
+          "resolved_at",
+          "message",
+          "evidence_ids",
+          "is_simulated"
+        ],
+        "title": "Alarm",
+        "type": "object"
+      },
+      "AlarmSeverity": {
+        "enum": [
+          "WATCH",
+          "WARNING",
+          "CRITICAL"
+        ],
+        "title": "AlarmSeverity",
+        "type": "string"
+      },
+      "AlarmStatus": {
+        "enum": [
+          "RAISED",
+          "ACKNOWLEDGED",
+          "RESOLVED"
+        ],
+        "title": "AlarmStatus",
+        "type": "string"
+      },
+      "AnomalyScoreResult": {
+        "additionalProperties": false,
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          },
+          "kind": {
+            "const": "anomaly_score",
+            "default": "anomaly_score",
+            "title": "Kind",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Threshold"
+          },
+          "scale": {
+            "description": "How to read the score, e.g. 'z-score', 'isolation-forest 0..1'",
+            "title": "Scale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "meta",
+          "kind",
+          "score",
+          "threshold",
+          "scale"
+        ],
+        "title": "AnomalyScoreResult",
+        "type": "object"
+      },
+      "ApiError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "detail"
+        ],
+        "title": "ApiError",
+        "type": "object"
+      },
+      "Baseline": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_id": {
+            "title": "Baseline Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/BaselineKind"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "feature_ref": {
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "stats": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FeatureStats"
+            },
+            "title": "Stats",
+            "type": "object"
+          },
+          "verified_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Verified By"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Verified At"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          }
+        },
+        "required": [
+          "baseline_id",
+          "kind",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "feature_ref",
+          "window",
+          "stats",
+          "verified_by",
+          "verified_at",
+          "meta"
+        ],
+        "title": "Baseline",
+        "type": "object"
+      },
+      "BaselineKind": {
+        "description": "Three independent baselines (L4-05).",
+        "enum": [
+          "VERIFIED_HEALTHY",
+          "ADAPTIVE",
+          "DEGRADATION_HISTORY"
+        ],
+        "title": "BaselineKind",
+        "type": "string"
+      },
+      "ChartKind": {
+        "enum": [
+          "LINE",
+          "SCATTER",
+          "HISTOGRAM",
+          "CYCLE_DURATION"
+        ],
+        "title": "ChartKind",
+        "type": "string"
+      },
+      "ClassProbabilityResult": {
+        "additionalProperties": false,
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          },
+          "kind": {
+            "const": "class_probability",
+            "default": "class_probability",
+            "title": "Kind",
+            "type": "string"
+          },
+          "probabilities": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "minProperties": 2,
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "calibrated": {
+            "title": "Calibrated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "meta",
+          "kind",
+          "probabilities",
+          "calibrated"
+        ],
+        "title": "ClassProbabilityResult",
+        "type": "object"
+      },
+      "ComponentInstance": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "machine_id": {
+            "title": "Machine Id",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ComponentType"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "drive_chain_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Components sharing a drive chain (scenario S19) share this id",
+            "title": "Drive Chain Id"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Signal Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "component_id",
+          "machine_id",
+          "type",
+          "name",
+          "drive_chain_id",
+          "signal_ids"
+        ],
+        "title": "ComponentInstance",
+        "type": "object"
+      },
+      "ComponentLifecycle": {
+        "additionalProperties": false,
+        "description": "One physical installation of a component. Replacement creates a new lifecycle (L3-06).",
+        "properties": {
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "installed_at": {
+            "format": "date-time",
+            "title": "Installed At",
+            "type": "string"
+          },
+          "retired_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retired At"
+          },
+          "predecessor_lifecycle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Predecessor Lifecycle Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LifecycleStatus"
+          },
+          "accumulated_operating_hours": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Accumulated Operating Hours",
+            "type": "number"
+          },
+          "accumulated_cycles": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Accumulated Cycles",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "lifecycle_id",
+          "component_id",
+          "installed_at",
+          "retired_at",
+          "predecessor_lifecycle_id",
+          "status",
+          "accumulated_operating_hours",
+          "accumulated_cycles"
+        ],
+        "title": "ComponentLifecycle",
+        "type": "object"
+      },
+      "ComponentType": {
+        "enum": [
+          "BALL_SCREW",
+          "LINEAR_MOTOR",
+          "VACUUM_CUP",
+          "PNEUMATIC_CYLINDER",
+          "CAM",
+          "GEAR"
+        ],
+        "title": "ComponentType",
+        "type": "string"
+      },
+      "CycleKind": {
+        "enum": [
+          "EXTEND",
+          "RETRACT",
+          "VACUUM_RELEASE",
+          "MOTION_SEGMENT"
+        ],
+        "title": "CycleKind",
+        "type": "string"
+      },
+      "DataQualityReport": {
+        "additionalProperties": false,
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "sample_count": {
+            "minimum": 0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "missing_count": {
+            "minimum": 0,
+            "title": "Missing Count",
+            "type": "integer"
+          },
+          "duplicate_count": {
+            "minimum": 0,
+            "title": "Duplicate Count",
+            "type": "integer"
+          },
+          "out_of_order_count": {
+            "minimum": 0,
+            "title": "Out Of Order Count",
+            "type": "integer"
+          },
+          "gap_count": {
+            "minimum": 0,
+            "title": "Gap Count",
+            "type": "integer"
+          },
+          "median_interval_s": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Median Interval S"
+          },
+          "interval_jitter_s": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Interval Jitter S"
+          },
+          "unit_suspect": {
+            "default": false,
+            "title": "Unit Suspect",
+            "type": "boolean"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signal_id",
+          "window",
+          "sample_count",
+          "missing_count",
+          "duplicate_count",
+          "out_of_order_count",
+          "gap_count",
+          "median_interval_s",
+          "interval_jitter_s",
+          "unit_suspect",
+          "is_simulated"
+        ],
+        "title": "DataQualityReport",
+        "type": "object"
+      },
+      "DataSourceConfig": {
+        "additionalProperties": false,
+        "description": "Connection configuration as exposed through the API.\n\nCredentials are never part of this schema (SEC-03): ``credential_ref`` names a server-side secret.",
+        "properties": {
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DataSourceKind"
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Verified DB engine, e.g. 'postgresql', 'mysql'",
+            "title": "Engine"
+          },
+          "host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Host"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 65536,
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Port"
+          },
+          "database": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Database"
+          },
+          "credential_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Credential Ref"
+          },
+          "read_only": {
+            "default": true,
+            "title": "Read Only",
+            "type": "boolean"
+          },
+          "statement_timeout_s": {
+            "default": 30,
+            "exclusiveMinimum": 0,
+            "maximum": 300,
+            "title": "Statement Timeout S",
+            "type": "number"
+          },
+          "max_rows": {
+            "default": 200000,
+            "exclusiveMinimum": 0,
+            "maximum": 2000000,
+            "title": "Max Rows",
+            "type": "integer"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_source_id",
+          "name",
+          "kind",
+          "engine",
+          "host",
+          "port",
+          "database",
+          "credential_ref",
+          "read_only",
+          "statement_timeout_s",
+          "max_rows",
+          "is_simulated"
+        ],
+        "title": "DataSourceConfig",
+        "type": "object"
+      },
+      "DataSourceKind": {
+        "enum": [
+          "SQL",
+          "SIMULATED"
+        ],
+        "title": "DataSourceKind",
+        "type": "string"
+      },
+      "Decision": {
+        "additionalProperties": false,
+        "properties": {
+          "decision_id": {
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "health_state": {
+            "$ref": "#/components/schemas/HealthState"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizedText"
+            },
+            "minItems": 1,
+            "title": "Reasons",
+            "type": "array"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "safety_constraints_applied": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Safety Constraints Applied",
+            "type": "array"
+          },
+          "conflicting_evidence": {
+            "default": false,
+            "title": "Conflicting Evidence",
+            "type": "boolean"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          }
+        },
+        "required": [
+          "decision_id",
+          "component_id",
+          "lifecycle_id",
+          "health_state",
+          "reasons",
+          "evidence_ids",
+          "safety_constraints_applied",
+          "conflicting_evidence",
+          "meta"
+        ],
+        "title": "Decision",
+        "type": "object"
+      },
+      "DegradationIndicatorResult": {
+        "additionalProperties": false,
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          },
+          "kind": {
+            "const": "degradation_indicator",
+            "default": "degradation_indicator",
+            "title": "Kind",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "reference_baseline_id": {
+            "title": "Reference Baseline Id",
+            "type": "string"
+          },
+          "higher_is_worse": {
+            "title": "Higher Is Worse",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "meta",
+          "kind",
+          "value",
+          "unit",
+          "reference_baseline_id",
+          "higher_is_worse"
+        ],
+        "title": "DegradationIndicatorResult",
+        "type": "object"
+      },
+      "EligibilityCondition": {
+        "additionalProperties": false,
+        "description": "A declarative precondition checked before the operator's output may be used (L6-01).",
+        "properties": {
+          "code": {
+            "pattern": "^[A-Z][A-Z0-9_]*$",
+            "title": "Code",
+            "type": "string"
+          },
+          "description": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ],
+        "title": "EligibilityCondition",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EvidenceSource"
+          },
+          "result_ref": {
+            "description": "Id of the underlying result (prediction, rule hit, report)",
+            "title": "Result Ref",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "source",
+          "result_ref",
+          "summary",
+          "eligible",
+          "meta"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "EvidenceSource": {
+        "enum": [
+          "RULE",
+          "STATISTIC",
+          "MODEL",
+          "MAINTENANCE",
+          "DATA_QUALITY"
+        ],
+        "title": "EvidenceSource",
+        "type": "string"
+      },
+      "FailureProbabilityResult": {
+        "additionalProperties": false,
+        "description": "Only valid when genuine failure/lifecycle evidence exists (L5-05).",
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          },
+          "kind": {
+            "const": "failure_probability",
+            "default": "failure_probability",
+            "title": "Kind",
+            "type": "string"
+          },
+          "probability": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Probability",
+            "type": "number"
+          },
+          "horizon_hours": {
+            "exclusiveMinimum": 0,
+            "title": "Horizon Hours",
+            "type": "number"
+          },
+          "failure_events_in_training": {
+            "exclusiveMinimum": 0,
+            "title": "Failure Events In Training",
+            "type": "integer"
+          },
+          "censoring_method": {
+            "minLength": 1,
+            "title": "Censoring Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "meta",
+          "kind",
+          "probability",
+          "horizon_hours",
+          "failure_events_in_training",
+          "censoring_method"
+        ],
+        "title": "FailureProbabilityResult",
+        "type": "object"
+      },
+      "FallbackBehavior": {
+        "enum": [
+          "RETURN_UNSUPPORTED",
+          "USE_PREVIOUS_VERSION",
+          "USE_STATISTICAL_BASELINE"
+        ],
+        "title": "FallbackBehavior",
+        "type": "string"
+      },
+      "FeatureDef": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "description": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "name",
+          "unit",
+          "description"
+        ],
+        "title": "FeatureDef",
+        "type": "object"
+      },
+      "FeatureSchema": {
+        "additionalProperties": false,
+        "description": "Declared, versioned feature set (L4-04). ``ref`` is ``feature_set@version``.",
+        "properties": {
+          "feature_set": {
+            "title": "Feature Set",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureDef"
+            },
+            "minItems": 1,
+            "title": "Features",
+            "type": "array"
+          }
+        },
+        "required": [
+          "feature_set",
+          "version",
+          "features"
+        ],
+        "title": "FeatureSchema",
+        "type": "object"
+      },
+      "FeatureStats": {
+        "additionalProperties": false,
+        "properties": {
+          "mean": {
+            "title": "Mean",
+            "type": "number"
+          },
+          "std": {
+            "minimum": 0,
+            "title": "Std",
+            "type": "number"
+          },
+          "p05": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P05"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P50"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "P95"
+          },
+          "n": {
+            "minimum": 0,
+            "title": "N",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "mean",
+          "std",
+          "p05",
+          "p50",
+          "p95",
+          "n"
+        ],
+        "title": "FeatureStats",
+        "type": "object"
+      },
+      "FeatureVector": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "feature_ref": {
+            "description": "feature_set@version",
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "values": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Values",
+            "type": "object"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "feature_ref",
+          "window",
+          "values",
+          "is_simulated"
+        ],
+        "title": "FeatureVector",
+        "type": "object"
+      },
+      "Feedback": {
+        "additionalProperties": false,
+        "properties": {
+          "feedback_id": {
+            "title": "Feedback Id",
+            "type": "string"
+          },
+          "alarm_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Alarm Id"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Decision Id"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/FeedbackVerdict"
+          },
+          "comment": {
+            "default": "",
+            "title": "Comment",
+            "type": "string"
+          },
+          "submitted_by": {
+            "title": "Submitted By",
+            "type": "string"
+          },
+          "submitted_at": {
+            "format": "date-time",
+            "title": "Submitted At",
+            "type": "string"
+          },
+          "maintenance_event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Maintenance Event Id"
+          }
+        },
+        "required": [
+          "feedback_id",
+          "alarm_id",
+          "decision_id",
+          "verdict",
+          "comment",
+          "submitted_by",
+          "submitted_at",
+          "maintenance_event_id"
+        ],
+        "title": "Feedback",
+        "type": "object"
+      },
+      "FeedbackVerdict": {
+        "enum": [
+          "CONFIRMED",
+          "FALSE_ALARM",
+          "UNSURE"
+        ],
+        "title": "FeedbackVerdict",
+        "type": "string"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "llm_enabled": {
+            "type": "boolean",
+            "title": "Llm Enabled"
+          },
+          "llm_required": {
+            "type": "boolean",
+            "title": "Llm Required"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "llm_enabled",
+          "llm_required"
+        ],
+        "title": "HealthResponse"
+      },
+      "HealthState": {
+        "description": "Prediction output (L6-04). Never used as a self-generated training label.",
+        "enum": [
+          "NORMAL",
+          "WATCH",
+          "WARNING",
+          "CRITICAL",
+          "UNKNOWN"
+        ],
+        "title": "HealthState",
+        "type": "string"
+      },
+      "LifecycleStatus": {
+        "enum": [
+          "ACTIVE",
+          "RETIRED"
+        ],
+        "title": "LifecycleStatus",
+        "type": "string"
+      },
+      "LocalizedText": {
+        "additionalProperties": false,
+        "description": "User-facing text in both supported languages (GEN-05).",
+        "properties": {
+          "zh": {
+            "minLength": 1,
+            "title": "Zh",
+            "type": "string"
+          },
+          "en": {
+            "minLength": 1,
+            "title": "En",
+            "type": "string"
+          }
+        },
+        "required": [
+          "zh",
+          "en"
+        ],
+        "title": "LocalizedText",
+        "type": "object"
+      },
+      "Machine": {
+        "additionalProperties": false,
+        "properties": {
+          "machine_id": {
+            "title": "Machine Id",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "line": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Line"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "machine_id",
+          "name",
+          "line",
+          "is_simulated"
+        ],
+        "title": "Machine",
+        "type": "object"
+      },
+      "MaintenanceEvent": {
+        "additionalProperties": false,
+        "description": "An intervention event (L3-05). Lubrication never resets aging (L3-08).",
+        "properties": {
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/MaintenanceEventType"
+          },
+          "performed_at": {
+            "format": "date-time",
+            "title": "Performed At",
+            "type": "string"
+          },
+          "performed_by": {
+            "title": "Performed By",
+            "type": "string"
+          },
+          "notes": {
+            "default": "",
+            "title": "Notes",
+            "type": "string"
+          },
+          "new_lifecycle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Set only for REPLACEMENT",
+            "title": "New Lifecycle Id"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "event_id",
+          "component_id",
+          "lifecycle_id",
+          "type",
+          "performed_at",
+          "performed_by",
+          "notes",
+          "new_lifecycle_id",
+          "is_simulated"
+        ],
+        "title": "MaintenanceEvent",
+        "type": "object"
+      },
+      "MaintenanceEventType": {
+        "enum": [
+          "LUBRICATION",
+          "INSPECTION",
+          "ADJUSTMENT",
+          "PARTIAL_REPAIR",
+          "REPLACEMENT"
+        ],
+        "title": "MaintenanceEventType",
+        "type": "string"
+      },
+      "MaintenanceWorkflowState": {
+        "enum": [
+          "MAINTENANCE_EVENT",
+          "STABILIZATION",
+          "POST_MAINTENANCE_VALIDATION",
+          "NORMAL_MONITORING",
+          "REVIEW_REQUIRED"
+        ],
+        "title": "MaintenanceWorkflowState",
+        "type": "string"
+      },
+      "MotionDirection": {
+        "enum": [
+          "FORWARD",
+          "REVERSE",
+          "NONE",
+          "UNKNOWN"
+        ],
+        "title": "MotionDirection",
+        "type": "string"
+      },
+      "MovementCycle": {
+        "additionalProperties": false,
+        "properties": {
+          "cycle_id": {
+            "title": "Cycle Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/CycleKind"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration S"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Regime Id"
+          }
+        },
+        "required": [
+          "cycle_id",
+          "component_id",
+          "lifecycle_id",
+          "kind",
+          "start",
+          "end",
+          "duration_s",
+          "complete",
+          "regime_id"
+        ],
+        "title": "MovementCycle",
+        "type": "object"
+      },
+      "NormalizedSample": {
+        "additionalProperties": false,
+        "description": "Full-resolution normalized signal value (ARCHITECTURE §4 layer 2).",
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "quality": {
+            "items": {
+              "$ref": "#/components/schemas/QualityFlag"
+            },
+            "title": "Quality",
+            "type": "array"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signal_id",
+          "ts",
+          "value",
+          "unit",
+          "quality",
+          "source_ref",
+          "is_simulated"
+        ],
+        "title": "NormalizedSample",
+        "type": "object"
+      },
+      "OperatingRegime": {
+        "additionalProperties": false,
+        "description": "Observable operating conditions used for normalization and eligibility (L3-03).",
+        "properties": {
+          "regime_id": {
+            "title": "Regime Id",
+            "type": "string"
+          },
+          "speed_band": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Speed Band"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/MotionDirection",
+            "default": "UNKNOWN"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/AccelerationPhase",
+            "default": "UNKNOWN"
+          },
+          "load_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Load Class"
+          },
+          "recipe": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recipe"
+          },
+          "supported": {
+            "description": "False for unknown/unsupported regimes (scenario S17)",
+            "title": "Supported",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "regime_id",
+          "speed_band",
+          "direction",
+          "phase",
+          "load_class",
+          "recipe",
+          "supported"
+        ],
+        "title": "OperatingRegime",
+        "type": "object"
+      },
+      "OperatingState": {
+        "description": "Machine/component operating state (L3-02). Not a health state.",
+        "enum": [
+          "RUNNING",
+          "IDLE",
+          "STOPPED",
+          "MAINTENANCE",
+          "FAULT",
+          "UNKNOWN"
+        ],
+        "title": "OperatingState",
+        "type": "string"
+      },
+      "OperatorSpec": {
+        "additionalProperties": false,
+        "description": "Declaration every model/operator must provide (L5-02).",
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_types": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentType"
+            },
+            "minItems": 1,
+            "title": "Component Types",
+            "type": "array"
+          },
+          "input_signals": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Input Signals",
+            "type": "array"
+          },
+          "supported_regimes": {
+            "description": "Regime ids, or ['*'] for regime-agnostic",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Supported Regimes",
+            "type": "array"
+          },
+          "sampling": {
+            "items": {
+              "$ref": "#/components/schemas/SamplingRequirement"
+            },
+            "minItems": 1,
+            "title": "Sampling",
+            "type": "array"
+          },
+          "feature_ref": {
+            "description": "feature_set@version",
+            "title": "Feature Ref",
+            "type": "string"
+          },
+          "output_kind": {
+            "$ref": "#/components/schemas/OutputKind"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "timeout_s": {
+            "exclusiveMinimum": 0,
+            "maximum": 600,
+            "title": "Timeout S",
+            "type": "number"
+          },
+          "fallback": {
+            "$ref": "#/components/schemas/FallbackBehavior"
+          },
+          "eligibility": {
+            "items": {
+              "$ref": "#/components/schemas/EligibilityCondition"
+            },
+            "minItems": 1,
+            "title": "Eligibility",
+            "type": "array"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_types",
+          "input_signals",
+          "supported_regimes",
+          "sampling",
+          "feature_ref",
+          "output_kind",
+          "model_version",
+          "timeout_s",
+          "fallback",
+          "eligibility"
+        ],
+        "title": "OperatorSpec",
+        "type": "object"
+      },
+      "OutputKind": {
+        "enum": [
+          "anomaly_score",
+          "class_probability",
+          "degradation_indicator",
+          "failure_probability"
+        ],
+        "title": "OutputKind",
+        "type": "string"
+      },
+      "PhysicalQuantity": {
+        "enum": [
+          "SPEED",
+          "TORQUE",
+          "DURATION",
+          "POSITION",
+          "CURRENT",
+          "PRESSURE",
+          "OTHER"
+        ],
+        "title": "PhysicalQuantity",
+        "type": "string"
+      },
+      "PredictionResult": {
+        "discriminator": {
+          "mapping": {
+            "anomaly_score": "#/components/schemas/AnomalyScoreResult",
+            "class_probability": "#/components/schemas/ClassProbabilityResult",
+            "degradation_indicator": "#/components/schemas/DegradationIndicatorResult",
+            "failure_probability": "#/components/schemas/FailureProbabilityResult",
+            "unsupported": "#/components/schemas/UnsupportedPrediction"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AnomalyScoreResult"
+          },
+          {
+            "$ref": "#/components/schemas/ClassProbabilityResult"
+          },
+          {
+            "$ref": "#/components/schemas/DegradationIndicatorResult"
+          },
+          {
+            "$ref": "#/components/schemas/FailureProbabilityResult"
+          },
+          {
+            "$ref": "#/components/schemas/UnsupportedPrediction"
+          }
+        ]
+      },
+      "QualityFlag": {
+        "enum": [
+          "MISSING",
+          "DUPLICATE",
+          "OUT_OF_ORDER",
+          "JITTER",
+          "GAP",
+          "OUT_OF_RANGE",
+          "UNIT_SUSPECT",
+          "MISALIGNED"
+        ],
+        "title": "QualityFlag",
+        "type": "string"
+      },
+      "QueryParamType": {
+        "enum": [
+          "STRING",
+          "INTEGER",
+          "FLOAT",
+          "TIMESTAMP",
+          "IDENTIFIER"
+        ],
+        "title": "QueryParamType",
+        "type": "string"
+      },
+      "QueryParameter": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "pattern": "^[a-z_][a-z0-9_]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/QueryParamType"
+          },
+          "label": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "required": {
+            "default": true,
+            "title": "Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "label",
+          "required"
+        ],
+        "title": "QueryParameter",
+        "type": "object"
+      },
+      "QueryTemplate": {
+        "additionalProperties": false,
+        "description": "An approved, parameterized, read-only query (L1-05). SQL text is visible to admins only.",
+        "properties": {
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "description": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/QueryParameter"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "max_rows": {
+            "exclusiveMinimum": 0,
+            "maximum": 2000000,
+            "title": "Max Rows",
+            "type": "integer"
+          },
+          "max_range_hours": {
+            "exclusiveMinimum": 0,
+            "title": "Max Range Hours",
+            "type": "number"
+          },
+          "version": {
+            "minimum": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "template_id",
+          "name",
+          "description",
+          "data_source_id",
+          "parameters",
+          "max_rows",
+          "max_range_hours",
+          "version"
+        ],
+        "title": "QueryTemplate",
+        "type": "object"
+      },
+      "RawTelemetryRow": {
+        "additionalProperties": false,
+        "description": "One row as returned by the source, before semantic mapping (ARCHITECTURE §4 layer 1).",
+        "properties": {
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "key_name": {
+            "title": "Key Name",
+            "type": "string"
+          },
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "source_ref": {
+            "description": "Data source id plus template/version that produced the row",
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "device_id",
+          "key_name",
+          "ts",
+          "value",
+          "source_ref",
+          "is_simulated"
+        ],
+        "title": "RawTelemetryRow",
+        "type": "object"
+      },
+      "Recommendation": {
+        "additionalProperties": false,
+        "properties": {
+          "recommendation_id": {
+            "title": "Recommendation Id",
+            "type": "string"
+          },
+          "decision_id": {
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/RecommendationPriority"
+          },
+          "action": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "rationale": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Evidence Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "recommendation_id",
+          "decision_id",
+          "priority",
+          "action",
+          "rationale",
+          "evidence_ids"
+        ],
+        "title": "Recommendation",
+        "type": "object"
+      },
+      "RecommendationPriority": {
+        "enum": [
+          "INFO",
+          "PLAN",
+          "SOON",
+          "IMMEDIATE"
+        ],
+        "title": "RecommendationPriority",
+        "type": "string"
+      },
+      "ResultMeta": {
+        "additionalProperties": false,
+        "description": "Provenance carried by every analytical result (GEN-06, GEN-03).\n\nVersions are opaque strings such as ``\"ewma-torque@1.2.0\"``. ``None`` is not allowed: a component\nthat does not use a model still reports which rule or operator version produced the result.",
+        "properties": {
+          "model_version": {
+            "minLength": 1,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "feature_version": {
+            "minLength": 1,
+            "title": "Feature Version",
+            "type": "string"
+          },
+          "config_version": {
+            "minLength": 1,
+            "title": "Config Version",
+            "type": "string"
+          },
+          "computed_at": {
+            "format": "date-time",
+            "title": "Computed At",
+            "type": "string"
+          },
+          "data_window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "model_version",
+          "feature_version",
+          "config_version",
+          "computed_at",
+          "data_window",
+          "is_simulated"
+        ],
+        "title": "ResultMeta",
+        "type": "object"
+      },
+      "SamplingRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "max_interval_s": {
+            "exclusiveMinimum": 0,
+            "title": "Max Interval S",
+            "type": "number"
+          },
+          "min_samples": {
+            "exclusiveMinimum": 0,
+            "title": "Min Samples",
+            "type": "integer"
+          },
+          "max_gap_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max Gap S"
+          }
+        },
+        "required": [
+          "signal_id",
+          "max_interval_s",
+          "min_samples",
+          "max_gap_s"
+        ],
+        "title": "SamplingRequirement",
+        "type": "object"
+      },
+      "SeriesPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "ts",
+          "value"
+        ],
+        "title": "SeriesPoint",
+        "type": "object"
+      },
+      "SignalConfigVersion": {
+        "additionalProperties": false,
+        "description": "Immutable snapshot reference for the signal configuration (L2-05).",
+        "properties": {
+          "version": {
+            "minimum": 1,
+            "title": "Version",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "comment": {
+            "default": "",
+            "title": "Comment",
+            "type": "string"
+          },
+          "content_hash": {
+            "title": "Content Hash",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "created_at",
+          "created_by",
+          "comment",
+          "content_hash"
+        ],
+        "title": "SignalConfigVersion",
+        "type": "object"
+      },
+      "SignalDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/PhysicalQuantity"
+          },
+          "unit": {
+            "description": "Engineering unit of normalized values, e.g. 'rpm', 'N*m', 's'",
+            "title": "Unit",
+            "type": "string"
+          },
+          "expected_sampling_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expected Sampling S"
+          },
+          "valid_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Valid Min"
+          },
+          "valid_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Valid Max"
+          }
+        },
+        "required": [
+          "signal_id",
+          "name",
+          "quantity",
+          "unit",
+          "expected_sampling_s",
+          "valid_min",
+          "valid_max"
+        ],
+        "title": "SignalDefinition",
+        "type": "object"
+      },
+      "SignalGroup": {
+        "additionalProperties": false,
+        "properties": {
+          "group_id": {
+            "title": "Group Id",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Signal Ids",
+            "type": "array"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Component Id"
+          }
+        },
+        "required": [
+          "group_id",
+          "name",
+          "signal_ids",
+          "component_id"
+        ],
+        "title": "SignalGroup",
+        "type": "object"
+      },
+      "SignalMapping": {
+        "additionalProperties": false,
+        "description": "Binds a logical signal to a device + KeyName in a data source (L2-01).",
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "data_source_id": {
+            "title": "Data Source Id",
+            "type": "string"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "key_name": {
+            "title": "Key Name",
+            "type": "string"
+          },
+          "time_field": {
+            "title": "Time Field",
+            "type": "string"
+          },
+          "value_field": {
+            "title": "Value Field",
+            "type": "string"
+          },
+          "conversion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UnitConversion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Component Id"
+          }
+        },
+        "required": [
+          "signal_id",
+          "data_source_id",
+          "template_id",
+          "device_id",
+          "key_name",
+          "time_field",
+          "value_field",
+          "conversion",
+          "component_id"
+        ],
+        "title": "SignalMapping",
+        "type": "object"
+      },
+      "TimeWindow": {
+        "additionalProperties": false,
+        "description": "Half-open interval [start, end) in timezone-aware timestamps.",
+        "properties": {
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "TimeWindow",
+        "type": "object"
+      },
+      "UnitConversion": {
+        "additionalProperties": false,
+        "description": "Linear conversion ``target = source * scale + offset`` (L2-02).",
+        "properties": {
+          "source_unit": {
+            "title": "Source Unit",
+            "type": "string"
+          },
+          "target_unit": {
+            "title": "Target Unit",
+            "type": "string"
+          },
+          "scale": {
+            "default": 1.0,
+            "title": "Scale",
+            "type": "number"
+          },
+          "offset": {
+            "default": 0.0,
+            "title": "Offset",
+            "type": "number"
+          }
+        },
+        "required": [
+          "source_unit",
+          "target_unit",
+          "scale",
+          "offset"
+        ],
+        "title": "UnitConversion",
+        "type": "object"
+      },
+      "UnsupportedPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "operator_id": {
+            "title": "Operator Id",
+            "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "lifecycle_id": {
+            "title": "Lifecycle Id",
+            "type": "string"
+          },
+          "regime_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regime Id"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResultMeta"
+          },
+          "kind": {
+            "const": "unsupported",
+            "default": "unsupported",
+            "title": "Kind",
+            "type": "string"
+          },
+          "requested_kind": {
+            "$ref": "#/components/schemas/OutputKind"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/UnsupportedReason"
+          },
+          "detail": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "operator_id",
+          "component_id",
+          "lifecycle_id",
+          "regime_id",
+          "meta",
+          "kind",
+          "requested_kind",
+          "reason",
+          "detail"
+        ],
+        "title": "UnsupportedPrediction",
+        "type": "object"
+      },
+      "UnsupportedReason": {
+        "enum": [
+          "INSUFFICIENT_DATA",
+          "DATA_QUALITY",
+          "UNSUPPORTED_REGIME",
+          "INELIGIBLE_INPUT",
+          "TIMEOUT",
+          "MODEL_UNAVAILABLE",
+          "NO_FAILURE_EVIDENCE",
+          "COMPONENT_TEMPLATE_ONLY"
+        ],
+        "title": "UnsupportedReason",
+        "type": "string"
+      },
+      "VisualizationSeries": {
+        "additionalProperties": false,
+        "description": "Downsampled data for charts only; never an algorithm input (L2-06).",
+        "properties": {
+          "signal_id": {
+            "title": "Signal Id",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "downsampled": {
+            "title": "Downsampled",
+            "type": "boolean"
+          },
+          "source_point_count": {
+            "minimum": 0,
+            "title": "Source Point Count",
+            "type": "integer"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "e.g. 'lttb'",
+            "title": "Method"
+          },
+          "is_simulated": {
+            "title": "Is Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signal_id",
+          "unit",
+          "points",
+          "downsampled",
+          "source_point_count",
+          "method",
+          "is_simulated"
+        ],
+        "title": "VisualizationSeries",
+        "type": "object"
+      },
+      "VisualizationTemplate": {
+        "additionalProperties": false,
+        "properties": {
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "chart": {
+            "$ref": "#/components/schemas/ChartKind"
+          },
+          "signal_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Signal Ids",
+            "type": "array"
+          },
+          "y_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y Min"
+          },
+          "y_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y Max"
+          }
+        },
+        "required": [
+          "template_id",
+          "name",
+          "chart",
+          "signal_ids",
+          "y_min",
+          "y_max"
+        ],
+        "title": "VisualizationTemplate",
+        "type": "object"
+      }
+    }
+  }
+}

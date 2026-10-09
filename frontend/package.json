@@ -13,7 +13,8 @@
     "typecheck": "vue-tsc --build --force",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "lint": "eslint . --max-warnings 0 && prettier --check ."
+    "lint": "eslint . --max-warnings 0 && prettier --check .",
+    "gen:types": "openapi-typescript ../contracts/schemas/openapi.json -o src/api/generated.ts && prettier -w src/api/generated.ts"
   },
   "dependencies": {
     "vue": "^3.5.43",
@@ -28,6 +29,7 @@
     "eslint": "^9.39.5",
     "eslint-plugin-vue": "^10.11.1",
     "jsdom": "^26.1.0",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.9.9",
     "typescript": "~5.8",
     "typescript-eslint": "^8.71.1",
