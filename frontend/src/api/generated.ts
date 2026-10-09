@@ -623,7 +623,7 @@ export interface components {
       window: components['schemas']['TimeWindow']
       /** Stats */
       stats: {
-        [key: string]: components['schemas']['FeatureStats']
+        [key: string]: components['schemas']['app__monitoring__schemas__FeatureStats']
       }
       /**
        * Verified By
@@ -771,6 +771,54 @@ export interface components {
      * @enum {string}
      */
     CycleKind: 'EXTEND' | 'RETRACT' | 'VACUUM_RELEASE' | 'MOTION_SEGMENT'
+    /**
+     * CycleSummary
+     * @description Operations of one actuator signal in a period; incomplete ones never count as durations.
+     */
+    CycleSummary: {
+      /** Signal Id */
+      signal_id: string
+      /** Component Id */
+      component_id: string
+      kind: components['schemas']['CycleKind']
+      window: components['schemas']['TimeWindow']
+      /** Operation Count */
+      operation_count: number
+      /** Completed Count */
+      completed_count: number
+      /** Incomplete Count */
+      incomplete_count: number
+      /**
+       * Implausible Count
+       * @default 0
+       */
+      implausible_count: number
+      /**
+       * Timeout S
+       * @default null
+       */
+      timeout_s: number | null
+      /**
+       * Timeout Inferred
+       * @default false
+       */
+      timeout_inferred: boolean
+      /**
+       * Median Duration S
+       * @description Completed, plausible operations only
+       * @default null
+       */
+      median_duration_s: number | null
+      /**
+       * Sufficient
+       * @description Enough completed operations for duration statistics
+       */
+      sufficient: boolean
+      /** Min Completed */
+      min_completed: number
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * DataQualityReport
      * @description Quality of one signal over a window, computed on full-resolution rows (L4-01, L2-06).
@@ -1092,29 +1140,18 @@ export interface components {
       /** Features */
       features: components['schemas']['FeatureDef'][]
     }
-    /** FeatureStats */
-    FeatureStats: {
-      /** Mean */
-      mean: number
-      /** Std */
-      std: number
+    /** FeatureValue */
+    FeatureValue: {
+      /** Feature Id */
+      feature_id: string
+      /** Value */
+      value: number
       /**
-       * P05
+       * Normalized
+       * @description Condition-normalized residual (L4-03)
        * @default null
        */
-      p05: number | null
-      /**
-       * P50
-       * @default null
-       */
-      p50: number | null
-      /**
-       * P95
-       * @default null
-       */
-      p95: number | null
-      /** N */
-      n: number
+      normalized: number | null
     }
     /** FeatureVector */
     FeatureVector: {
@@ -1215,6 +1252,22 @@ export interface components {
      * @enum {string}
      */
     HealthState: 'NORMAL' | 'WATCH' | 'WARNING' | 'CRITICAL' | 'UNKNOWN'
+    /**
+     * KnownRegime
+     * @description A regime established from a reference period. Matching uses speed features only.
+     */
+    KnownRegime: {
+      regime: components['schemas']['OperatingRegime']
+      /** Match Features */
+      match_features: components['schemas']['app__equipment__schemas__FeatureStats'][]
+      /**
+       * Reference
+       * @description Per-regime levels used for normalization (L4-03)
+       */
+      reference: components['schemas']['app__equipment__schemas__FeatureStats'][]
+      /** Window Count */
+      window_count: number
+    }
     /** LayoutColumn */
     LayoutColumn: {
       /** Name */
@@ -1249,6 +1302,32 @@ export interface components {
        * @default null
        */
       line: string | null
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /** MachineOperations */
+    MachineOperations: {
+      /** Machine Id */
+      machine_id: string
+      window: components['schemas']['TimeWindow']
+      /** States */
+      states: components['schemas']['StateSegment'][]
+      /** Regimes */
+      regimes: components['schemas']['RegimeAssignment'][]
+      /** Cycles */
+      cycles: components['schemas']['MovementCycle'][]
+      /** Cycle Summaries */
+      cycle_summaries: components['schemas']['CycleSummary'][]
+      /**
+       * Catalog Id
+       * @default null
+       */
+      catalog_id: string | null
+      /**
+       * Not Evaluated
+       * @description States this source cannot evidence (e.g. FAULT)
+       */
+      not_evaluated: components['schemas']['OperatingState'][]
       /** Is Simulated */
       is_simulated: boolean
     }
@@ -1337,6 +1416,25 @@ export interface components {
        * @default null
        */
       regime_id: string | null
+      /**
+       * Plausible
+       * @description False: far from typical, kept out of statistics
+       * @default true
+       */
+      plausible: boolean
+      /**
+       * @description Motion segments only
+       * @default null
+       */
+      direction: components['schemas']['MotionDirection'] | null
+      /**
+       * Signal Id
+       * @description Signal the cycle was derived from
+       * @default null
+       */
+      signal_id: string | null
+      /** Is Simulated */
+      is_simulated: boolean
     }
     /**
      * NormalizedSample
@@ -1744,6 +1842,54 @@ export interface components {
      * @enum {string}
      */
     RecommendationPriority: 'INFO' | 'PLAN' | 'SOON' | 'IMMEDIATE'
+    /**
+     * RegimeAssignment
+     * @description Regime of one observation window.
+     */
+    RegimeAssignment: {
+      /**
+       * Start
+       * Format: date-time
+       */
+      start: string
+      /**
+       * End
+       * Format: date-time
+       */
+      end: string
+      state: components['schemas']['OperatingState']
+      status: components['schemas']['RegimeStatus']
+      /**
+       * Regime Id
+       * @default null
+       */
+      regime_id: string | null
+      /** Features */
+      features: components['schemas']['FeatureValue'][]
+      reason: components['schemas']['LocalizedText']
+    }
+    /** RegimeCatalog */
+    RegimeCatalog: {
+      /** Catalog Id */
+      catalog_id: string
+      /** Machine Id */
+      machine_id: string
+      learned_from: components['schemas']['TimeWindow']
+      /**
+       * Tolerance
+       * @description Relative tolerance on each speed feature
+       */
+      tolerance: number
+      /** Regimes */
+      regimes: components['schemas']['KnownRegime'][]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /**
+     * RegimeStatus
+     * @enum {string}
+     */
+    RegimeStatus: 'KNOWN' | 'UNSUPPORTED' | 'NOT_EVALUATED'
     /**
      * ResultMeta
      * @description Provenance carried by every analytical result (GEN-06, GEN-03).
@@ -2178,6 +2324,31 @@ export interface components {
        */
       verified: boolean
     }
+    /**
+     * StateSegment
+     * @description A stretch of time with one derived operating state and the evidence for it (L3-02).
+     */
+    StateSegment: {
+      /**
+       * Start
+       * Format: date-time
+       */
+      start: string
+      /**
+       * End
+       * Format: date-time
+       */
+      end: string
+      state: components['schemas']['OperatingState']
+      /**
+       * Evidence
+       * @description Signal ids or record ids used
+       */
+      evidence: string[]
+      reason: components['schemas']['LocalizedText']
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** StudioDevice */
     StudioDevice: {
       /** Device Id */
@@ -2408,6 +2579,47 @@ export interface components {
        */
       base_version: number | null
       item: components['schemas']['VisualizationTemplate']
+    }
+    /**
+     * FeatureStats
+     * @description Robust level of one per-window feature, e.g. cruise speed of a speed signal.
+     */
+    app__equipment__schemas__FeatureStats: {
+      /**
+       * Feature Id
+       * @description '<signal_id>:<feature>', e.g. 'M01-BS1.torque:cruise'
+       */
+      feature_id: string
+      /** Median */
+      median: number
+      /** Mad */
+      mad: number
+      /** Count */
+      count: number
+    }
+    /** FeatureStats */
+    app__monitoring__schemas__FeatureStats: {
+      /** Mean */
+      mean: number
+      /** Std */
+      std: number
+      /**
+       * P05
+       * @default null
+       */
+      p05: number | null
+      /**
+       * P50
+       * @default null
+       */
+      p50: number | null
+      /**
+       * P95
+       * @default null
+       */
+      p95: number | null
+      /** N */
+      n: number
     }
   }
   responses: never

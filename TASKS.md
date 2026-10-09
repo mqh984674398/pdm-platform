@@ -17,8 +17,8 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T010](contracts/tasks/TASK-010.md) | Secure read-only SQL query service | 3 | T009 |  | DONE |
 | [T011](contracts/tasks/TASK-011.md) | Signal mapping and preview APIs | 3 | T010 |  | DONE |
 | [T012](contracts/tasks/TASK-012.md) | Data quality, unit conversion, and time alignment | 3 | T011 |  | DONE |
-| [T013](contracts/tasks/TASK-013.md) | Operating-regime and movement-cycle processing | 3 | T012 |  | IN_PROGRESS |
-| [T014](contracts/tasks/TASK-014.md) | Component lifecycle and maintenance services | 3 | T013 | G2 | TODO |
+| [T013](contracts/tasks/TASK-013.md) | Operating-regime and movement-cycle processing | 3 | T012 |  | DONE |
+| [T014](contracts/tasks/TASK-014.md) | Component lifecycle and maintenance services | 3 | T013 | G2 | IN_PROGRESS |
 | [T015](contracts/tasks/TASK-015.md) | Feature extraction and feature versioning | 4 | T013, T014 |  | TODO |
 | [T016](contracts/tasks/TASK-016.md) | Healthy/adaptive baselines and degradation monitoring | 4 | T015, T014 |  | TODO |
 | [T017](contracts/tasks/TASK-017.md) | Statistical rules and alarm-event engine | 4 | T016 |  | TODO |

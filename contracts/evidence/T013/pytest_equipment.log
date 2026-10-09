@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/claude/pdm/backend
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 24 items
+
+tests/equipment/test_cycles.py ........                                  [ 33%]
+tests/equipment/test_regimes.py ......                                   [ 58%]
+tests/equipment/test_state.py ..........                                 [100%]
+
+============================== 24 passed in 1.45s ==============================

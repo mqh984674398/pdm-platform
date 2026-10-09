@@ -6,7 +6,7 @@ from enum import StrEnum
 
 from pydantic import AwareDatetime, Field, model_validator
 
-from app.core.schemas import ContractModel, LocalizedText
+from app.core.schemas import ContractModel, LocalizedText, TimeWindow
 
 
 class ComponentType(StrEnum):
@@ -121,6 +121,105 @@ class MovementCycle(ContractModel):
     duration_s: float | None = Field(default=None, ge=0)
     complete: bool
     regime_id: str | None = None
+    plausible: bool = Field(default=True, description="False: far from typical, kept out of statistics")
+    direction: MotionDirection | None = Field(default=None, description="Motion segments only")
+    signal_id: str | None = Field(default=None, description="Signal the cycle was derived from")
+    is_simulated: bool
+
+
+class StateSegment(ContractModel):
+    """A stretch of time with one derived operating state and the evidence for it (L3-02)."""
+
+    start: AwareDatetime
+    end: AwareDatetime
+    state: OperatingState
+    evidence: list[str] = Field(default_factory=list, description="Signal ids or record ids used")
+    reason: LocalizedText
+    is_simulated: bool
+
+
+class FeatureStats(ContractModel):
+    """Robust level of one per-window feature, e.g. cruise speed of a speed signal."""
+
+    feature_id: str = Field(description="'<signal_id>:<feature>', e.g. 'M01-BS1.torque:cruise'")
+    median: float
+    mad: float = Field(ge=0)
+    count: int = Field(ge=0)
+
+
+class KnownRegime(ContractModel):
+    """A regime established from a reference period. Matching uses speed features only."""
+
+    regime: OperatingRegime
+    match_features: list[FeatureStats]
+    reference: list[FeatureStats] = Field(description="Per-regime levels used for normalization (L4-03)")
+    window_count: int = Field(ge=1)
+
+
+class RegimeCatalog(ContractModel):
+    catalog_id: str
+    machine_id: str
+    learned_from: TimeWindow
+    tolerance: float = Field(gt=0, description="Relative tolerance on each speed feature")
+    regimes: list[KnownRegime]
+    is_simulated: bool
+
+
+class RegimeStatus(StrEnum):
+    KNOWN = "KNOWN"
+    UNSUPPORTED = "UNSUPPORTED"  # running in conditions no known regime covers (S17)
+    NOT_EVALUATED = "NOT_EVALUATED"  # not running, or no speed signal to characterize the regime
+
+
+class FeatureValue(ContractModel):
+    feature_id: str
+    value: float
+    normalized: float | None = Field(default=None, description="Condition-normalized residual (L4-03)")
+
+
+class RegimeAssignment(ContractModel):
+    """Regime of one observation window."""
+
+    start: AwareDatetime
+    end: AwareDatetime
+    state: OperatingState
+    status: RegimeStatus
+    regime_id: str | None = None
+    features: list[FeatureValue] = Field(default_factory=list)
+    reason: LocalizedText
+
+
+class CycleSummary(ContractModel):
+    """Operations of one actuator signal in a period; incomplete ones never count as durations."""
+
+    signal_id: str
+    component_id: str
+    kind: CycleKind
+    window: TimeWindow
+    operation_count: int = Field(ge=0)
+    completed_count: int = Field(ge=0)
+    incomplete_count: int = Field(ge=0)
+    implausible_count: int = Field(default=0, ge=0)
+    timeout_s: float | None = None
+    timeout_inferred: bool = False
+    median_duration_s: float | None = Field(default=None, description="Completed, plausible operations only")
+    sufficient: bool = Field(description="Enough completed operations for duration statistics")
+    min_completed: int
+    is_simulated: bool
+
+
+class MachineOperations(ContractModel):
+    machine_id: str
+    window: TimeWindow
+    states: list[StateSegment]
+    regimes: list[RegimeAssignment]
+    cycles: list[MovementCycle]
+    cycle_summaries: list[CycleSummary]
+    catalog_id: str | None = None
+    not_evaluated: list[OperatingState] = Field(
+        default_factory=list, description="States this source cannot evidence (e.g. FAULT)"
+    )
+    is_simulated: bool
 
 
 class MaintenanceEventType(StrEnum):

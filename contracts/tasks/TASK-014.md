@@ -1,7 +1,7 @@
 # TASK-014 — Component lifecycle and maintenance services
 
 - **ID:** T014
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 3 — Backend and Industrial Domain
 - **Gate:** G2 (approval requested after this task)
 
