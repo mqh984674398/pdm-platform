@@ -68,7 +68,8 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      # The github reporter turns failures into check annotations, readable without the raw log.
+      - run: npm run test:e2e -- --reporter=github,list
         env:
           PDM_PYTHON: python
 
