@@ -22,6 +22,12 @@ from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
+from app.feedback.service import FeedbackNotFoundError, FeedbackPermissionError
+from app.llm.assistant import AssistantDisabled, AssistantResponseError
+from app.llm.client import LlmCancelled, LlmTimeout, LlmUnavailable
+from app.llm.endpoint import EndpointRejected, ModelRejected
+from app.llm.rag import DocumentError, DocumentNotFoundError, DocumentPermissionError
+from app.llm.settings import LlmPermissionError
 from app.monitoring.alarms.service import AlarmNotFoundError, AlarmTransitionError
 from app.monitoring.baselines.verified import BaselineError, BaselinePermissionError
 from app.monitoring.features.store import FeatureConflictError
@@ -56,6 +62,19 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (BaselineError, 422, "baseline_refused", "无法建立该基准，未保存。", "The baseline could not be created; nothing was saved."),
     (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),
     (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
+    (EndpointRejected, 422, "llm_endpoint_rejected", "只允许本机或局域网内的 Ollama 地址，已拒绝远程/云端地址。", "Only a local or LAN Ollama endpoint is allowed; remote or cloud endpoints are refused."),
+    (ModelRejected, 422, "llm_model_rejected", "该模型不允许使用（云端路由、未安装或不在允许列表中）。", "This model is not allowed (cloud-routed, not installed, or not on the allowlist)."),
+    (LlmPermissionError, 403, "llm_settings_role", "修改 Ollama 设置需要管理员角色。", "Changing the Ollama settings requires the administrator role."),
+    (AssistantDisabled, 503, "assistant_disabled", "助手未启用或未选择模型；平台其他功能不受影响。", "The assistant is off or has no model; the rest of the platform is unaffected."),
+    (LlmTimeout, 504, "llm_timeout", "本地模型响应超时。", "The local model did not answer in time."),
+    (LlmCancelled, 499, "llm_cancelled", "已取消。", "Cancelled."),
+    (LlmUnavailable, 503, "llm_unavailable", "无法连接本地 Ollama；监测和报警不受影响。", "The local Ollama cannot be reached; monitoring and alarms are unaffected."),
+    (AssistantResponseError, 502, "llm_bad_answer", "模型回答格式不符合要求，已丢弃。", "The model's answer did not have the required structure and was discarded."),
+    (DocumentPermissionError, 403, "document_role", "添加文档需要工程师角色，批准需要管理员角色。", "Adding a document requires the engineer role; approving requires the administrator role."),
+    (DocumentNotFoundError, 404, "unknown_document", "未找到该文档。", "Document not found."),
+    (DocumentError, 422, "document_refused", "无法处理该文档。", "The document could not be processed."),
+    (FeedbackPermissionError, 403, "feedback_role", "提交反馈需要维护角色，复核需要工程师角色。", "Feedback requires the maintenance role; review requires the engineer role."),
+    (FeedbackNotFoundError, 404, "unknown_feedback", "未找到该反馈。", "Feedback not found."),
     (RegistryNotFoundError, 404, "unknown_version", "未找到该版本。", "Version not found."),
     (RegistryPermissionError, 403, "registry_role", "晋升需要管理员角色；提交、拒绝和回滚需要工程师角色。", "Promotion requires the administrator role; proposing, rejecting and rolling back require the engineer role."),
     (RegistryError, 409, "registry_refused", "注册表拒绝了该操作，未保存。", "The registry refused this action; nothing was saved."),

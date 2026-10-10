@@ -14,5 +14,5 @@ test('navigates all screens and switches language without reload', async ({ page
   await page.locator('[data-nav="models"]').click()
   await expect(page.locator('h1')).toHaveText('Model versions')
   await page.locator('[data-nav="assistant"]').click()
-  await expect(page.getByTestId('placeholder')).toBeVisible()
+  await expect(page.locator('h1')).toHaveText('Local assistant')
 })

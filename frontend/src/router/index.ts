@@ -6,6 +6,7 @@ import {
 } from 'vue-router'
 import AlarmsView from '@/views/AlarmsView.vue'
 import AnalysisView from '@/views/AnalysisView.vue'
+import AssistantView from '@/views/AssistantView.vue'
 import BaselinesView from '@/views/BaselinesView.vue'
 import ComponentView from '@/views/ComponentView.vue'
 import DataSourceStudioView from '@/views/DataSourceStudioView.vue'
@@ -30,6 +31,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   alarms: { component: AlarmsView },
   optimization: { component: OptimizationView },
   models: { component: ModelsView },
+  assistant: { component: AssistantView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {

@@ -1,7 +1,7 @@
 # TASK-028 — Windows/LAN deployment and final acceptance
 
 - **ID:** T028
-- **Status:** TODO
+- **Status:** IN_PROGRESS
 - **Phase:** 7 — Release
 - **Gate:** G4 (approval requested after this task)
 

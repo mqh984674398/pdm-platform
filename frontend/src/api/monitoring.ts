@@ -14,6 +14,13 @@ import type {
   MaintenanceEvent,
   MaintenanceWorkflow,
   OptimizationRun,
+  LlmConfig,
+  LlmConfigState,
+  LlmHealth,
+  AssistantResponse,
+  RagDocument,
+  FeedbackItem,
+  FeedbackIn,
   DeploymentVersion,
   KindSummary,
   SignalConfigState,
@@ -131,6 +138,54 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         method: 'POST',
         body: JSON.stringify({ comment }),
       }),
+    llmSettings: () => call<LlmConfigState>('/api/llm/settings'),
+    saveLlmSettings: (cfg: LlmConfig) =>
+      call<LlmConfigState>('/api/llm/settings', { method: 'PUT', body: JSON.stringify(cfg) }),
+    llmHealth: () => call<LlmHealth>('/api/llm/health'),
+    documents: () => call<RagDocument[]>('/api/llm/documents'),
+    addDocument: (doc: { title: string; text: string; min_role: string; source?: string }) =>
+      call<RagDocument>('/api/llm/documents', { method: 'POST', body: JSON.stringify(doc) }),
+    approveDocument: (docId: string) =>
+      call<RagDocument>(`/api/llm/documents/${encodeURIComponent(docId)}/approve`, {
+        method: 'POST',
+      }),
+    feedback: (fb: FeedbackIn) =>
+      call<FeedbackItem>('/api/feedback', { method: 'POST', body: JSON.stringify(fb) }),
+    cancelAsk: (requestId: string) =>
+      fetchImpl(`/api/llm/ask/${encodeURIComponent(requestId)}/cancel`, {
+        method: 'POST',
+        headers: headers(),
+      }),
+    /** Stream the assistant's events (NDJSON); calls onEvent for each, resolves when the stream ends. */
+    async askStream(
+      body: { question: string; component_id?: string; request_id: string },
+      onEvent: (ev: AskEvent) => void,
+      signal?: AbortSignal,
+    ) {
+      const resp = await fetchImpl('/api/llm/ask/stream', {
+        method: 'POST',
+        headers: { ...headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal,
+      })
+      if (!resp.ok || !resp.body) {
+        throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+      }
+      const reader = resp.body.getReader()
+      const dec = new TextDecoder()
+      let buf = ''
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buf += dec.decode(value, { stream: true })
+        let i
+        while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim()
+          buf = buf.slice(i + 1)
+          if (line) onEvent(JSON.parse(line) as AskEvent)
+        }
+      }
+    },
     registryKinds: () => call<KindSummary[]>('/api/registry/kinds'),
     registryVersions: (kind: string) =>
       call<DeploymentVersion[]>('/api/registry/versions', {}, { kind }),
@@ -167,6 +222,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       }),
   }
 }
+
+export type AskEvent =
+  | { type: 'context'; citations: unknown[]; health_state: string | null }
+  | { type: 'token'; text: string }
+  | { type: 'answer'; response: AssistantResponse }
+  | { type: 'error'; code: string; message: string }
 
 export type MonitoringApi = ReturnType<typeof createMonitoringApi>
 export const monitoringApi = createMonitoringApi()

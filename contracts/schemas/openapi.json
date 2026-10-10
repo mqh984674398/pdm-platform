@@ -5528,6 +5528,899 @@
           }
         }
       }
+    },
+    "/api/llm/settings": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Get Settings ",
+        "operationId": "get_settings__api_llm_settings_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmConfigState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Put Settings",
+        "operationId": "put_settings_api_llm_settings_put",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmConfig-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmConfigState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/health": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_llm_health_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmHealth"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/ask": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Ask",
+        "operationId": "ask_api_llm_ask_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/ask/stream": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Ask Stream",
+        "description": "Newline-delimited JSON events; cancel with POST /llm/ask/{request_id}/cancel or by disconnecting.",
+        "operationId": "ask_stream_api_llm_ask_stream_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/ask/{request_id}/cancel": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_api_llm_ask__request_id__cancel_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/documents": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Documents",
+        "operationId": "documents_api_llm_documents_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Document"
+                  },
+                  "title": "Response Documents Api Llm Documents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Add Document",
+        "operationId": "add_document_api_llm_documents_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/llm/documents/{doc_id}/approve": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Approve Document",
+        "operationId": "approve_document_api_llm_documents__doc_id__approve_post",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Doc Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feedback": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Submit Feedback",
+        "operationId": "submit_feedback_api_feedback_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "List Feedback",
+        "operationId": "list_feedback_api_feedback_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "alarm_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Alarm Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackItem"
+                  },
+                  "title": "Response List Feedback Api Feedback Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feedback/{feedback_id}/review": {
+      "post": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Review Feedback",
+        "operationId": "review_feedback_api_feedback__feedback_id__review_post",
+        "parameters": [
+          {
+            "name": "feedback_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Feedback Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6071,6 +6964,118 @@
         "title": "ApiError",
         "type": "object"
       },
+      "AssistantRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id",
+            "description": "Lets the caller cancel a stream"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AssistantRequest"
+      },
+      "AssistantResponse": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checks"
+          },
+          "health_state": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthState"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "From the rules and evidence fusion, not from the LLM"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "guard_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guard Notes"
+          },
+          "is_simulated": {
+            "type": "boolean",
+            "title": "Is Simulated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "answer",
+          "citations",
+          "checks",
+          "health_state",
+          "decision_id",
+          "model",
+          "guard_notes",
+          "is_simulated"
+        ],
+        "title": "AssistantResponse"
+      },
       "AuditEntry": {
         "additionalProperties": false,
         "properties": {
@@ -6429,6 +7434,40 @@
         ],
         "title": "ChartKind",
         "type": "string"
+      },
+      "Citation": {
+        "properties": {
+          "chunk_id": {
+            "type": "string",
+            "title": "Chunk Id"
+          },
+          "doc_id": {
+            "type": "string",
+            "title": "Doc Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "excerpt": {
+            "type": "string",
+            "title": "Excerpt"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "chunk_id",
+          "doc_id",
+          "title",
+          "excerpt",
+          "score"
+        ],
+        "title": "Citation"
       },
       "ClassProbabilityResult": {
         "additionalProperties": false,
@@ -7920,6 +8959,100 @@
         "title": "DeviceSuggestions",
         "type": "object"
       },
+      "Document": {
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "title": "Doc Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "min_role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "added_by": {
+            "type": "string",
+            "title": "Added By"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "chunks": {
+            "type": "integer",
+            "title": "Chunks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "doc_id",
+          "title",
+          "min_role",
+          "source",
+          "approved",
+          "added_by",
+          "added_at",
+          "approved_by",
+          "chunks"
+        ],
+        "title": "Document"
+      },
+      "DocumentIn": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 200000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "min_role": {
+            "$ref": "#/components/schemas/Role",
+            "default": "viewer"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Source",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "text"
+        ],
+        "title": "DocumentIn"
+      },
       "EligibilityCondition": {
         "additionalProperties": false,
         "description": "A declarative precondition checked before the operator's output may be used (L6-01).",
@@ -8506,6 +9639,179 @@
         ],
         "title": "Feedback",
         "type": "object"
+      },
+      "FeedbackIn": {
+        "properties": {
+          "alarm_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alarm Id"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Id"
+          },
+          "maintenance_event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maintenance Event Id"
+          },
+          "assistant_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assistant Ref"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/FeedbackVerdict"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Comment",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "verdict"
+        ],
+        "title": "FeedbackIn"
+      },
+      "FeedbackItem": {
+        "properties": {
+          "alarm_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alarm Id"
+          },
+          "decision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Id"
+          },
+          "maintenance_event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maintenance Event Id"
+          },
+          "assistant_ref": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assistant Ref"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/FeedbackVerdict"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Comment",
+            "default": ""
+          },
+          "feedback_id": {
+            "type": "string",
+            "title": "Feedback Id"
+          },
+          "submitted_by": {
+            "type": "string",
+            "title": "Submitted By"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "PENDING_REVIEW or REVIEWED"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "review_note": {
+            "type": "string",
+            "title": "Review Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "alarm_id",
+          "decision_id",
+          "maintenance_event_id",
+          "assistant_ref",
+          "verdict",
+          "comment",
+          "feedback_id",
+          "submitted_by",
+          "submitted_at",
+          "status",
+          "reviewed_by",
+          "review_note"
+        ],
+        "title": "FeedbackItem"
       },
       "FeedbackVerdict": {
         "enum": [
@@ -9100,6 +10406,218 @@
         ],
         "title": "LifecycleStatus",
         "type": "string"
+      },
+      "LlmConfig-Input": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "default": "http://127.0.0.1:11434"
+          },
+          "chat_model": {
+            "type": "string",
+            "title": "Chat Model",
+            "default": ""
+          },
+          "embed_model": {
+            "type": "string",
+            "title": "Embed Model",
+            "default": ""
+          },
+          "allowed_hosts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Hosts",
+            "description": "LAN host names allowed besides IPs"
+          },
+          "allowed_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Models",
+            "description": "Empty: any installed local model"
+          },
+          "timeout_s": {
+            "type": "number",
+            "maximum": 600.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Timeout S",
+            "default": 60.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LlmConfig"
+      },
+      "LlmConfig-Output": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "default": "http://127.0.0.1:11434"
+          },
+          "chat_model": {
+            "type": "string",
+            "title": "Chat Model",
+            "default": ""
+          },
+          "embed_model": {
+            "type": "string",
+            "title": "Embed Model",
+            "default": ""
+          },
+          "allowed_hosts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Hosts",
+            "description": "LAN host names allowed besides IPs"
+          },
+          "allowed_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Models",
+            "description": "Empty: any installed local model"
+          },
+          "timeout_s": {
+            "type": "number",
+            "maximum": 600.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Timeout S",
+            "default": 60.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "enabled",
+          "endpoint",
+          "chat_model",
+          "embed_model",
+          "allowed_hosts",
+          "allowed_models",
+          "timeout_s"
+        ],
+        "title": "LlmConfig"
+      },
+      "LlmConfigState": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/LlmConfig-Output"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "changed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed By"
+          },
+          "changed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "config",
+          "version",
+          "changed_by",
+          "changed_at"
+        ],
+        "title": "LlmConfigState"
+      },
+      "LlmHealth": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "reachable": {
+            "type": "boolean",
+            "title": "Reachable"
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "chat_model_installed": {
+            "type": "boolean",
+            "title": "Chat Model Installed"
+          },
+          "embed_model_installed": {
+            "type": "boolean",
+            "title": "Embed Model Installed"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "enabled",
+          "reachable",
+          "endpoint",
+          "version",
+          "models",
+          "chat_model_installed",
+          "embed_model_installed",
+          "detail"
+        ],
+        "title": "LlmHealth"
       },
       "LocalizedText": {
         "additionalProperties": false,
@@ -11138,6 +12656,29 @@
         ],
         "title": "ResultMeta",
         "type": "object"
+      },
+      "Review": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Review"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "viewer",
+          "maintenance",
+          "engineer",
+          "admin"
+        ],
+        "title": "Role"
       },
       "Rollback": {
         "properties": {

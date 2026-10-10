@@ -26,6 +26,20 @@ const failed = ref(false)
 const busy = ref<string | null>(null)
 const actionError = ref<string | null>(null)
 const comments = ref<Record<string, string>>({})
+const feedbackSent = ref<Record<string, boolean>>({})
+
+async function sendFeedback(a: Alarm, verdict: 'CONFIRMED' | 'FALSE_ALARM') {
+  try {
+    await monitoringApi.feedback({
+      alarm_id: a.alarm_id,
+      verdict,
+      comment: comments.value[a.alarm_id] ?? '',
+    })
+    feedbackSent.value[a.alarm_id] = true
+  } catch {
+    actionError.value = a.alarm_id
+  }
+}
 
 async function load() {
   failed.value = false
@@ -141,6 +155,22 @@ async function act(a: Alarm, action: 'acknowledge' | 'resolve') {
             <dt>{{ t('alarms.evidence') }}</dt>
             <dd class="ids">{{ a.evidence_ids.join(', ') }}</dd>
           </dl>
+          <p class="fb">
+            <span>{{ t('alarms.feedback') }}</span>
+            <template v-if="!feedbackSent[a.alarm_id]">
+              <button
+                type="button"
+                data-testid="fb-confirmed"
+                @click="sendFeedback(a, 'CONFIRMED')"
+              >
+                {{ t('alarms.confirmed') }}
+              </button>
+              <button type="button" data-testid="fb-false" @click="sendFeedback(a, 'FALSE_ALARM')">
+                {{ t('alarms.falseAlarm') }}
+              </button>
+            </template>
+            <span v-else data-testid="fb-sent">{{ t('alarms.feedbackSent') }}</span>
+          </p>
           <form v-if="a.status !== 'RESOLVED'" class="actions" @submit.prevent>
             <label class="comment">
               <span>{{ t('alarms.comment') }}</span>
@@ -253,6 +283,19 @@ dt {
   font-size: var(--text-xs);
   color: var(--ink-faint);
   overflow-wrap: anywhere;
+}
+.fb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+.fb button {
+  padding: 2px 8px;
+  font-size: var(--text-xs);
 }
 .actions {
   display: flex;

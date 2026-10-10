@@ -1052,6 +1052,165 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/llm/settings': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Settings */
+    get: operations['get_settings__api_llm_settings_get']
+    /** Put Settings */
+    put: operations['put_settings_api_llm_settings_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/health': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Health */
+    get: operations['health_api_llm_health_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/ask': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Ask */
+    post: operations['ask_api_llm_ask_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/ask/stream': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Ask Stream
+     * @description Newline-delimited JSON events; cancel with POST /llm/ask/{request_id}/cancel or by disconnecting.
+     */
+    post: operations['ask_stream_api_llm_ask_stream_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/ask/{request_id}/cancel': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Cancel */
+    post: operations['cancel_api_llm_ask__request_id__cancel_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/documents': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Documents */
+    get: operations['documents_api_llm_documents_get']
+    put?: never
+    /** Add Document */
+    post: operations['add_document_api_llm_documents_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/llm/documents/{doc_id}/approve': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Approve Document */
+    post: operations['approve_document_api_llm_documents__doc_id__approve_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/feedback': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Feedback */
+    get: operations['list_feedback_api_feedback_get']
+    put?: never
+    /** Submit Feedback */
+    post: operations['submit_feedback_api_feedback_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/feedback/{feedback_id}/review': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Review Feedback */
+    post: operations['review_feedback_api_feedback__feedback_id__review_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1281,6 +1440,37 @@ export interface components {
         [key: string]: unknown
       } | null
     }
+    /** AssistantRequest */
+    AssistantRequest: {
+      /** Question */
+      question: string
+      /** Component Id */
+      component_id?: string | null
+      /**
+       * Request Id
+       * @description Lets the caller cancel a stream
+       */
+      request_id?: string | null
+    }
+    /** AssistantResponse */
+    AssistantResponse: {
+      /** Answer */
+      answer: string
+      /** Citations */
+      citations: components['schemas']['Citation'][]
+      /** Checks */
+      checks: string[]
+      /** @description From the rules and evidence fusion, not from the LLM */
+      health_state: components['schemas']['HealthState'] | null
+      /** Decision Id */
+      decision_id: string | null
+      /** Model */
+      model: string
+      /** Guard Notes */
+      guard_notes: string[]
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /** AuditEntry */
     AuditEntry: {
       /**
@@ -1445,6 +1635,19 @@ export interface components {
      * @enum {string}
      */
     ChartKind: 'LINE' | 'SCATTER' | 'HISTOGRAM' | 'CYCLE_DURATION'
+    /** Citation */
+    Citation: {
+      /** Chunk Id */
+      chunk_id: string
+      /** Doc Id */
+      doc_id: string
+      /** Title */
+      title: string
+      /** Excerpt */
+      excerpt: string
+      /** Score */
+      score: number
+    }
     /** ClassProbabilityResult */
     ClassProbabilityResult: {
       /** Operator Id */
@@ -2024,6 +2227,43 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** Document */
+    Document: {
+      /** Doc Id */
+      doc_id: string
+      /** Title */
+      title: string
+      min_role: components['schemas']['Role']
+      /** Source */
+      source: string
+      /** Approved */
+      approved: boolean
+      /** Added By */
+      added_by: string
+      /**
+       * Added At
+       * Format: date-time
+       */
+      added_at: string
+      /** Approved By */
+      approved_by: string | null
+      /** Chunks */
+      chunks: number
+    }
+    /** DocumentIn */
+    DocumentIn: {
+      /** Title */
+      title: string
+      /** Text */
+      text: string
+      /** @default viewer */
+      min_role: components['schemas']['Role']
+      /**
+       * Source
+       * @default
+       */
+      source: string
+    }
     /**
      * EligibilityCondition
      * @description A declarative precondition checked before the operator's output may be used (L6-01).
@@ -2257,6 +2497,61 @@ export interface components {
        * @default null
        */
       maintenance_event_id: string | null
+    }
+    /** FeedbackIn */
+    FeedbackIn: {
+      /** Alarm Id */
+      alarm_id?: string | null
+      /** Decision Id */
+      decision_id?: string | null
+      /** Maintenance Event Id */
+      maintenance_event_id?: string | null
+      /** Assistant Ref */
+      assistant_ref?: string | null
+      verdict: components['schemas']['FeedbackVerdict']
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+    }
+    /** FeedbackItem */
+    FeedbackItem: {
+      /** Alarm Id */
+      alarm_id: string | null
+      /** Decision Id */
+      decision_id: string | null
+      /** Maintenance Event Id */
+      maintenance_event_id: string | null
+      /** Assistant Ref */
+      assistant_ref: string | null
+      verdict: components['schemas']['FeedbackVerdict']
+      /**
+       * Comment
+       * @default
+       */
+      comment: string
+      /** Feedback Id */
+      feedback_id: string
+      /** Submitted By */
+      submitted_by: string
+      /**
+       * Submitted At
+       * Format: date-time
+       */
+      submitted_at: string
+      /**
+       * Status
+       * @description PENDING_REVIEW or REVIEWED
+       */
+      status: string
+      /** Reviewed By */
+      reviewed_by: string | null
+      /**
+       * Review Note
+       * @default
+       */
+      review_note: string
     }
     /**
      * FeedbackVerdict
@@ -2499,6 +2794,114 @@ export interface components {
      * @enum {string}
      */
     LifecycleStatus: 'ACTIVE' | 'RETIRED'
+    /** LlmConfig */
+    'LlmConfig-Input': {
+      /**
+       * Enabled
+       * @default false
+       */
+      enabled: boolean
+      /**
+       * Endpoint
+       * @default http://127.0.0.1:11434
+       */
+      endpoint: string
+      /**
+       * Chat Model
+       * @default
+       */
+      chat_model: string
+      /**
+       * Embed Model
+       * @default
+       */
+      embed_model: string
+      /**
+       * Allowed Hosts
+       * @description LAN host names allowed besides IPs
+       */
+      allowed_hosts?: string[]
+      /**
+       * Allowed Models
+       * @description Empty: any installed local model
+       */
+      allowed_models?: string[]
+      /**
+       * Timeout S
+       * @default 60
+       */
+      timeout_s: number
+    }
+    /** LlmConfig */
+    'LlmConfig-Output': {
+      /**
+       * Enabled
+       * @default false
+       */
+      enabled: boolean
+      /**
+       * Endpoint
+       * @default http://127.0.0.1:11434
+       */
+      endpoint: string
+      /**
+       * Chat Model
+       * @default
+       */
+      chat_model: string
+      /**
+       * Embed Model
+       * @default
+       */
+      embed_model: string
+      /**
+       * Allowed Hosts
+       * @description LAN host names allowed besides IPs
+       */
+      allowed_hosts: string[]
+      /**
+       * Allowed Models
+       * @description Empty: any installed local model
+       */
+      allowed_models: string[]
+      /**
+       * Timeout S
+       * @default 60
+       */
+      timeout_s: number
+    }
+    /** LlmConfigState */
+    LlmConfigState: {
+      config: components['schemas']['LlmConfig-Output']
+      /** Version */
+      version: number
+      /** Changed By */
+      changed_by: string | null
+      /** Changed At */
+      changed_at: string | null
+    }
+    /** LlmHealth */
+    LlmHealth: {
+      /** Enabled */
+      enabled: boolean
+      /** Reachable */
+      reachable: boolean
+      /** Endpoint */
+      endpoint: string
+      /** Version */
+      version: string | null
+      /** Models */
+      models: string[]
+      /** Chat Model Installed */
+      chat_model_installed: boolean
+      /** Embed Model Installed */
+      embed_model_installed: boolean
+      /**
+       * Detail
+       * @default
+       */
+      detail: string
+    }
     /**
      * LocalizedText
      * @description User-facing text in both supported languages (GEN-05).
@@ -3333,6 +3736,19 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** Review */
+    Review: {
+      /**
+       * Note
+       * @default
+       */
+      note: string
+    }
+    /**
+     * Role
+     * @enum {string}
+     */
+    Role: 'viewer' | 'maintenance' | 'engineer' | 'admin'
     /** Rollback */
     Rollback: {
       /** Comment */
@@ -6716,6 +7132,421 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['DeploymentVersion']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_settings__api_llm_settings_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LlmConfigState']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_settings_api_llm_settings_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LlmConfig-Input']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LlmConfigState']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  health_api_llm_health_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LlmHealth']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  ask_api_llm_ask_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AssistantRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AssistantResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  ask_stream_api_llm_ask_stream_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AssistantRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  cancel_api_llm_ask__request_id__cancel_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        request_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  documents_api_llm_documents_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Document'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  add_document_api_llm_documents_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DocumentIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Document']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  approve_document_api_llm_documents__doc_id__approve_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        doc_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Document']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_feedback_api_feedback_get: {
+    parameters: {
+      query?: {
+        status?: string | null
+        alarm_id?: string | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FeedbackItem'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  submit_feedback_api_feedback_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FeedbackIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FeedbackItem']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  review_feedback_api_feedback__feedback_id__review_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        feedback_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['Review']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FeedbackItem']
         }
       }
       /** @description Validation Error */

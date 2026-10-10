@@ -29,6 +29,12 @@ export default defineConfig({
       timeout: 180_000,
     },
     {
+      // Deterministic stand-in for a local Ollama (T027); no model runs in CI.
+      command: `${python} ../backend/scripts/fake_ollama.py --port 11435`,
+      url: 'http://127.0.0.1:11435/api/version',
+      reuseExistingServer: false,
+    },
+    {
       command: 'npm run preview',
       url: 'http://127.0.0.1:4173',
       reuseExistingServer: true,
