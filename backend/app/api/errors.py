@@ -24,6 +24,7 @@ from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
+from app.equipment.plant import PlantPermissionError
 from app.feedback.service import FeedbackNotFoundError, FeedbackPermissionError
 from app.llm.assistant import AssistantDisabled, AssistantResponseError
 from app.llm.client import LlmCancelled, LlmTimeout, LlmUnavailable
@@ -55,6 +56,7 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (EquipmentNotFoundError, 404, "unknown_equipment", "未找到该设备、部件、生命周期或工作流。", "Machine, component, lifecycle or workflow not found."),
     (EquipmentConflictError, 409, "equipment_conflict", "与已记录的设备或维护历史冲突，未保存。", "Conflicts with the recorded equipment or maintenance history; nothing was saved."),
     (WorkflowTransitionError, 409, "workflow_transition_refused", "不允许该维护工作流状态转换。", "This maintenance workflow transition is not allowed."),
+    (PlantPermissionError, 403, "plant_role", "设备结构只能由管理员修改。", "Only an administrator can change the plant structure."),
     (WorkflowPermissionError, 403, "workflow_review_role", "关闭复核需要工程师角色。", "Closing a review requires the engineer role."),
     (AlarmNotFoundError, 404, "unknown_alarm", "未找到该报警。", "Alarm not found."),
     (AlarmTransitionError, 409, "alarm_transition_refused", "不允许该报警状态变更。", "This alarm status change is not allowed."),

@@ -641,6 +641,110 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/plant-tree': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Plant Tree */
+    get: operations['plant_tree_api_plant_tree_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-nodes/{node_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Node */
+    put: operations['put_node_api_plant_nodes__node_id__put']
+    post?: never
+    /** Delete Node */
+    delete: operations['delete_node_api_plant_nodes__node_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-machines': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Create Machine */
+    post: operations['create_machine_api_plant_machines_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-machines/{machine_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Place Machine */
+    put: operations['place_machine_api_plant_machines__machine_id__put']
+    post?: never
+    /** Delete Machine */
+    delete: operations['delete_machine_api_plant_machines__machine_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-machines/{machine_id}/components/{component_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Component */
+    put: operations['put_component_api_plant_machines__machine_id__components__component_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-components/{component_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Delete Component */
+    delete: operations['delete_component_api_plant_components__component_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/baselines/verified': {
     parameters: {
       query?: never
@@ -1810,6 +1914,20 @@ export interface components {
       comment: string
     }
     /**
+     * CommonCause
+     * @description Two or more components on one shared drive chain are abnormal at the same time (S19, D-038).
+     *
+     *     The drive chain is the likelier single cause than separate wear of each component, so it is
+     *     pointed out next to each component's own health output. Health states themselves are unchanged.
+     */
+    CommonCause: {
+      /** Drive Chain Id */
+      drive_chain_id: string
+      /** Component Ids */
+      component_ids: string[]
+      note: components['schemas']['LocalizedText']
+    }
+    /**
      * ComponentAging
      * @description Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08).
      */
@@ -1843,6 +1961,18 @@ export interface components {
       last_maintenance_at: string | null
     }
     /**
+     * ComponentChange
+     * @description What an administrator sets for a component; lifecycles and signals are kept.
+     */
+    ComponentChange: {
+      /** Component Id */
+      component_id: string
+      type: components['schemas']['ComponentType']
+      name: components['schemas']['LocalizedText']
+      /** Drive Chain Id */
+      drive_chain_id?: string | null
+    }
+    /**
      * ComponentHealthReport
      * @description Current health decision of a component with its evidence trail (L6-04).
      */
@@ -1852,6 +1982,8 @@ export interface components {
       evidence: components['schemas']['Evidence'][]
       /** Recommendations */
       recommendations: components['schemas']['Recommendation'][]
+      /** @default null */
+      common_cause: components['schemas']['CommonCause'] | null
       /** Is Simulated */
       is_simulated: boolean
     }
@@ -2712,6 +2844,8 @@ export interface components {
       drive_chain_id: string | null
       health: components['schemas']['HealthState']
       reason: components['schemas']['LocalizedText']
+      /** @default null */
+      common_cause: components['schemas']['CommonCause'] | null
       /** Lifecycle Id */
       lifecycle_id: string | null
       /** Last Window End */
@@ -2736,6 +2870,11 @@ export interface components {
       name: components['schemas']['LocalizedText']
       /** Line */
       line: string | null
+      /**
+       * @description Workshop / process (D-037)
+       * @default null
+       */
+      path: components['schemas']['LocalizedText'] | null
       /**
        * As Of
        * @description Newest evaluated window of the machine
@@ -3052,6 +3191,23 @@ export interface components {
       line: string | null
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Process Id
+       * @description Process (工序) node in the plant structure; set by administrators
+       * @default null
+       */
+      process_id: string | null
+      /**
+       * Device Id
+       * @description Device id of this machine in the data source (e.g. a TDengine tag)
+       * @default null
+       */
+      device_id: string | null
+      /**
+       * @description Workshop / process path, derived from the plant structure (read-only)
+       * @default null
+       */
+      path: components['schemas']['LocalizedText'] | null
     }
     /** Machine */
     'Machine-Input': {
@@ -3062,6 +3218,18 @@ export interface components {
       line?: string | null
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Process Id
+       * @description Process (工序) node in the plant structure; set by administrators
+       */
+      process_id?: string | null
+      /**
+       * Device Id
+       * @description Device id of this machine in the data source (e.g. a TDengine tag)
+       */
+      device_id?: string | null
+      /** @description Workshop / process path, derived from the plant structure (read-only) */
+      path?: components['schemas']['LocalizedText'] | null
     }
     /** Machine */
     'Machine-Output': {
@@ -3072,6 +3240,28 @@ export interface components {
       line: string | null
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Process Id
+       * @description Process (工序) node in the plant structure; set by administrators
+       */
+      process_id: string | null
+      /**
+       * Device Id
+       * @description Device id of this machine in the data source (e.g. a TDengine tag)
+       */
+      device_id: string | null
+      /** @description Workshop / process path, derived from the plant structure (read-only) */
+      path: components['schemas']['LocalizedText'] | null
+    }
+    /** MachineCreate */
+    MachineCreate: {
+      /** Machine Id */
+      machine_id: string
+      name: components['schemas']['LocalizedText']
+      /** Process Id */
+      process_id: string
+      /** Device Id */
+      device_id?: string | null
     }
     /** MachineOperations */
     MachineOperations: {
@@ -3098,6 +3288,14 @@ export interface components {
       not_evaluated: components['schemas']['OperatingState'][]
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** MachinePlacement */
+    MachinePlacement: {
+      /** Process Id */
+      process_id: string | null
+      /** Device Id */
+      device_id?: string | null
+      name?: components['schemas']['LocalizedText'] | null
     }
     /**
      * MaintenanceEvent
@@ -3504,6 +3702,70 @@ export interface components {
      */
     PhysicalQuantity:
       'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'OTHER'
+    /**
+     * PlantLevel
+     * @enum {string}
+     */
+    PlantLevel: 'WORKSHOP' | 'PROCESS'
+    /** PlantMachine */
+    PlantMachine: {
+      /** Machine Id */
+      machine_id: string
+      name: components['schemas']['LocalizedText']
+      /** Device Id */
+      device_id: string | null
+      /** Is Simulated */
+      is_simulated: boolean
+      /** Components */
+      components: components['schemas']['ComponentInstance-Output'][]
+    }
+    /** PlantNodeChange */
+    PlantNodeChange: {
+      /** Node Id */
+      node_id: string
+      /**
+       * Parent Id
+       * @description Workshop of a process; None for a workshop
+       */
+      parent_id?: string | null
+      level: components['schemas']['PlantLevel']
+      name: components['schemas']['LocalizedText']
+      /**
+       * Sort
+       * @default 0
+       */
+      sort: number
+    }
+    /** PlantProcess */
+    PlantProcess: {
+      /** Node Id */
+      node_id: string
+      name: components['schemas']['LocalizedText']
+      /** Sort */
+      sort: number
+      /** Machines */
+      machines: components['schemas']['PlantMachine'][]
+    }
+    /** PlantTree */
+    PlantTree: {
+      /** Workshops */
+      workshops: components['schemas']['PlantWorkshop'][]
+      /**
+       * Unplaced
+       * @description Machines not yet assigned to a process
+       */
+      unplaced: components['schemas']['PlantMachine'][]
+    }
+    /** PlantWorkshop */
+    PlantWorkshop: {
+      /** Node Id */
+      node_id: string
+      name: components['schemas']['LocalizedText']
+      /** Sort */
+      sort: number
+      /** Processes */
+      processes: components['schemas']['PlantProcess'][]
+    }
     PredictionResult:
       | components['schemas']['AnomalyScoreResult']
       | components['schemas']['ClassProbabilityResult']
@@ -4505,6 +4767,14 @@ export interface components {
       dataset_id: string | null
       /** @default null */
       label: components['schemas']['LocalizedText'] | null
+      /**
+       * Machine Id
+       * @description Machine bound to this device (D-037)
+       * @default null
+       */
+      machine_id: string | null
+      /** @default null */
+      machine_path: components['schemas']['LocalizedText'] | null
       /** Keys */
       keys: components['schemas']['DeviceKey'][]
       /** Is Simulated */
@@ -6471,6 +6741,285 @@ export interface operations {
         content: {
           'application/json': components['schemas']['MaintenanceWorkflow']
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  plant_tree_api_plant_tree_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlantTree']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_node_api_plant_nodes__node_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        node_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PlantNodeChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlantTree']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_node_api_plant_nodes__node_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        node_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  create_machine_api_plant_machines_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MachineCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Machine-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  place_machine_api_plant_machines__machine_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MachinePlacement']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Machine-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_machine_api_plant_machines__machine_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_component_api_plant_machines__machine_id__components__component_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ComponentChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentInstance-Output']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_component_api_plant_components__component_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {

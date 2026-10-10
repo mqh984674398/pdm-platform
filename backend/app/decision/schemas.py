@@ -84,6 +84,17 @@ class HealthTrend(ContractModel):
     points: list[TrendPoint]
 
 
+class CommonCause(ContractModel):
+    """Two or more components on one shared drive chain are abnormal at the same time (S19, D-038).
+
+    The drive chain is the likelier single cause than separate wear of each component, so it is
+    pointed out next to each component's own health output. Health states themselves are unchanged."""
+
+    drive_chain_id: str
+    component_ids: list[str] = Field(min_length=2)
+    note: LocalizedText
+
+
 class FleetComponent(ContractModel):
     """One component on the dashboard: its current health output and what it is based on (UI-02/03)."""
 
@@ -94,6 +105,7 @@ class FleetComponent(ContractModel):
     drive_chain_id: str | None
     health: HealthState
     reason: LocalizedText
+    common_cause: CommonCause | None = None
     lifecycle_id: str | None
     last_window_end: AwareDatetime | None
     open_alarms: int
@@ -108,6 +120,7 @@ class FleetMachine(ContractModel):
     machine_id: str
     name: LocalizedText
     line: str | None
+    path: LocalizedText | None = Field(default=None, description="Workshop / process (D-037)")
     as_of: AwareDatetime | None = Field(description="Newest evaluated window of the machine")
     components: list[FleetComponent]
     is_simulated: bool
@@ -126,6 +139,7 @@ class ComponentHealthReport(ContractModel):
     decision: Decision
     evidence: list[Evidence]
     recommendations: list[Recommendation] = Field(default_factory=list)
+    common_cause: CommonCause | None = None
     is_simulated: bool
 
 

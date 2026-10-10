@@ -52,7 +52,8 @@ const found = computed(() => {
         </div>
       </nav>
       <PanelBox>
-        <p class="crumb">
+        <p class="crumb" data-testid="component-crumb">
+          <span v-if="found.machine.path">{{ lt(found.machine.path) }} / </span>
           <RouterLink
             :to="`/machine/${found.machine.machine_id}?c=${found.component.component_id}`"
             >{{ lt(found.machine.name) }}</RouterLink

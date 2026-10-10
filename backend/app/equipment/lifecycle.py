@@ -51,13 +51,18 @@ class MachineRecord(Base):
     name: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
     line: Mapped[str | None] = mapped_column(String(64), nullable=True)
     is_simulated: Mapped[bool] = mapped_column(nullable=False)
+    process_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    device_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
 
-    def to_model(self) -> Machine:
+    def to_model(self, path: LocalizedText | None = None) -> Machine:
         return Machine(
             machine_id=self.machine_id,
             name=LocalizedText.model_validate(self.name),
             line=self.line,
             is_simulated=self.is_simulated,
+            process_id=self.process_id,
+            device_id=self.device_id,
+            path=path,
         )
 
 
@@ -123,9 +128,15 @@ class EquipmentStore:
 
     # --- topology (L3-01) ----------------------------------------------------------------------
 
+    def _paths(self) -> dict[str, LocalizedText]:
+        from app.equipment.plant import process_paths  # plant structure lives beside the topology
+
+        return process_paths(self.session)
+
     def machines(self) -> list[Machine]:
+        paths = self._paths()
         return [
-            r.to_model()
+            r.to_model(paths.get(r.process_id or ""))
             for r in self.session.scalars(select(MachineRecord).order_by(MachineRecord.machine_id))
         ]
 
@@ -133,7 +144,13 @@ class EquipmentStore:
         rec = self.session.get(MachineRecord, machine_id)
         if rec is None:
             raise EquipmentNotFoundError(f"machine '{machine_id}' does not exist")
-        return rec.to_model()
+        return rec.to_model(self._paths().get(rec.process_id or ""))
+
+    def machine_for_device(self, device_id: str) -> Machine | None:
+        """The machine bound to a data source device id (or named like it), if any."""
+        rec = self.session.scalars(select(MachineRecord).where(MachineRecord.device_id == device_id)).first()
+        rec = rec or self.session.get(MachineRecord, device_id)
+        return None if rec is None else self.machine(rec.machine_id)
 
     def put_machine(self, m: Machine, who: Principal) -> Machine:
         rec = self.session.get(MachineRecord, m.machine_id)
@@ -143,9 +160,11 @@ class EquipmentStore:
             self.session.add(rec)
         elif rec.is_simulated != m.is_simulated:
             raise EquipmentConflictError("a machine cannot switch between simulated and real")
+        # Placement (process, device id) is changed only through the plant structure (D-037).
         rec.name, rec.line, rec.is_simulated = m.name.model_dump(), m.line, m.is_simulated
         audit(self.session, who, f"topology.machine_{action}", "machine", m.machine_id)
-        return rec.to_model()
+        self.session.flush()
+        return self.machine(m.machine_id)
 
     def components(self, machine_id: str | None = None) -> list[ComponentInstance]:
         stmt = select(ComponentRecord).order_by(ComponentRecord.component_id)

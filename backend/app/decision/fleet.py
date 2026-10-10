@@ -25,6 +25,7 @@ from app.core.schemas import LocalizedText, ResultMeta, TimeWindow
 from app.decision.config import active as active_config
 from app.decision.fusion import FusionInput, FusionResult, Preconditions, fuse, recommend
 from app.decision.schemas import (
+    CommonCause,
     ComponentHealthReport,
     Decision,
     Evidence,
@@ -284,11 +285,14 @@ class FleetHealthService:
                         is_simulated=self.equipment.is_simulated(c.component_id),
                     )
                 )
+            causes = common_causes([(r.component_id, r.drive_chain_id, r.health) for r in rows])
+            rows = [r.model_copy(update={"common_cause": causes.get(r.component_id)}) for r in rows]
             machines.append(
                 FleetMachine(
                     machine_id=m.machine_id,
                     name=m.name,
                     line=m.line,
+                    path=m.path,
                     as_of=as_of,
                     components=rows,
                     is_simulated=m.is_simulated,
@@ -406,9 +410,63 @@ class FleetHealthService:
                 meta=meta(feature_ref, window),
             )
             recommendations = recommend(decision, comp.type, evidence, {})
+        cause = None
+        if comp.drive_chain_id:
+            peers = [
+                c
+                for c in self.equipment.components(comp.machine_id)
+                if c.drive_chain_id == comp.drive_chain_id
+            ]
+            states = [
+                (
+                    c.component_id,
+                    c.drive_chain_id,
+                    a.health
+                    if c.component_id == component_id
+                    else self._assess(c.component_id, *self._evaluate(c.component_id), as_of).health,
+                )
+                for c in peers
+            ]
+            cause = common_causes(states).get(component_id)
         return ComponentHealthReport(
-            decision=decision, evidence=evidence, recommendations=recommendations, is_simulated=sim
+            decision=decision,
+            evidence=evidence,
+            recommendations=recommendations,
+            common_cause=cause,
+            is_simulated=sim,
         )
+
+
+ABNORMAL = (HealthState.WARNING, HealthState.CRITICAL)
+
+
+def common_causes(
+    components: Sequence[tuple[str, str | None, HealthState]],
+) -> dict[str, CommonCause]:
+    """component id → shared drive-chain cause, for chains with two or more WARNING/CRITICAL members."""
+    chains: dict[str, list[str]] = {}
+    for cid, chain, health in components:
+        if chain and health in ABNORMAL:
+            chains.setdefault(chain, []).append(cid)
+    out: dict[str, CommonCause] = {}
+    for chain, ids in chains.items():
+        if len(ids) < 2:
+            continue
+        names = "、".join(ids)
+        cause = CommonCause(
+            drive_chain_id=chain,
+            component_ids=sorted(ids),
+            note=_t(
+                f"共用传动链 {chain} 上的 {names} 同时异常：优先检查传动链（联轴器、皮带、导轨与润滑），"
+                "再判断是否为各部件自身磨损。",
+                f"{', '.join(ids)} on shared drive chain {chain} are abnormal at the same time: check "
+                "the drive chain (coupling, belt, guides, lubrication) before treating it as wear of "
+                "each component.",
+            ),
+        )
+        for cid in ids:
+            out[cid] = cause
+    return out
 
 
 def component_type_ref(comp: ComponentInstance) -> str:

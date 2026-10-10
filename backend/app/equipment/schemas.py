@@ -27,6 +27,15 @@ class Machine(ContractModel):
     name: LocalizedText
     line: str | None = None
     is_simulated: bool
+    process_id: str | None = Field(
+        default=None, description="Process (工序) node in the plant structure; set by administrators"
+    )
+    device_id: str | None = Field(
+        default=None, description="Device id of this machine in the data source (e.g. a TDengine tag)"
+    )
+    path: LocalizedText | None = Field(
+        default=None, description="Workshop / process path, derived from the plant structure (read-only)"
+    )
 
 
 class ComponentInstance(ContractModel):

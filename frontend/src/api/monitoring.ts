@@ -31,6 +31,11 @@ import type {
   TimeWindow,
   UserInfo,
   VisualizationSeries,
+  ComponentChange,
+  MachineCreate,
+  MachinePlacement,
+  PlantNodeChange,
+  PlantTree,
 } from './contracts'
 import { authHeaders } from './session'
 
@@ -67,6 +72,11 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       throw new MonitoringApiError(resp.status, body)
     }
     return (await resp.json()) as T
+  }
+
+  async function remove(path: string): Promise<void> {
+    const resp = await fetchImpl(url(path), { method: 'DELETE', headers: headers() })
+    if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
   }
 
   return {
@@ -111,6 +121,29 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         method: 'PUT',
         body: JSON.stringify({ modules }),
       }),
+    plantTree: () => call<PlantTree>('/api/plant-tree'),
+    putPlantNode: (n: PlantNodeChange) =>
+      call<PlantTree>(`/api/plant-nodes/${encodeURIComponent(n.node_id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(n),
+      }),
+    deletePlantNode: (nodeId: string) => remove(`/api/plant-nodes/${encodeURIComponent(nodeId)}`),
+    createMachine: (m: MachineCreate) =>
+      call<Machine>('/api/plant-machines', { method: 'POST', body: JSON.stringify(m) }),
+    placeMachine: (machineId: string, p: MachinePlacement) =>
+      call<Machine>(`/api/plant-machines/${encodeURIComponent(machineId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(p),
+      }),
+    deleteMachine: (machineId: string) =>
+      remove(`/api/plant-machines/${encodeURIComponent(machineId)}`),
+    putComponent: (machineId: string, c: ComponentChange) =>
+      call<ComponentInstance>(
+        `/api/plant-machines/${encodeURIComponent(machineId)}/components/${encodeURIComponent(c.component_id)}`,
+        { method: 'PUT', body: JSON.stringify(c) },
+      ),
+    deleteComponent: (componentId: string) =>
+      remove(`/api/plant-components/${encodeURIComponent(componentId)}`),
     fleet: () => call<FleetOverview>('/api/fleet'),
     health: (componentId: string) =>
       call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),

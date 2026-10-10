@@ -23,7 +23,7 @@ async function mountApp(path = '/') {
 describe('App shell', () => {
   it('registers all 12 required interfaces as routes, plus administration', () => {
     expect(NAV.filter((n) => !n.adminOnly)).toHaveLength(12)
-    expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual(['users'])
+    expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual(['users', 'plant'])
     expect(routes.map((r) => r.name)).toEqual(NAV.map((n) => n.name))
   })
 
@@ -35,11 +35,11 @@ describe('App shell', () => {
     setLocale('zh-CN')
     const wrapper = await mountApp('/datasource')
     const nav = wrapper.get('[data-nav="datasource"]')
-    expect(nav.text()).toBe('数据源工作室')
+    expect(nav.text()).toBe('算法配置')
     expect(wrapper.get('[data-testid="backend-status"]').text()).toBe('无法连接后端服务')
     setLocale('en-US')
     await flushPromises()
-    expect(nav.text()).toBe('Data Source Studio')
+    expect(nav.text()).toBe('Algorithm configuration')
     expect(wrapper.get('[data-testid="backend-status"]').text()).toBe('Cannot reach the backend')
     expect(document.documentElement.lang).toBe('en-US')
     setLocale('zh-CN')

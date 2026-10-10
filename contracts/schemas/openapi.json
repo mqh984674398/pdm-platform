@@ -3610,6 +3610,604 @@
         }
       }
     },
+    "/api/plant-tree": {
+      "get": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Plant Tree",
+        "operationId": "plant_tree_api_plant_tree_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantTree"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plant-nodes/{node_id}": {
+      "put": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Put Node",
+        "operationId": "put_node_api_plant_nodes__node_id__put",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlantNodeChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantTree"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Delete Node",
+        "operationId": "delete_node_api_plant_nodes__node_id__delete",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plant-machines": {
+      "post": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Create Machine",
+        "operationId": "create_machine_api_plant_machines_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Machine-Output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plant-machines/{machine_id}": {
+      "put": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Place Machine",
+        "operationId": "place_machine_api_plant_machines__machine_id__put",
+        "parameters": [
+          {
+            "name": "machine_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Machine Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachinePlacement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Machine-Output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Delete Machine",
+        "operationId": "delete_machine_api_plant_machines__machine_id__delete",
+        "parameters": [
+          {
+            "name": "machine_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Machine Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plant-machines/{machine_id}/components/{component_id}": {
+      "put": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Put Component",
+        "operationId": "put_component_api_plant_machines__machine_id__components__component_id__put",
+        "parameters": [
+          {
+            "name": "machine_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Machine Id"
+            }
+          },
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentInstance-Output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plant-components/{component_id}": {
+      "delete": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Delete Component",
+        "operationId": "delete_component_api_plant_components__component_id__delete",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/baselines/verified": {
       "post": {
         "tags": [
@@ -8134,6 +8732,34 @@
         ],
         "title": "Comment"
       },
+      "CommonCause": {
+        "additionalProperties": false,
+        "description": "Two or more components on one shared drive chain are abnormal at the same time (S19, D-038).\n\nThe drive chain is the likelier single cause than separate wear of each component, so it is\npointed out next to each component's own health output. Health states themselves are unchanged.",
+        "properties": {
+          "drive_chain_id": {
+            "title": "Drive Chain Id",
+            "type": "string"
+          },
+          "component_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "title": "Component Ids",
+            "type": "array"
+          },
+          "note": {
+            "$ref": "#/components/schemas/LocalizedText"
+          }
+        },
+        "required": [
+          "drive_chain_id",
+          "component_ids",
+          "note"
+        ],
+        "title": "CommonCause",
+        "type": "object"
+      },
       "ComponentAging": {
         "additionalProperties": false,
         "description": "Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08).",
@@ -8204,6 +8830,42 @@
         "title": "ComponentAging",
         "type": "object"
       },
+      "ComponentChange": {
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+            "title": "Component Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ComponentType"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "drive_chain_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drive Chain Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_id",
+          "type",
+          "name"
+        ],
+        "title": "ComponentChange",
+        "description": "What an administrator sets for a component; lifecycles and signals are kept."
+      },
       "ComponentHealthReport": {
         "additionalProperties": false,
         "description": "Current health decision of a component with its evidence trail (L6-04).",
@@ -8225,6 +8887,17 @@
             "title": "Recommendations",
             "type": "array"
           },
+          "common_cause": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommonCause"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
@@ -8234,6 +8907,7 @@
           "decision",
           "evidence",
           "recommendations",
+          "common_cause",
           "is_simulated"
         ],
         "title": "ComponentHealthReport",
@@ -10451,6 +11125,17 @@
           "reason": {
             "$ref": "#/components/schemas/LocalizedText"
           },
+          "common_cause": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommonCause"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
           "lifecycle_id": {
             "anyOf": [
               {
@@ -10519,6 +11204,7 @@
           "drive_chain_id",
           "health",
           "reason",
+          "common_cause",
           "lifecycle_id",
           "last_window_end",
           "open_alarms",
@@ -10552,6 +11238,18 @@
             ],
             "title": "Line"
           },
+          "path": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workshop / process (D-037)"
+          },
           "as_of": {
             "anyOf": [
               {
@@ -10581,6 +11279,7 @@
           "machine_id",
           "name",
           "line",
+          "path",
           "as_of",
           "components",
           "is_simulated"
@@ -11253,13 +11952,54 @@
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
+          },
+          "process_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Process (工序) node in the plant structure; set by administrators",
+            "title": "Process Id"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Device id of this machine in the data source (e.g. a TDengine tag)",
+            "title": "Device Id"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workshop / process path, derived from the plant structure (read-only)"
           }
         },
         "required": [
           "machine_id",
           "name",
           "line",
-          "is_simulated"
+          "is_simulated",
+          "process_id",
+          "device_id",
+          "path"
         ],
         "title": "Machine",
         "type": "object"
@@ -11287,6 +12027,41 @@
           "is_simulated": {
             "type": "boolean",
             "title": "Is Simulated"
+          },
+          "process_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Id",
+            "description": "Process (工序) node in the plant structure; set by administrators"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id",
+            "description": "Device id of this machine in the data source (e.g. a TDengine tag)"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Workshop / process path, derived from the plant structure (read-only)"
           }
         },
         "additionalProperties": false,
@@ -11321,6 +12096,41 @@
           "is_simulated": {
             "type": "boolean",
             "title": "Is Simulated"
+          },
+          "process_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Id",
+            "description": "Process (工序) node in the plant structure; set by administrators"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id",
+            "description": "Device id of this machine in the data source (e.g. a TDengine tag)"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Workshop / process path, derived from the plant structure (read-only)"
           }
         },
         "additionalProperties": false,
@@ -11329,9 +12139,48 @@
           "machine_id",
           "name",
           "line",
-          "is_simulated"
+          "is_simulated",
+          "process_id",
+          "device_id",
+          "path"
         ],
         "title": "Machine"
+      },
+      "MachineCreate": {
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+            "title": "Machine Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "process_id": {
+            "type": "string",
+            "title": "Process Id"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_id",
+          "name",
+          "process_id"
+        ],
+        "title": "MachineCreate"
       },
       "MachineOperations": {
         "additionalProperties": false,
@@ -11409,6 +12258,49 @@
         ],
         "title": "MachineOperations",
         "type": "object"
+      },
+      "MachinePlacement": {
+        "properties": {
+          "process_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Id"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "process_id"
+        ],
+        "title": "MachinePlacement"
       },
       "MaintenanceEvent": {
         "additionalProperties": false,
@@ -12343,6 +13235,185 @@
         ],
         "title": "PhysicalQuantity",
         "type": "string"
+      },
+      "PlantLevel": {
+        "type": "string",
+        "enum": [
+          "WORKSHOP",
+          "PROCESS"
+        ],
+        "title": "PlantLevel"
+      },
+      "PlantMachine": {
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "title": "Machine Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "is_simulated": {
+            "type": "boolean",
+            "title": "Is Simulated"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentInstance-Output"
+            },
+            "type": "array",
+            "title": "Components"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_id",
+          "name",
+          "device_id",
+          "is_simulated",
+          "components"
+        ],
+        "title": "PlantMachine"
+      },
+      "PlantNodeChange": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+            "title": "Node Id"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id",
+            "description": "Workshop of a process; None for a workshop"
+          },
+          "level": {
+            "$ref": "#/components/schemas/PlantLevel"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "sort": {
+            "type": "integer",
+            "title": "Sort",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "node_id",
+          "level",
+          "name"
+        ],
+        "title": "PlantNodeChange"
+      },
+      "PlantProcess": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "sort": {
+            "type": "integer",
+            "title": "Sort"
+          },
+          "machines": {
+            "items": {
+              "$ref": "#/components/schemas/PlantMachine"
+            },
+            "type": "array",
+            "title": "Machines"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "node_id",
+          "name",
+          "sort",
+          "machines"
+        ],
+        "title": "PlantProcess"
+      },
+      "PlantTree": {
+        "properties": {
+          "workshops": {
+            "items": {
+              "$ref": "#/components/schemas/PlantWorkshop"
+            },
+            "type": "array",
+            "title": "Workshops"
+          },
+          "unplaced": {
+            "items": {
+              "$ref": "#/components/schemas/PlantMachine"
+            },
+            "type": "array",
+            "title": "Unplaced",
+            "description": "Machines not yet assigned to a process"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "workshops",
+          "unplaced"
+        ],
+        "title": "PlantTree"
+      },
+      "PlantWorkshop": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "sort": {
+            "type": "integer",
+            "title": "Sort"
+          },
+          "processes": {
+            "items": {
+              "$ref": "#/components/schemas/PlantProcess"
+            },
+            "type": "array",
+            "title": "Processes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "node_id",
+          "name",
+          "sort",
+          "processes"
+        ],
+        "title": "PlantWorkshop"
       },
       "PredictionResult": {
         "discriminator": {
@@ -14876,6 +15947,30 @@
             ],
             "default": null
           },
+          "machine_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Machine bound to this device (D-037)",
+            "title": "Machine Id"
+          },
+          "machine_path": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
           "keys": {
             "items": {
               "$ref": "#/components/schemas/DeviceKey"
@@ -14892,6 +15987,8 @@
           "device_id",
           "dataset_id",
           "label",
+          "machine_id",
+          "machine_path",
           "keys",
           "is_simulated"
         ],

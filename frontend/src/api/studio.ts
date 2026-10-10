@@ -30,6 +30,9 @@ export interface StudioDevice {
   scenario_title: LocalizedText
   /** rows is null when the source cannot count cheaply (real SQL sources). */
   keys: { key_name: string; rows: number | null }[]
+  /** Machine bound to this device in the plant structure (D-037), when there is one. */
+  machine_id?: string | null
+  machine_path?: LocalizedText | null
 }
 
 export interface StudioPreview {

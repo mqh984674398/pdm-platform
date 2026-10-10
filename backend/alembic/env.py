@@ -11,6 +11,7 @@ import app.datasource.query_service.registry  # noqa: E402,F401
 import app.equipment.lifecycle  # noqa: E402,F401
 import app.equipment.maintenance  # noqa: E402,F401
 import app.equipment.maintenance_impact.service  # noqa: E402,F401
+import app.equipment.plant  # noqa: E402,F401
 import app.monitoring.alarms.service  # noqa: E402,F401
 import app.monitoring.baselines.verified  # noqa: E402,F401
 import app.monitoring.features.store  # noqa: E402,F401

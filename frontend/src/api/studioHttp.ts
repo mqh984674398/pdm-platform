@@ -155,6 +155,8 @@ export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalT
           scenario_id: d.dataset_id ?? '',
           scenario_title: d.label ?? { zh: d.device_id, en: d.device_id },
           keys: d.keys.map((k) => ({ key_name: k.key_name, rows: k.rows ?? null })),
+          machine_id: d.machine_id ?? null,
+          machine_path: d.machine_path ?? null,
         }
         deviceCache.set(d.device_id, device)
         return device

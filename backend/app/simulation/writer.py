@@ -33,6 +33,9 @@ def _dump_json(obj: object) -> str:
     return json.dumps(obj, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
 
 
+PLANT_FIELDS = {"process_id", "device_id", "path"}
+
+
 def _models(items) -> list[dict]:
     return [i.model_dump(mode="json") for i in items]
 
@@ -92,7 +95,9 @@ def write_dataset(result: SimulationResult, out_dir: Path, compress_csv: bool = 
         _dump_json(
             {
                 "is_simulated": True,
-                "machines": _models(result.machines),
+                "machines": [  # plant placement (D-037) is configured per installation, not part of datasets
+                    {k: v for k, v in m.items() if k not in PLANT_FIELDS} for m in _models(result.machines)
+                ],
                 "components": _models(result.components),
                 # the simulator does not track usage periods (T014 field), so stored datasets stay unchanged
                 "lifecycles": [

@@ -103,6 +103,14 @@ export const NAV: NavItem[] = [
     icon: 'M6 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM1.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5M11 4.5h4M13 2.5v4',
     adminOnly: true,
   },
+  {
+    name: 'plant',
+    path: '/plant',
+    group: 'groupAdmin',
+    task: 'D-037',
+    icon: 'M2 14V7l4-3v3l4-3v3l4-3v10zM5 11h2M9 11h2',
+    adminOnly: true,
+  },
 ]
 
 export const NAV_GROUPS: NavGroup[] = [

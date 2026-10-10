@@ -25,6 +25,10 @@ function last(tr: HealthTrend) {
       <HealthBadge :state="component.health" />
     </header>
     <p class="reason" data-testid="health-reason">{{ lt(component.reason) }}</p>
+    <p v-if="component.common_cause" class="common" data-testid="common-cause">
+      <strong>{{ t('component.commonCause') }}</strong>
+      {{ lt(component.common_cause.note) }}
+    </p>
     <RouterLink
       v-if="component.open_alarms"
       :to="`/alarms?c=${component.component_id}`"
@@ -104,6 +108,16 @@ h3 {
 }
 .alarms {
   font-size: var(--text-sm);
+}
+.common {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--health-warning);
+  background: var(--surface-inset);
+  font-size: var(--text-sm);
+}
+.common strong {
+  display: block;
 }
 .reason {
   padding: var(--space-3);

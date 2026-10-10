@@ -187,3 +187,17 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-10 · **Status:** APPROVED by the user (same message, items 1–2).
 - **Decision:** The three-way System/Light/Dark control is replaced by one button that flips the shown theme (moon on a light page, sun on a dark page); the first visit still follows the operating system. Scrollbars are styled from theme tokens (`scrollbar-color` and `::-webkit-scrollbar`) so they match light and dark pages.
 
+## D-037 — Plant structure: workshop → process → machine, configured by administrators
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (Mira, 2026-10-10T14:25Z, item 1).
+- **Decision:** New `plant_nodes` table (WORKSHOP, PROCESS) and two machine columns, `process_id` and `device_id` (migration 0012). Administrators maintain the tree, create machines under a process, bind each machine to its device id in the data source (unique per machine), and maintain its components on the new admin screen "设备结构 / Plant structure"; every change is audited. Machines carry a derived `path` ("workshop / process") shown on the overview tiles, machine map header and component history crumb. In Algorithm configuration the device can be read from the database (as before, now showing the bound machine) or picked through workshop → process → machine; the machine's bound device id is what data is read with. For real sources the Components step offers the bound machine's components. Simulator datasets do not carry plant fields.
+- **Rationale:** user instruction; L3-01 topology.
+
+## D-038 — Shared drive chain: common-cause check and admin configuration
+- **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (gap found on the user's request, item 2).
+- **Finding:** `drive_chain_id` existed in the topology and the machine map drew the link, but nothing used it: S19 expects evidence fusion to point to the shared drive chain instead of separate ball-screw wear, and only the health levels were checked. There was also no screen to set components or drive chains (API `PUT /components` for engineers only).
+- **Decision:** When two or more components on one drive chain are WARNING or CRITICAL at the same time, the fleet overview and component report carry `common_cause` (drive chain, members, bilingual note to check the chain first). Health states are unchanged. Components and drive-chain ids are configured on the Plant structure screen (administrators only), not in the Algorithm configuration flow or Signal setup: drive chains are machine topology, independent of which signals are mapped, and the Algorithm configuration's Components step reads them from there.
+- **Verification:** S19 replay: both chained ball screws report the shared cause; no other demo machine does.
+
+## D-039 — "Data Source Studio" renamed "算法配置 / Algorithm configuration"
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (item 3). Route `/datasource` and module key `datasource` are unchanged so saved role-module settings keep working.
+

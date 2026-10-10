@@ -11,6 +11,7 @@ from datetime import timedelta
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Request
+from pydantic import Field
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -22,7 +23,8 @@ from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.simulated import RAW_COLUMNS, SimulatedAdapter
 from app.datasource.sql import AdapterError, SqlAdapter
 from app.datasource.tdengine import TdengineAdapter
-from app.equipment.schemas import ComponentInstance
+from app.equipment.lifecycle import EquipmentStore
+from app.equipment.schemas import ComponentInstance, Machine
 from app.signals.registry import SignalConfigStore
 from app.signals.schemas import SignalDefinition, SignalMapping
 
@@ -78,6 +80,8 @@ class StudioDevice(ContractModel):
     device_id: str
     dataset_id: str | None = None
     label: LocalizedText | None = None
+    machine_id: str | None = Field(default=None, description="Machine bound to this device (D-037)")
+    machine_path: LocalizedText | None = None
     keys: list[DeviceKey]
     is_simulated: bool
 
@@ -211,20 +215,34 @@ def _samples(adapter: TimeSeriesAdapter, columns: list[LayoutColumn], n: int = 5
     return [[cell[c.role](r) if c.role else "" for c in columns] for r in rows]
 
 
+def _machine_path(machine: Machine | None) -> LocalizedText | None:
+    if machine is None:
+        return None
+    if machine.path is None:
+        return machine.name
+    return LocalizedText(
+        zh=f"{machine.path.zh} / {machine.name.zh}", en=f"{machine.path.en} / {machine.name.en}"
+    )
+
+
 @router.get("/datasources/{data_source_id}/devices", response_model=list[StudioDevice])
-def source_devices(data_source_id: str, who: Viewer, reg: Sources) -> list[StudioDevice]:
+def source_devices(data_source_id: str, who: Viewer, reg: Sources, db: DB) -> list[StudioDevice]:
     reg.require_access(data_source_id, who)
     adapter = reg.adapter(data_source_id)
     counts = adapter.row_counts() if isinstance(adapter, SimulatedAdapter) else {}
+    equipment = EquipmentStore(db)
     out = []
     for d in adapter.discover().devices:
         ds = reg.dataset_for(data_source_id, d.device_id)
+        machine = equipment.machine_for_device(d.device_id)
         out.append(
             StudioDevice(
                 device_id=d.device_id,
                 dataset_id=ds.dataset_id if ds else None,
                 label=ds.title if ds else None,
                 keys=[DeviceKey(key_name=k, rows=counts.get((d.device_id, k))) for k in d.key_names],
+                machine_id=machine.machine_id if machine else None,
+                machine_path=_machine_path(machine),
                 is_simulated=adapter.is_simulated,
             )
         )
@@ -261,6 +279,9 @@ def device_suggestions(
             for c in topo.get("components", [])
             if c.get("machine_id") == machine
         ]
+    elif (machine := EquipmentStore(db).machine_for_device(device_id)) is not None:
+        # Real sources: the machine bound in the plant structure supplies the components (D-037).
+        components = EquipmentStore(db).components(machine.machine_id)
     window = ds.preview_window if ds and ds.preview_window else None
     if window is None and meta.latest_ts is not None:
         start = max(meta.latest_ts - DEFAULT_PREVIEW, meta.earliest_ts or meta.latest_ts)

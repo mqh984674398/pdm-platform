@@ -32,7 +32,7 @@ const attention = computed(() =>
     <div class="head">
       <div>
         <h3>{{ lt(machine.name) }}</h3>
-        <p class="sub">{{ machine.line }}</p>
+        <p class="sub">{{ machine.path ? lt(machine.path) : machine.line }}</p>
       </div>
       <HealthBadge :state="worst" />
     </div>
