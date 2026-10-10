@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S13",
+  "slug": "missing_duplicate",
+  "title": {
+    "zh": "缺失与重复数据",
+    "en": "Missing and duplicated telemetry"
+  },
+  "seed": 5013,
+  "dataset_id": "s13_missing_duplicate",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第2–4天转矩约30%缺失；第3–6天伸出时间约20%重复。",
+    "en": "Days 2–4: about 30% of torque rows missing; days 3–6: about 20% of extension rows duplicated."
+  },
+  "ground_truth": {
+    "zh": "仅数据缺陷，设备健康。",
+    "en": "Data defects only; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "报告缺失与重复；不得误报；数据不足处可 UNKNOWN。",
+    "en": "Report missing and duplicate data; no false alarms; UNKNOWN where data is insufficient."
+  },
+  "abstention_cases": [
+    {
+      "zh": "缺失过多的窗口应弃权（DATA_QUALITY）。",
+      "en": "Windows with too many missing rows should abstain (DATA_QUALITY)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S13-01",
+    "GC-S13-02"
+  ]
+}

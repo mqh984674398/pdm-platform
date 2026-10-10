@@ -1,0 +1,39 @@
+{
+  "scenario_id": "S02",
+  "slug": "multi_regime",
+  "title": {
+    "zh": "多工况运行",
+    "en": "Multiple operating regimes"
+  },
+  "seed": 5002,
+  "dataset_id": "s02_multi_regime",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B",
+    "R-C"
+  ],
+  "expected_observable_behavior": {
+    "zh": "转速、转矩、动作时间随配方 R-A/R-B/R-C 明显分层。",
+    "en": "Speed, torque, and durations shift by recipe R-A/R-B/R-C."
+  },
+  "ground_truth": {
+    "zh": "三种已知配方随机切换；无故障。",
+    "en": "Three known recipes switch randomly; no faults."
+  },
+  "expected_health_response": {
+    "zh": "工况归一化后全部 NORMAL；不按工况区分会误报。",
+    "en": "NORMAL after regime normalization; regime-unaware checks would false-alarm."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S02-01",
+    "GC-S02-02"
+  ]
+}

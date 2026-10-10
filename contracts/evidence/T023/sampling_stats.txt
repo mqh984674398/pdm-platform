@@ -1,0 +1,21 @@
+S01 samples 13198 signals 6 median_interval_s [2.0, 4.5] days 13.5 samples/signal/day 163
+S02 samples 13265 signals 6 median_interval_s [2.0, 5.0] days 13.8 samples/signal/day 161
+S03 samples 36688 signals 4 median_interval_s [2.0, 6.0] days 119.5 samples/signal/day 77
+S04 samples 20160 signals 3 median_interval_s [2.0] days 29.8 samples/signal/day 226
+S05 samples 9720 signals 3 median_interval_s [2.0] days 13.5 samples/signal/day 240
+S06 samples 7651 signals 3 median_interval_s [4.5] days 29.8 samples/signal/day 86
+S07 samples 3364 signals 2 median_interval_s [6.0] days 20.8 samples/signal/day 81
+S08 samples 3502 signals 2 median_interval_s [6.0] days 20.8 samples/signal/day 84
+S09 samples 14160 signals 2 median_interval_s [2.0] days 29.8 samples/signal/day 238
+S10 samples 14280 signals 2 median_interval_s [2.0] days 29.8 samples/signal/day 240
+S11 samples 6948 signals 2 median_interval_s [4.5] days 39.8 samples/signal/day 87
+S12 samples 18720 signals 2 median_interval_s [2.0] days 39.5 samples/signal/day 237
+S13 samples 4464 signals 4 median_interval_s [2.0, 6.0] days 6.8 samples/signal/day 165
+S14 samples 5040 signals 3 median_interval_s [2.0] days 6.8 samples/signal/day 249
+S15 samples 3120 signals 2 median_interval_s [2.0] days 6.8 samples/signal/day 231
+S16 samples 5292 signals 3 median_interval_s [2.0, 4.5] days 9.8 samples/signal/day 181
+S17 samples 6452 signals 4 median_interval_s [2.0, 6.0] days 9.8 samples/signal/day 165
+S18 samples 2296 signals 3 median_interval_s [6.0] days 9.5 samples/signal/day 81
+S19 samples 23400 signals 5 median_interval_s [2.0] days 20.8 samples/signal/day 226
+S20 samples 5090 signals 4 median_interval_s [2.0, 6.0] days 9.8 samples/signal/day 130
+total 216810

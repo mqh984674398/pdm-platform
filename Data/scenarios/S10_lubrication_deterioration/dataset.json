@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s10_lubrication_deterioration",
+  "description": "S10 Lubrication deterioration (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5010,
+  "config_sha256": "3b7c54f5b2b92f49d63fad244163bac81be8e1095e93ef0c3bcc363695e7a50d",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 720.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "306d344782b70f4d0478e381f483162f97116c1b425a909e3cc2ee4ee3f82a63",
+      "bytes": 846708,
+      "rows": 14280,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "5b921fdfac97963355c8c746ca0a80ffee8467a9bba59dc98c45d8ba21c13b1e",
+      "bytes": 1284222,
+      "rows": 14280,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "ac17e900fae9ee412a7a46fc0798fe30b1b256932586113e6f80719bc9e4660c",
+      "bytes": 8324,
+      "rows": 120,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "c74841666d95814d0d57cff297fd913f4a14ab207fa5b448f22280722257f701",
+      "bytes": 10077,
+      "rows": 120,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "38909c9334e44c5707c1eb0b450810a41ded913076f78ffad907c941a5e90326",
+      "bytes": 2300
+    },
+    "maintenance_events.json": {
+      "sha256": "b31835dd550f71301b3c9c089e291e6a0f904b98b6f48d63583a29d136f86a56",
+      "bytes": 317
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "b1f6551657207149a0db591953484361b1749e750a21bc0a5b878a1787c06ab1",
+      "bytes": 1883
+    }
+  }
+}

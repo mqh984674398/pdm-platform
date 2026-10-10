@@ -1,0 +1,47 @@
+S01_healthy
+  (no flags)
+S02_multi_regime
+  (no flags)
+S03_normal_aging
+  (no flags)
+S04_torque_drift
+  (no flags)
+S05_linear_motor_instability
+  (no flags)
+S06_vacuum_release_increase
+  (no flags)
+S07_cylinder_extend_slowdown
+  (no flags)
+S08_cylinder_retract_slowdown
+  (no flags)
+S09_lubrication_improvement
+  (no flags)
+S10_lubrication_deterioration
+  (no flags)
+S11_partial_repair
+  (no flags)
+S12_component_replacement
+  (no flags)
+S13_missing_duplicate
+  M01-BS1.torque MISSING: 48-96h
+  M01-CY1.extend_time DUPLICATE: 48-96h, 96-144h
+S14_jitter_out_of_order
+  M01-BS1.speed JITTER: 48-96h, 96-144h
+  M01-BS1.torque JITTER: 48-96h, 96-144h
+  M01-LM1.speed OUT_OF_ORDER: 48-96h, 96-144h
+S15_speed_torque_desync
+  M01-BS1.speed+M01-BS1.torque MISALIGNED: 48-96h, 96-144h
+S16_bias_unit_mismatch
+  M01-VC1.release_time OUT_OF_RANGE: 144-192h
+  M01-VC1.release_time UNIT_SUSPECT: 144-192h
+S17_unknown_regime
+  (no flags)
+S18_incomplete_operations
+  (no flags)
+S19_shared_drive_chain
+  (no flags)
+S20_source_interruption
+  M01-BS1.speed GAP: 48-96h, 96-144h
+  M01-BS1.torque GAP: 48-96h, 96-144h
+  M01-CY1.extend_time GAP: 96-144h
+  M01-CY1.retract_time GAP: 96-144h

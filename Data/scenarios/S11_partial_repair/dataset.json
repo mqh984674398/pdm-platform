@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s11_partial_repair",
+  "description": "S11 Partial maintenance or repair (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5011,
+  "config_sha256": "bfe6b61aa88ff7cfc13bc3f8df5dd37ac11b824e6792f4347329b0436e4c9d36",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 960.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "5b820c9fb32805acb0521b8577cca093e25039909e39a9c70b1b1ef8994e6a21",
+      "bytes": 416922,
+      "rows": 6948,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "6015f897c88c24cf3525b8c9cdd91b83f0ec39ca0a69aedae661a3106d2328c5",
+      "bytes": 662842,
+      "rows": 6948,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "5c63fbd75b33f87c9511ad8295e15c66fc9bf520d6dec88be6d7c36ed2b1db94",
+      "bytes": 11136,
+      "rows": 160,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "b2642f071911616b30913977f403ce847839aee1912572b1cee6a206d73d32a6",
+      "bytes": 14689,
+      "rows": 160,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "eada5af906ea082add38e9a89fc0bd692c776c2cb22f67be49c3f609cb6488dd",
+      "bytes": 2366
+    },
+    "maintenance_events.json": {
+      "sha256": "b900db9d765016059d90c9b196b805c6f2ee34f80b618095e07ecd2a70cc25d1",
+      "bytes": 320
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "ec9a49e98450100f79044f530c1cf26718a7e2368622f81241a494416b0f0610",
+      "bytes": 2035
+    }
+  }
+}

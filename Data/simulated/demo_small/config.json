@@ -1,0 +1,203 @@
+{
+  "dataset_id": "demo_small",
+  "description": "Two simulated machines over 3 days with all supported component types, multiple recipes, mild aging, one lubrication event, and one replacement.",
+  "seed": 20261009,
+  "start": "2026-01-05T00:00:00Z",
+  "duration_hours": 72.0,
+  "observation": {
+    "windows_per_day": 4,
+    "window_minutes": 5.0,
+    "servo_sample_s": 1.0,
+    "linear_sample_s": 1.0,
+    "idle_fraction": 0.1,
+    "stopped_fraction": 0.05
+  },
+  "recipes": [
+    {
+      "recipe_id": "R-A",
+      "servo_speed_rpm": 1500.0,
+      "load_nm": 1.5,
+      "linear_speed_mm_s": 400.0,
+      "cycle_period_s": 6.0,
+      "pressure_factor": 1.0,
+      "part_factor": 1.0
+    },
+    {
+      "recipe_id": "R-B",
+      "servo_speed_rpm": 3000.0,
+      "load_nm": 2.5,
+      "linear_speed_mm_s": 800.0,
+      "cycle_period_s": 4.5,
+      "pressure_factor": 1.05,
+      "part_factor": 1.1
+    }
+  ],
+  "machines": [
+    {
+      "machine_id": "M01",
+      "name": {
+        "zh": "模拟装配机 1号",
+        "en": "Simulated assembly machine 1"
+      },
+      "device_id": "SIM-M01",
+      "components": [
+        {
+          "component_id": "M01-BS1",
+          "type": "BALL_SCREW",
+          "name": {
+            "zh": "X轴滚珠丝杠",
+            "en": "X-axis ball screw"
+          },
+          "drive_chain_id": "M01-DC1",
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M01-LM1",
+          "type": "LINEAR_MOTOR",
+          "name": {
+            "zh": "传送直线电机",
+            "en": "Transfer linear motor"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M01-VC1",
+          "type": "VACUUM_CUP",
+          "name": {
+            "zh": "取料真空吸盘",
+            "en": "Pick vacuum cup"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M01-CY1",
+          "type": "PNEUMATIC_CYLINDER",
+          "name": {
+            "zh": "压紧气缸",
+            "en": "Clamp cylinder"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        }
+      ],
+      "recipes": [
+        "R-A",
+        "R-B"
+      ],
+      "recipe_schedule": []
+    },
+    {
+      "machine_id": "M02",
+      "name": {
+        "zh": "模拟装配机 2号",
+        "en": "Simulated assembly machine 2"
+      },
+      "device_id": "SIM-M02",
+      "components": [
+        {
+          "component_id": "M02-BS1",
+          "type": "BALL_SCREW",
+          "name": {
+            "zh": "Z轴滚珠丝杠",
+            "en": "Z-axis ball screw"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 8.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M02-CY1",
+          "type": "PNEUMATIC_CYLINDER",
+          "name": {
+            "zh": "推料气缸",
+            "en": "Pusher cylinder"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M02-CAM1",
+          "type": "CAM",
+          "name": {
+            "zh": "分度凸轮",
+            "en": "Indexing cam"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M02-GR1",
+          "type": "GEAR",
+          "name": {
+            "zh": "减速齿轮",
+            "en": "Reduction gear"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        }
+      ],
+      "recipes": [
+        "R-A"
+      ],
+      "recipe_schedule": []
+    }
+  ],
+  "aging": [
+    {
+      "target": "M01-DC1",
+      "rate_per_1000h": 0.5
+    },
+    {
+      "target": "M02-BS1",
+      "rate_per_1000h": 0.5
+    },
+    {
+      "target": "M01-CY1",
+      "rate_per_1000h": 0.3
+    }
+  ],
+  "effects": [
+    {
+      "target": "M01-BS1",
+      "parameter": "lubrication",
+      "shape": "LINEAR",
+      "start_h": 0.0,
+      "end_h": 36.0,
+      "magnitude": 0.15
+    }
+  ],
+  "maintenance": [
+    {
+      "component_id": "M01-BS1",
+      "at_h": 36.5,
+      "type": "LUBRICATION",
+      "parameter_deltas": {
+        "lubrication": -0.15
+      },
+      "wear_delta": 0.0,
+      "duration_h": 0.5,
+      "performed_by": "sim-technician"
+    },
+    {
+      "component_id": "M02-CY1",
+      "at_h": 48.2,
+      "type": "REPLACEMENT",
+      "parameter_deltas": {},
+      "wear_delta": 0.0,
+      "duration_h": 0.5,
+      "performed_by": "sim-technician"
+    }
+  ],
+  "data_faults": [],
+  "incomplete_ops": [],
+  "timestamp_format": "iso_utc"
+}

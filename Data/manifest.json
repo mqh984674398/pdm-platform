@@ -1,0 +1,1055 @@
+{
+  "is_simulated_workspace": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "datasets": [
+    {
+      "dataset_id": "demo_small",
+      "path": "simulated/demo_small",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 20261009,
+      "config_sha256": "5c2e0c7ce90686a98b656cee56ae15403b7c7343aba096c4064f94b1fb60d656",
+      "files": {
+        "raw_telemetry.csv": {
+          "sha256": "0cf324ad453aea9c916d731b73adba76bd6881ac7c742a78bd62d50a82d2fccb",
+          "bytes": 1145823,
+          "rows": 19329
+        },
+        "normalized.csv": {
+          "sha256": "df506121a81c1d2497ea1d1adf9df8172e8d8d3d1f290cfa1be94d1e1dee71b7",
+          "bytes": 1757946,
+          "rows": 19329
+        },
+        "truth_windows.csv": {
+          "sha256": "5310e01cea6716b9104091f0885460582cac63c7730e47f4370d6ad362269b8e",
+          "bytes": 1688,
+          "rows": 24
+        },
+        "truth_components.csv": {
+          "sha256": "ddcec4a5c260f3b9c1815a02928e7a79b8992bfc734b91673e7d9f3265c99a84",
+          "bytes": 6273,
+          "rows": 72
+        },
+        "topology.json": {
+          "sha256": "d6cd961c2e994581f634eb46e24d7b31ffddf54f151bff66c3f34684b69094d0",
+          "bytes": 12545
+        },
+        "maintenance_events.json": {
+          "sha256": "e695fa9f7ba087c14cb7cb93fd390a7980a3fa8975dfa526924751a531f73e8c",
+          "bytes": 640
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "c0256e57f5eff8fa0f03e685dd2addccd16bd1afaafb721fda6ed2d871d4ae9f",
+          "bytes": 4843
+        }
+      }
+    },
+    {
+      "dataset_id": "s01_healthy",
+      "path": "scenarios/S01_healthy",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5001,
+      "config_sha256": "1afd9c69de5705e554ec4f0141cb439dcd33cb51d26a604a4c0ffe9f66e7fb21",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "4db4a43fe25ca57449080b8ff6adf83b4c70f080ba8b9300fe224efa8ef61623",
+          "bytes": 784615,
+          "rows": 13198,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "f48962d8d6e9bb47c003ee403d45e46fc65ceb7577e71de7fc223f2215ad950f",
+          "bytes": 1210559,
+          "rows": 13198,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "8c1c4ed7e65962847f0f926af0cc512ea162e5253120d0e67a19a096412e8446",
+          "bytes": 3906,
+          "rows": 56,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "eb60503af82d550911764b0928ab9d73261706a3cc6626251bd246aee3769eb1",
+          "bytes": 19139,
+          "rows": 224,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "483c8f16d276007f8cb233cbd7003ccd0284d4c6ff646a947b2196117ff0b70d",
+          "bytes": 6934
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "09c69cdcf8012931950fe52cd6b7f060ec6145b7991aef62650cc1f9701171f1",
+          "bytes": 2722
+        }
+      }
+    },
+    {
+      "dataset_id": "s02_multi_regime",
+      "path": "scenarios/S02_multi_regime",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5002,
+      "config_sha256": "0bd5a4ca5ed247939a61a03a985948908f6649b6544d55af926fcf1bbf882ae7",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "8d31cf7a5d04fc5aaa6911756ebb54052e476f8189df041520f86d290e6b4ca9",
+          "bytes": 789364,
+          "rows": 13265,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "7d8f05702738082fa483c0fb5c3dca943c0736da57811714c9c38b8485bd7ee0",
+          "bytes": 1218323,
+          "rows": 13265,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "0d1ad599551f14be9c68f7030dda3e1fe1fd8235ac91eed352d863210c40b0f7",
+          "bytes": 3915,
+          "rows": 56,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "32718a2ecbfba7db5a2f74f6c24e4a3ea28d705f7ae5c70824ec9d23259831f5",
+          "bytes": 19175,
+          "rows": 224,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "13b671131e00a1764371abca2134d75ebc9541ff4102536ea17700d2a555e7aa",
+          "bytes": 6934
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "94d3af925231d128d4a19c6997e7ec4ead7a09eee0ac18b198a2dcce776d5916",
+          "bytes": 2957
+        }
+      }
+    },
+    {
+      "dataset_id": "s03_normal_aging",
+      "path": "scenarios/S03_normal_aging",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5003,
+      "config_sha256": "2e41c013060fe2047c07a69150b042383efc10a38ba926fe7122947288d5785b",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "5a64cc1fea734eacf317af8865c4ec4a479c7cb1d8bd6ba359218f720c2824b4",
+          "bytes": 2182464,
+          "rows": 36688,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "f1e44752640a896a9d53105b8801d61c2f0d9a53adb8f18ae5bb2dab55fc0031",
+          "bytes": 3351328,
+          "rows": 36688,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "0575a24e31f0ac2fd6b0162052163c2f5d46778987ba917de76412ea4985ae8c",
+          "bytes": 16706,
+          "rows": 240,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "0c96048631df0666192cc1a3ef2a8611effd2a73f0e6410d4413ee5dd228f4bb",
+          "bytes": 41811,
+          "rows": 480,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "93971924433602da9483dbcd43befaab4162ecece2eac93f4d92819dca917069",
+          "bytes": 4352
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "d85e149a05ca6ad2f3297dfa7de575f7e7a8134fb5748c991638a19e812865aa",
+          "bytes": 1984
+        }
+      }
+    },
+    {
+      "dataset_id": "s04_torque_drift",
+      "path": "scenarios/S04_torque_drift",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5004,
+      "config_sha256": "efb3dfab3bde1071fb63f94697d94124db5f2731c32ca4fc7ad224ce0f1e7d01",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "468ae036595149c6aea8d06cb9c4b1d92585e66149f7c3e3989c977600795213",
+          "bytes": 1196307,
+          "rows": 20160,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "4c7828aa7498e5e40e40e70969b5064df52ab3432e662d25dfa2f01f4e179672",
+          "bytes": 1821033,
+          "rows": 20160,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "8e4ffdd44aec3ef7827367ee6bd7b40a4d20d2a85969fae46a5d89847622cba1",
+          "bytes": 8324,
+          "rows": 120,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "a0c954ee5526ff6bbd32809d161c1e457153833f065eac9242d9cebc6af2ec2a",
+          "bytes": 20007,
+          "rows": 240,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "5335cdf4f536d0a4bb955a301d67b5c14817fdeb2db8195a715ded1d82c2345c",
+          "bytes": 3579
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "00cb63bde0533ccfa866c8d2da8bf7d3baf05da99e6c56cfb92280920f816118",
+          "bytes": 2156
+        }
+      }
+    },
+    {
+      "dataset_id": "s05_linear_motor_instability",
+      "path": "scenarios/S05_linear_motor_instability",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5005,
+      "config_sha256": "85b4f67a7c2ed01fc2e25bbcd6e4357dc79a876fc9d4a7813c3d14de681c2b68",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "56b4c0d000e7455d6559ae6fe15f774d0efacc2a3064311efcaedabc4c4d6947",
+          "bytes": 577670,
+          "rows": 9720,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "e546d08550456079d66e4fdc52af7f5a95a2f765608a420a7dae7bf85117aa22",
+          "bytes": 878638,
+          "rows": 9720,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "341e2ab7ff7e61d8d0a46ce961474db086702ed272b7835b3a0afe9824b07fa1",
+          "bytes": 3915,
+          "rows": 56,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "21cc02c194321cba443308f481f3deda0be0b77603e86dd9cd512eaacfb92660",
+          "bytes": 9437,
+          "rows": 112,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "f913990839daff3f4bd5fec258674f8fe9887f8142f2b643c83d96dc9ad2b96c",
+          "bytes": 3585
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "1406b985cb86adb71dde13fe58f1e260e6c1c76c290deea357f5db06c2297cd3",
+          "bytes": 2173
+        }
+      }
+    },
+    {
+      "dataset_id": "s06_vacuum_release_increase",
+      "path": "scenarios/S06_vacuum_release_increase",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5006,
+      "config_sha256": "7880f13897555c8a85c2e3c16b22d69d1198ee653d3c2ee2515f6b25488ad72c",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "bc0bf69b37eb8b40d59f02118485bacdd8b8fa9efb63e1821414fe635ce089f7",
+          "bytes": 457845,
+          "rows": 7651,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "a78dd033fd02469d97a358b49af4257ffa3540d7c4c18aa9c2d2795fc004250d",
+          "bytes": 731182,
+          "rows": 7651,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "8c945693e3f9147aa407b7d37ce7b93293f50c537e6d99439900f886346cd090",
+          "bytes": 8330,
+          "rows": 120,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "c8359d389d672511d4a8580aaf4cc30322f199734863c7547546a4fdb395e6ec",
+          "bytes": 20979,
+          "rows": 240,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "c8e45a09475b44ed5737ec93ec1ded93c2af0e7806d8142355335e20d810a4f1",
+          "bytes": 3663
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "4139b51185b8cec8d918809f4af70c370c6dae8dc2f81086c015e232e96df4a1",
+          "bytes": 2165
+        }
+      }
+    },
+    {
+      "dataset_id": "s07_cylinder_extend_slowdown",
+      "path": "scenarios/S07_cylinder_extend_slowdown",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5007,
+      "config_sha256": "dbcfe7ed0e183bfe45aedfafa2c357bd4b7b53efa2ae791167d11acbb90fefa2",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "08e367a2f6741901f98914540a96bab3c08adf5b793707cfc9d1fa29e613815c",
+          "bytes": 201882,
+          "rows": 3364,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "5eb8edba7eeb7e3f4b395aa50ff980ee692d02d22a2d5ec168daaf13368c2f86",
+          "bytes": 320978,
+          "rows": 3364,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "bd0bc267752d3b0564fe8d5ae8a1f44a2432048b296ae2115b51ba20462b0f71",
+          "bytes": 5832,
+          "rows": 84,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "b9cee0e2f9a595fd64a1cd78511e4c89b25d90d674497be6bb9a1083211053fe",
+          "bytes": 7773,
+          "rows": 84,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "85363888ad1883c2982dfb2face33aa1a3aaa859b05802c1ebf23cc1b5c3b7cd",
+          "bytes": 2366
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "35dcb8856dfd02c7789bdb19d895f3bf15aeecfa6c40ed3c6a4eada05fd2d0be",
+          "bytes": 1793
+        }
+      }
+    },
+    {
+      "dataset_id": "s08_cylinder_retract_slowdown",
+      "path": "scenarios/S08_cylinder_retract_slowdown",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5008,
+      "config_sha256": "12b8c5648ca73f16862fcb9a51d2807e9cbc85afdcbbe858a7cc00ccc6ddd42b",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "0404792e126cc51b89053a13aedba0b1265253e7cb18bd6fb9978b7a93880a2c",
+          "bytes": 210162,
+          "rows": 3502,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "3ac2836d2360ce8843303a00ac7f774f393270ec56853e25d97bcd2e14dd3ad6",
+          "bytes": 334129,
+          "rows": 3502,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "9811dff33257bb68f94b250bac3241c1ff4114f56255db1d01df7b8483577e9f",
+          "bytes": 5841,
+          "rows": 84,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "493bb109c8fa59f824c446f23a5f6d167c1a2d33f24c07fd528556dd9af031c6",
+          "bytes": 7782,
+          "rows": 84,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "93a0fea1640de0d2d223721853e0934b06541b06d9c20f1a6e453cf63aa089b8",
+          "bytes": 2366
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "c5bdab852456556a661b31f2beea73930886e94ab7b9b001784305cd08d337f3",
+          "bytes": 1796
+        }
+      }
+    },
+    {
+      "dataset_id": "s09_lubrication_improvement",
+      "path": "scenarios/S09_lubrication_improvement",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5009,
+      "config_sha256": "925fc2a6f929a9a45c473c60e50b7179ba20ad5903f301ed6f0951a745cf4069",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "34639e599484bf9670db0a41ea7b3380cd34692a13e21f344e222bd8f2e6189d",
+          "bytes": 838787,
+          "rows": 14160,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "1f88db42ba120375f22694740cbae1f89d040de6eaf11d6034868ca44c4a8dc3",
+          "bytes": 1272845,
+          "rows": 14160,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "09e8cc4a557aac263fb777828c5afaae61345307027386bba66150198780db31",
+          "bytes": 8312,
+          "rows": 120,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "d8b9b877066432ece1367b5ffb16f9b5362732902642b7a08246fc3e1f376599",
+          "bytes": 10065,
+          "rows": 120,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "592da1385763b50c1a26441f4b66fd0e8f85f9d9954eff881e721134b60778d1",
+          "bytes": 2300
+        },
+        "maintenance_events.json": {
+          "sha256": "b31835dd550f71301b3c9c089e291e6a0f904b98b6f48d63583a29d136f86a56",
+          "bytes": 317
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "baaaa595867b5bbb278800d9e36b82619e90b4d31003308fe4743b74aad54526",
+          "bytes": 2049
+        }
+      }
+    },
+    {
+      "dataset_id": "s10_lubrication_deterioration",
+      "path": "scenarios/S10_lubrication_deterioration",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5010,
+      "config_sha256": "3b7c54f5b2b92f49d63fad244163bac81be8e1095e93ef0c3bcc363695e7a50d",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "306d344782b70f4d0478e381f483162f97116c1b425a909e3cc2ee4ee3f82a63",
+          "bytes": 846708,
+          "rows": 14280,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "5b921fdfac97963355c8c746ca0a80ffee8467a9bba59dc98c45d8ba21c13b1e",
+          "bytes": 1284222,
+          "rows": 14280,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "ac17e900fae9ee412a7a46fc0798fe30b1b256932586113e6f80719bc9e4660c",
+          "bytes": 8324,
+          "rows": 120,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "c74841666d95814d0d57cff297fd913f4a14ab207fa5b448f22280722257f701",
+          "bytes": 10077,
+          "rows": 120,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "38909c9334e44c5707c1eb0b450810a41ded913076f78ffad907c941a5e90326",
+          "bytes": 2300
+        },
+        "maintenance_events.json": {
+          "sha256": "b31835dd550f71301b3c9c089e291e6a0f904b98b6f48d63583a29d136f86a56",
+          "bytes": 317
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "b1f6551657207149a0db591953484361b1749e750a21bc0a5b878a1787c06ab1",
+          "bytes": 1883
+        }
+      }
+    },
+    {
+      "dataset_id": "s11_partial_repair",
+      "path": "scenarios/S11_partial_repair",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5011,
+      "config_sha256": "bfe6b61aa88ff7cfc13bc3f8df5dd37ac11b824e6792f4347329b0436e4c9d36",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "5b820c9fb32805acb0521b8577cca093e25039909e39a9c70b1b1ef8994e6a21",
+          "bytes": 416922,
+          "rows": 6948,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "6015f897c88c24cf3525b8c9cdd91b83f0ec39ca0a69aedae661a3106d2328c5",
+          "bytes": 662842,
+          "rows": 6948,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "5c63fbd75b33f87c9511ad8295e15c66fc9bf520d6dec88be6d7c36ed2b1db94",
+          "bytes": 11136,
+          "rows": 160,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "b2642f071911616b30913977f403ce847839aee1912572b1cee6a206d73d32a6",
+          "bytes": 14689,
+          "rows": 160,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "eada5af906ea082add38e9a89fc0bd692c776c2cb22f67be49c3f609cb6488dd",
+          "bytes": 2366
+        },
+        "maintenance_events.json": {
+          "sha256": "b900db9d765016059d90c9b196b805c6f2ee34f80b618095e07ecd2a70cc25d1",
+          "bytes": 320
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "ec9a49e98450100f79044f530c1cf26718a7e2368622f81241a494416b0f0610",
+          "bytes": 2035
+        }
+      }
+    },
+    {
+      "dataset_id": "s12_component_replacement",
+      "path": "scenarios/S12_component_replacement",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5012,
+      "config_sha256": "70c12725ce27dfc44287418c06312dd3de7d8e957b73a40a1a64611a6ceda6b1",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "831c19c1a50c6f6633ee662838cb4e9791fb5a4cd539931c6c82923021d53930",
+          "bytes": 1109450,
+          "rows": 18720,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "4bd775d5082f486a484111f77a3fc585cd0857c277dc12dac7863f74f112eaf4",
+          "bytes": 1683139,
+          "rows": 18720,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "00b2772f5f9f331cd0d17776e4f6a071e4c1a3d03acdc848bda5bc3e0086d795",
+          "bytes": 11100,
+          "rows": 160,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "772e54263003fddd399f4414efcb42eb1006da74b39365b8f0d63a887bc4acdb",
+          "bytes": 13373,
+          "rows": 160,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "1cfb00edbb1232f8a5d7c6be46ba9a2380e1bc2b438e1cefc29815eb6d511ae5",
+          "bytes": 2624
+        },
+        "maintenance_events.json": {
+          "sha256": "eaf8ca89f894950c699bd9ee220be1de8f3975d108b910a97005fbb701d3bdae",
+          "bytes": 326
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "b9a2a1189fa0c03995eaaeb8518b30dd717eea7ea5fc4f5936ce1d07a2d78f64",
+          "bytes": 2014
+        }
+      }
+    },
+    {
+      "dataset_id": "s13_missing_duplicate",
+      "path": "scenarios/S13_missing_duplicate",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5013,
+      "config_sha256": "cfbad7990e995a8449f198daa8516788c7e63b1e5880dc1f0892fff6b4beaada",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "9c198286e56feb68296b2f229e20668beaa7bc1d38dfea696b6dce5df1a2a8d8",
+          "bytes": 265869,
+          "rows": 4464,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "206c56441a4cb25ba990553bef83aa0bea990087fe35256c95cdb3f4b6586ab6",
+          "bytes": 408407,
+          "rows": 4464,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "1fcba21d5018a43ae529d588aa30d6c85433c5c17ec773d3149bac05a4f8233b",
+          "bytes": 1983,
+          "rows": 28,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "adcd462ab165bb03069747759bbcae053f083329b9d659d4c78ce02107c02c8e",
+          "bytes": 5013,
+          "rows": 56,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "0f2fd5281740cda0e931a2fff347f9531fd75b5d20251ff11e8569f08b2b82e3",
+          "bytes": 4346
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "8eaa865fec887f8337c1ae3a368f71286e9a2555f65d90d2e7a840be07a33ef7",
+          "bytes": 473
+        },
+        "config.json": {
+          "sha256": "e0510ec65c60bdae0ea1474c4419a10e4de04beebd29193c03adb80d55d5481b",
+          "bytes": 2537
+        }
+      }
+    },
+    {
+      "dataset_id": "s14_jitter_out_of_order",
+      "path": "scenarios/S14_jitter_out_of_order",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5014,
+      "config_sha256": "a4d12ebfb1c78ae2955a83dfd60d260fc45ad7dfa8de340a1b6bb2246f19f79f",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "81cc0f5d20b8e09b8b30e7e7f31d3fec2067d55134e2e055865bda157fd2a820",
+          "bytes": 299494,
+          "rows": 5040,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "cbe2ab850d22eba4a71487d66cfcc93c5feb8444a6038a892dc0a76d82360677",
+          "bytes": 455564,
+          "rows": 5040,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "7adfc0a663dc3c593e94285e3d04f4e485acc0bbca75d9bd83d9d512f3f51031",
+          "bytes": 1983,
+          "rows": 28,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "d68e2f89f2ebdf6b50967c66cb3800922db2661f0986f16f9dc0b912659e9d0c",
+          "bytes": 4789,
+          "rows": 56,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "14a07532c4019587ca47b236c64fa87f14c6b4bd587b1ab2d6e5684f830667d2",
+          "bytes": 3579
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "dd5508ff6233f3b4b1e9fe876b5ec522503d4ca285d684c3450231dfc7633452",
+          "bytes": 684
+        },
+        "config.json": {
+          "sha256": "338f6dfd7a71c850339f0b18b793da86a3876a16bb95387f304ab5782e10e90f",
+          "bytes": 2581
+        }
+      }
+    },
+    {
+      "dataset_id": "s15_speed_torque_desync",
+      "path": "scenarios/S15_speed_torque_desync",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5015,
+      "config_sha256": "f47c3f4a63c38a0c1c4cecd7624bda523aebb2e907e29cfc9c1cc1354a74277f",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "399d93c0553c4975ca2027c19f1fa83bcdb199f3203537a1282b42e62485caaa",
+          "bytes": 185001,
+          "rows": 3120,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "3ba967b57ada2d20c718ea8be5c140392f1535cc2a85df38d82fcc9b4931c652",
+          "bytes": 280598,
+          "rows": 3120,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "204b34309923720dd80da8c9de4cadaf0bd4e7fcb4a790aef75fbb311b8839d2",
+          "bytes": 1980,
+          "rows": 28,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "52595b8e4113cc4bbb4bb095a8466056ce0dbbdba8d62bf47a18bbe928b5433a",
+          "bytes": 2465,
+          "rows": 28,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "3455da97c810543977a1cc4c3a3ed833470eafacea7eb619f79feee407ed369d",
+          "bytes": 2297
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "059532ca491dd696e8593c4d116c5be1d1ad3d867dc252bda5e6204f3a2cf34e",
+          "bytes": 227
+        },
+        "config.json": {
+          "sha256": "6c1f82a66cb5d9e505103268d0519b445457e5015cdcacb39a84d588979c0084",
+          "bytes": 1909
+        }
+      }
+    },
+    {
+      "dataset_id": "s16_bias_unit_mismatch",
+      "path": "scenarios/S16_bias_unit_mismatch",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5016,
+      "config_sha256": "161476462d9126897fa8219ba0048f07239120530b36f5d24153f1b0c4225fa1",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "e9d62ba775c8fd7b0bc2e923c8a5d6d4b13842762f7cef55ac3a2a5ca5f3da92",
+          "bytes": 313632,
+          "rows": 5292,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "d61e1c97a6257e80bd64c7c32e04a2bf577494c8a9848e7decabefea93b324fe",
+          "bytes": 480240,
+          "rows": 5292,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "f3d3bfe7956b0efbfe6d9494b74e078b8e90870741d5ba3f71533ce597cd31d4",
+          "bytes": 2793,
+          "rows": 40,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "74f407974644d70c9fe34c20aea42d44de45ce3e98ba54240de42f31a449bf26",
+          "bytes": 6745,
+          "rows": 80,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "c6083c0b184e80b4f935251b7fed4591bc6efb0c60fdc090ce546bfb4045f54e",
+          "bytes": 3597
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "78e80625743341461655c69f45cb6714aeb7054d1d6cfc40f3096011c4edd597",
+          "bytes": 471
+        },
+        "config.json": {
+          "sha256": "66388d3288d3a462e377b246bba0d6df4d2302b6eb44adf1e5f80116493d8213",
+          "bytes": 2537
+        }
+      }
+    },
+    {
+      "dataset_id": "s17_unknown_regime",
+      "path": "scenarios/S17_unknown_regime",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5017,
+      "config_sha256": "43b8ae96cf651d5e3058bdd9d19709e2334fab30065adf479cf181efdfce196d",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "0db9451e3b8b712e55676b997a8beaa89479d51819edd135c1fe07d2e1e19b41",
+          "bytes": 383576,
+          "rows": 6452,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "7e4b94fc18b63e103bddad13682cda0639a06f4241f955de5e92c5ae3a839f17",
+          "bytes": 589181,
+          "rows": 6452,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "ed746a263c20fb454a0b784aed86ba58b5ab97495f951d1b282278ab08bf29fb",
+          "bytes": 2799,
+          "rows": 40,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "d0c379a773c076a97447226a22bfec7f030ae70760410bbf56475977b31ee498",
+          "bytes": 7077,
+          "rows": 80,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "9f364d6af980d355bb641b591edae4fa8143a8a3179e1f5b3e2dd645b9a6948f",
+          "bytes": 4352
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "b8de9de777f8cbbebecd06d4a47b53619784a0593616156f493d6a526aba8f5f",
+          "bytes": 2328
+        }
+      }
+    },
+    {
+      "dataset_id": "s18_incomplete_operations",
+      "path": "scenarios/S18_incomplete_operations",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5018,
+      "config_sha256": "af716e65385603258d38cedb498dd419bd7858181e5636c98f52fb2acc1fcfd1",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "dc864722c487142b48ddc0d08965c501e8c815368c757638f7bd685510a5ef16",
+          "bytes": 137068,
+          "rows": 2296,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "56fd5262d31deb269b7333e771c3b845e7659dc96e899363f902007bb4f1cff9",
+          "bytes": 219304,
+          "rows": 2296,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "ec6b76dbfe947426f783d815c65e03e6e65ff60d5a974bc6009325ca25ca76c2",
+          "bytes": 2805,
+          "rows": 40,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "fb3c64fe8f6cf1fa95fa4e41407386228920296190bb97e201a56c83ac6f2f2a",
+          "bytes": 7089,
+          "rows": 80,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "b353b528d2c1790d2072d6331fd4455b5b9fc6b37dd48067826a75e7e6993957",
+          "bytes": 3663
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "f43a721f26b9bfb57c37b30609dbf55ecd1b0c3be8872d6fae073741877d332c",
+          "bytes": 1804
+        },
+        "config.json": {
+          "sha256": "35486a6499ea763237e2de102d3cd83897d5f6ea6f659433303c38e271646edf",
+          "bytes": 2273
+        }
+      }
+    },
+    {
+      "dataset_id": "s19_shared_drive_chain",
+      "path": "scenarios/S19_shared_drive_chain",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5019,
+      "config_sha256": "8cb24608d3aa5ee7351ea68d7e62604cc21ccfe439788c0dc0d8e15b68b310e6",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "119cab4ba489d839cb0e3169f1939bfb414badc2c7b350962eb312fdfb864ddb",
+          "bytes": 1389985,
+          "rows": 23400,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "013783dde6dd8513fd285f59f1587dabf17344ee2394539d4d8fab415b30709b",
+          "bytes": 2111327,
+          "rows": 23400,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "54594fb57f45545b237248ce903a263eb3b62c51cf554af7be0f0b3e69dc7756",
+          "bytes": 5844,
+          "rows": 84,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "a900c32521af667fad56680029fa6262a60ce62daa278357eaa177f6c6a10e80",
+          "bytes": 21045,
+          "rows": 252,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "02fb7d3dfc5b326ff45d9de4b86cf7a5275e024b0175c8896c094ccb0090d9f1",
+          "bytes": 5571
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+          "bytes": 55
+        },
+        "config.json": {
+          "sha256": "69c36e42a6d422314333a4cab22af23a1da59cf40267468d3b6213ccb68dd0da",
+          "bytes": 2543
+        }
+      }
+    },
+    {
+      "dataset_id": "s20_source_interruption",
+      "path": "scenarios/S20_source_interruption",
+      "is_simulated": true,
+      "generator_version": "sim-1.0.0",
+      "seed": 5020,
+      "config_sha256": "68c7ee2b845cde1ebae165ad492dfc270cb7dcfc4fab3bd0dc31f3bfe0b22712",
+      "files": {
+        "raw_telemetry.csv.gz": {
+          "sha256": "81bb6b3f83a71172b163bf922dc5c06849f1a2d9e16073957f88994851152333",
+          "bytes": 302651,
+          "rows": 5090,
+          "gzip": true
+        },
+        "normalized.csv.gz": {
+          "sha256": "04ab7ed7a76d2eabd0c82d2cf5e83a425acb99b516496cbb499ea25db9222f9e",
+          "bytes": 464584,
+          "rows": 5090,
+          "gzip": true
+        },
+        "truth_windows.csv.gz": {
+          "sha256": "a08b1f18feeacaaa16aff7771c33374f61c1e3b4360e03776e1b9b757563129c",
+          "bytes": 2799,
+          "rows": 40,
+          "gzip": true
+        },
+        "truth_components.csv.gz": {
+          "sha256": "cb6858f3c1beadd9dc6b15c01c97ba752ec489f4041993944c47f4612117d634",
+          "bytes": 7077,
+          "rows": 80,
+          "gzip": true
+        },
+        "topology.json": {
+          "sha256": "b34ee3b1e865dbc98b10e3a775899f4e76ad7ca5eec4ed7710d1ce74dc3d0355",
+          "bytes": 4352
+        },
+        "maintenance_events.json": {
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes": 3
+        },
+        "faults.json": {
+          "sha256": "62aa72f3cfe65369e8830ee0c2816b43611e2b93c9643bac04e2506c3f916fb1",
+          "bytes": 905
+        },
+        "config.json": {
+          "sha256": "e1f6e6f366d8aec22a99ec93d7738afe65ae3809c614cf96f6084dd43e2f1bff",
+          "bytes": 2349
+        }
+      }
+    }
+  ]
+}

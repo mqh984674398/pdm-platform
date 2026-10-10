@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s03_normal_aging",
+  "description": "S03 Normal long-term aging (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5003,
+  "config_sha256": "2e41c013060fe2047c07a69150b042383efc10a38ba926fe7122947288d5785b",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 2880.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "5a64cc1fea734eacf317af8865c4ec4a479c7cb1d8bd6ba359218f720c2824b4",
+      "bytes": 2182464,
+      "rows": 36688,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "f1e44752640a896a9d53105b8801d61c2f0d9a53adb8f18ae5bb2dab55fc0031",
+      "bytes": 3351328,
+      "rows": 36688,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "0575a24e31f0ac2fd6b0162052163c2f5d46778987ba917de76412ea4985ae8c",
+      "bytes": 16706,
+      "rows": 240,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "0c96048631df0666192cc1a3ef2a8611effd2a73f0e6410d4413ee5dd228f4bb",
+      "bytes": 41811,
+      "rows": 480,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "93971924433602da9483dbcd43befaab4162ecece2eac93f4d92819dca917069",
+      "bytes": 4352
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "d85e149a05ca6ad2f3297dfa7de575f7e7a8134fb5748c991638a19e812865aa",
+      "bytes": 1984
+    }
+  }
+}

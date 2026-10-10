@@ -1,0 +1,2372 @@
+{
+ "run_id": "OPT-20261009T233526-0",
+ "started_by": "evidence-script",
+ "started_at": "2026-10-09T23:35:26.979185Z",
+ "seed": 0,
+ "suite": "golden-cases (SIMULATED demo fleet)",
+ "champion": {
+  "candidate_id": "champion",
+  "path": "champion",
+  "changes": {},
+  "rules_version": "pdm-rules@1.0.0",
+  "policy_version": "aging-grading@1.0.0",
+  "safety_unchanged": true,
+  "metrics": {
+   "windows": 1310,
+   "within": 1199,
+   "over": 96,
+   "under": 15,
+   "ratio": 0.9152671755725191,
+   "cases": [
+    {
+     "case_id": "GC-S01-01",
+     "component_id": "A01-BS1",
+     "windows": 37,
+     "within": 37,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S01-02",
+     "component_id": "A01-LM1",
+     "windows": 37,
+     "within": 37,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S01-03",
+     "component_id": "A01-VC1",
+     "windows": 37,
+     "within": 37,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S01-04",
+     "component_id": "A01-CY1",
+     "windows": 37,
+     "within": 37,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S04-01",
+     "component_id": "A02-BS1",
+     "windows": 76,
+     "within": 76,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S04-02",
+     "component_id": "A02-LM1",
+     "windows": 86,
+     "within": 86,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S03-01",
+     "component_id": "A03-BS1",
+     "windows": 188,
+     "within": 158,
+     "over": 30,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S03-02",
+     "component_id": "A03-CY1",
+     "windows": 198,
+     "within": 158,
+     "over": 40,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S07-01",
+     "component_id": "A04-CY1",
+     "windows": 56,
+     "within": 56,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S12-01",
+     "component_id": "A05-BS1",
+     "windows": 57,
+     "within": 43,
+     "over": 0,
+     "under": 14
+    },
+    {
+     "case_id": "GC-S19-01",
+     "component_id": "A06-BS1",
+     "windows": 48,
+     "within": 48,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S19-02",
+     "component_id": "A06-BS2",
+     "windows": 51,
+     "within": 51,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S19-03",
+     "component_id": "A06-LM1",
+     "windows": 61,
+     "within": 61,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S20-01",
+     "component_id": "A07-BS1",
+     "windows": 14,
+     "within": 14,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S20-02",
+     "component_id": "A07-CY1",
+     "windows": 17,
+     "within": 17,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S05-01",
+     "component_id": "A08-LM1",
+     "windows": 34,
+     "within": 34,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S05-02",
+     "component_id": "A08-BS1",
+     "windows": 35,
+     "within": 35,
+     "over": 0,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S09-01",
+     "component_id": "A09-BS1",
+     "windows": 65,
+     "within": 60,
+     "over": 4,
+     "under": 1
+    },
+    {
+     "case_id": "GC-S10-01",
+     "component_id": "A10-BS1",
+     "windows": 83,
+     "within": 61,
+     "over": 22,
+     "under": 0
+    },
+    {
+     "case_id": "GC-S11-01",
+     "component_id": "A11-CY1",
+     "windows": 93,
+     "within": 93,
+     "over": 0,
+     "under": 0
+    }
+   ]
+  }
+ },
+ "candidates": [
+  {
+   "candidate_id": "A01",
+   "path": "A",
+   "changes": {
+    "persistence": 4.0,
+    "hold": 3.0,
+    "cusum_k": 2.0,
+    "cusum_h": 10.0,
+    "threshold_scale": 0.9
+   },
+   "rules_version": "pdm-rules@1.0.0+A01",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1194,
+    "over": 102,
+    "under": 14,
+    "ratio": 0.9114503816793893,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 158,
+      "over": 30,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 61,
+      "over": 4,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 55,
+      "over": 28,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B02",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.15,
+    "aging_min_age_days": 21.0,
+    "aging_max_step": 2.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B02",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1191,
+    "over": 104,
+    "under": 15,
+    "ratio": 0.9091603053435114,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 156,
+      "over": 32,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 87,
+      "over": 6,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "A03",
+   "path": "A",
+   "changes": {
+    "persistence": 2.0,
+    "hold": 4.0,
+    "cusum_k": 2.0,
+    "cusum_h": 16.0,
+    "threshold_scale": 1.0
+   },
+   "rules_version": "pdm-rules@1.0.0+A03",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1156,
+    "over": 141,
+    "under": 13,
+    "ratio": 0.8824427480916031,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 151,
+      "over": 37,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 162,
+      "over": 36,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 44,
+      "over": 0,
+      "under": 13
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 47,
+      "over": 14,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 30,
+      "over": 5,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 61,
+      "over": 4,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 38,
+      "over": 45,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B04",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.2,
+    "aging_min_age_days": 45.0,
+    "aging_max_step": 3.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B04",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1192,
+    "over": 103,
+    "under": 15,
+    "ratio": 0.9099236641221374,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 158,
+      "over": 30,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 86,
+      "over": 7,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "A05",
+   "path": "A",
+   "changes": {
+    "persistence": 3.0,
+    "hold": 3.0,
+    "cusum_k": 2.0,
+    "cusum_h": 16.0,
+    "threshold_scale": 0.9
+   },
+   "rules_version": "pdm-rules@1.0.0+A05",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1205,
+    "over": 95,
+    "under": 10,
+    "ratio": 0.9198473282442748,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 157,
+      "over": 31,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 159,
+      "over": 39,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 47,
+      "over": 0,
+      "under": 10
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 62,
+      "over": 3,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B06",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.25,
+    "aging_min_age_days": 45.0,
+    "aging_max_step": 2.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B06",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1192,
+    "over": 103,
+    "under": 15,
+    "ratio": 0.9099236641221374,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 158,
+      "over": 30,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 86,
+      "over": 7,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "A07",
+   "path": "A",
+   "changes": {
+    "persistence": 3.0,
+    "hold": 4.0,
+    "cusum_k": 2.0,
+    "cusum_h": 10.0,
+    "threshold_scale": 1.2
+   },
+   "rules_version": "pdm-rules@1.0.0+A07",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1184,
+    "over": 102,
+    "under": 24,
+    "ratio": 0.9038167938931297,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 157,
+      "over": 31,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 38,
+      "over": 0,
+      "under": 19
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 5,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 57,
+      "over": 26,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 88,
+      "over": 0,
+      "under": 5
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B08",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.15,
+    "aging_min_age_days": 45.0,
+    "aging_max_step": 2.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B08",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1190,
+    "over": 105,
+    "under": 15,
+    "ratio": 0.9083969465648855,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 156,
+      "over": 32,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 86,
+      "over": 7,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "A09",
+   "path": "A",
+   "changes": {
+    "persistence": 3.0,
+    "hold": 2.0,
+    "cusum_k": 1.5,
+    "cusum_h": 12.0,
+    "threshold_scale": 1.0
+   },
+   "rules_version": "pdm-rules@1.0.0+A09",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1195,
+    "over": 100,
+    "under": 15,
+    "ratio": 0.9122137404580153,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 155,
+      "over": 33,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 156,
+      "over": 42,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 42,
+      "over": 0,
+      "under": 15
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 59,
+      "over": 6,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 64,
+      "over": 19,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B10",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.2,
+    "aging_min_age_days": 21.0,
+    "aging_max_step": 2.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B10",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1199,
+    "over": 96,
+    "under": 15,
+    "ratio": 0.9152671755725191,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 158,
+      "over": 30,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "A11",
+   "path": "A",
+   "changes": {
+    "persistence": 2.0,
+    "hold": 2.0,
+    "cusum_k": 2.5,
+    "cusum_h": 12.0,
+    "threshold_scale": 1.0
+   },
+   "rules_version": "pdm-rules@1.0.0+A11",
+   "policy_version": "aging-grading@1.0.0",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1182,
+    "over": 113,
+    "under": 15,
+    "ratio": 0.9022900763358779,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 156,
+      "over": 32,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 164,
+      "over": 34,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 42,
+      "over": 0,
+      "under": 15
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 52,
+      "over": 9,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 32,
+      "over": 3,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 64,
+      "over": 1,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 49,
+      "over": 34,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  },
+  {
+   "candidate_id": "B12",
+   "path": "B",
+   "changes": {
+    "aging_max_rate": 0.15,
+    "aging_min_age_days": 30.0,
+    "aging_max_step": 3.0
+   },
+   "rules_version": "pdm-rules@1.0.0",
+   "policy_version": "aging-grading@1.0.0+B12",
+   "safety_unchanged": true,
+   "metrics": {
+    "windows": 1310,
+    "within": 1197,
+    "over": 98,
+    "under": 15,
+    "ratio": 0.9137404580152672,
+    "cases": [
+     {
+      "case_id": "GC-S01-01",
+      "component_id": "A01-BS1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-02",
+      "component_id": "A01-LM1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-03",
+      "component_id": "A01-VC1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S01-04",
+      "component_id": "A01-CY1",
+      "windows": 37,
+      "within": 37,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-01",
+      "component_id": "A02-BS1",
+      "windows": 76,
+      "within": 76,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S04-02",
+      "component_id": "A02-LM1",
+      "windows": 86,
+      "within": 86,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-01",
+      "component_id": "A03-BS1",
+      "windows": 188,
+      "within": 156,
+      "over": 32,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S03-02",
+      "component_id": "A03-CY1",
+      "windows": 198,
+      "within": 158,
+      "over": 40,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S07-01",
+      "component_id": "A04-CY1",
+      "windows": 56,
+      "within": 56,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S12-01",
+      "component_id": "A05-BS1",
+      "windows": 57,
+      "within": 43,
+      "over": 0,
+      "under": 14
+     },
+     {
+      "case_id": "GC-S19-01",
+      "component_id": "A06-BS1",
+      "windows": 48,
+      "within": 48,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-02",
+      "component_id": "A06-BS2",
+      "windows": 51,
+      "within": 51,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S19-03",
+      "component_id": "A06-LM1",
+      "windows": 61,
+      "within": 61,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-01",
+      "component_id": "A07-BS1",
+      "windows": 14,
+      "within": 14,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S20-02",
+      "component_id": "A07-CY1",
+      "windows": 17,
+      "within": 17,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-01",
+      "component_id": "A08-LM1",
+      "windows": 34,
+      "within": 34,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S05-02",
+      "component_id": "A08-BS1",
+      "windows": 35,
+      "within": 35,
+      "over": 0,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S09-01",
+      "component_id": "A09-BS1",
+      "windows": 65,
+      "within": 60,
+      "over": 4,
+      "under": 1
+     },
+     {
+      "case_id": "GC-S10-01",
+      "component_id": "A10-BS1",
+      "windows": 83,
+      "within": 61,
+      "over": 22,
+      "under": 0
+     },
+     {
+      "case_id": "GC-S11-01",
+      "component_id": "A11-CY1",
+      "windows": 93,
+      "within": 93,
+      "over": 0,
+      "under": 0
+     }
+    ]
+   }
+  }
+ ],
+ "recommended": "A05",
+ "is_simulated": true
+}

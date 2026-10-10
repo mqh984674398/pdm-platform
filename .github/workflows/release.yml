@@ -1,0 +1,41 @@
+name: Release
+
+# Run by hand from the Actions tab: builds the offline Windows bundle and publishes a GitHub Release
+# with the zip and the deployment guide attached.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        required: true
+        default: v0.1.0
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      # Pinned versions from the lock so the bundle matches the tested build.
+      - run: pip install packaging -r backend/requirements.lock && pip install --no-deps -e backend
+      - run: npm ci
+        working-directory: frontend
+      - run: curl -fsSL -o python.nupkg https://www.nuget.org/api/v2/package/python/3.12.10
+      - run: python deploy/build_offline.py --python-nupkg python.nupkg
+      - run: cp deploy/offline/DEPLOY_GUIDE.md dist/DEPLOY_GUIDE.md
+      - run: >
+          gh release create "$TAG" dist/pdm-*-offline-win64.zip "dist/DEPLOY_GUIDE.md#部署说明 DEPLOY_GUIDE.md"
+          --target "$GITHUB_SHA" --title "PDM Platform $TAG" --notes-file deploy/offline/RELEASE_NOTES.md

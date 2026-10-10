@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S11",
+  "slug": "partial_repair",
+  "title": {
+    "zh": "部分维修",
+    "en": "Partial maintenance or repair"
+  },
+  "seed": 5011,
+  "dataset_id": "s11_partial_repair",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "伸出时间持续上升；第21天部分维修后下降但未回到初始水平。",
+    "en": "Extension time rises; after partial repair on day 21 it drops but not back to the initial level."
+  },
+  "ground_truth": {
+    "zh": "伸出参数 0→+0.5（0–20天）；维修 −0.3，磨损 −0.02。",
+    "en": "Extend parameter 0→+0.5 (days 0–20); repair −0.3 and wear −0.02."
+  },
+  "expected_health_response": {
+    "zh": "维修前 WARNING；维修后 WATCH（部分改善）；影响分析报告部分恢复。",
+    "en": "WARNING before repair; WATCH after (partial improvement); impact analysis reports partial recovery."
+  },
+  "abstention_cases": [
+    {
+      "zh": "维护后稳定期内不做健康结论（UNKNOWN）。",
+      "en": "No health conclusion during post-maintenance stabilization (UNKNOWN)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S11-01"
+  ]
+}

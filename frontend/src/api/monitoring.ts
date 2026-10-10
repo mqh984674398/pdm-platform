@@ -1,0 +1,220 @@
+/**
+ * Monitoring reads and alarm actions over the real backend (T019/T020). The development header
+ * provider stands in for login until T028 (DECISIONS D-010); the UI acts as a maintenance engineer.
+ */
+import type {
+  Alarm,
+  ApiError,
+  Baseline,
+  ComponentHealthReport,
+  ComponentInstance,
+  DegradationHistory,
+  FleetOverview,
+  Machine,
+  MaintenanceEvent,
+  MaintenanceWorkflow,
+  OptimizationRun,
+  LlmConfig,
+  LlmConfigState,
+  LlmHealth,
+  AssistantResponse,
+  RagDocument,
+  FeedbackItem,
+  FeedbackIn,
+  DeploymentVersion,
+  KindSummary,
+  SignalConfigState,
+  TimeWindow,
+  VisualizationSeries,
+} from './contracts'
+import { authHeaders } from './session'
+
+export { UI_USER, devRole } from './session'
+
+export class MonitoringApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly body: ApiError | null,
+  ) {
+    super(body?.message.en ?? `request failed (${status})`)
+  }
+}
+
+type Query = Record<string, string | number | boolean | undefined>
+
+function url(path: string, query?: Query): string {
+  const params = new URLSearchParams()
+  for (const [k, v] of Object.entries(query ?? {})) if (v !== undefined) params.set(k, String(v))
+  const qs = params.toString()
+  return qs ? `${path}?${qs}` : path
+}
+
+export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(...a)) {
+  const headers = authHeaders
+
+  async function call<T>(path: string, init: RequestInit = {}, query?: Query): Promise<T> {
+    const resp = await fetchImpl(url(path, query), {
+      ...init,
+      headers: { ...headers(), ...(init.body ? { 'Content-Type': 'application/json' } : {}) },
+    })
+    if (!resp.ok) {
+      const body = (await resp.json().catch(() => null)) as ApiError | null
+      throw new MonitoringApiError(resp.status, body)
+    }
+    return (await resp.json()) as T
+  }
+
+  return {
+    signalConfig: () => call<SignalConfigState>('/api/signal-config'),
+    fleet: () => call<FleetOverview>('/api/fleet'),
+    health: (componentId: string) =>
+      call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),
+    machines: () => call<Machine[]>('/api/machines'),
+    components: (machineId: string) =>
+      call<ComponentInstance[]>(`/api/machines/${encodeURIComponent(machineId)}/components`),
+    extent: (signalId: string) =>
+      call<TimeWindow | null>(`/api/timeseries/${encodeURIComponent(signalId)}/extent`),
+    series: (
+      signalId: string,
+      start: number,
+      end: number,
+      maxPoints: number,
+      signal?: AbortSignal,
+    ) =>
+      call<VisualizationSeries>(
+        `/api/timeseries/${encodeURIComponent(signalId)}`,
+        { signal },
+        {
+          start: new Date(start).toISOString(),
+          end: new Date(end).toISOString(),
+          max_points: maxPoints,
+        },
+      ),
+    /** Full-resolution CSV of a range; returns the file name and content. */
+    async exportCsv(signalId: string, start: number, end: number) {
+      const resp = await fetchImpl(
+        url(`/api/timeseries/${encodeURIComponent(signalId)}/export`, {
+          start: new Date(start).toISOString(),
+          end: new Date(end).toISOString(),
+        }),
+        { headers: headers() },
+      )
+      if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+      const disposition = resp.headers.get('content-disposition') ?? ''
+      const name = /filename="([^"]+)"/.exec(disposition)?.[1] ?? `${signalId}.csv`
+      return { name, blob: await resp.blob() }
+    },
+    baselines: (componentId: string) =>
+      call<Baseline[]>(`/api/components/${encodeURIComponent(componentId)}/baselines`),
+    degradation: (componentId: string, feature: string, featureRef: string) =>
+      call<DegradationHistory>(
+        `/api/components/${encodeURIComponent(componentId)}/degradation`,
+        {},
+        { feature, feature_ref: featureRef },
+      ),
+    events: (componentId: string) =>
+      call<MaintenanceEvent[]>(
+        `/api/components/${encodeURIComponent(componentId)}/maintenance-events`,
+      ),
+    workflows: (componentId: string) =>
+      call<MaintenanceWorkflow[]>('/api/maintenance-workflows', {}, { component_id: componentId }),
+    alarms: (query: { component_id?: string; status?: string } = {}) =>
+      call<Alarm[]>('/api/alarms', {}, query),
+    acknowledge: (alarmId: string, comment: string) =>
+      call<Alarm>(`/api/alarms/${encodeURIComponent(alarmId)}/acknowledge`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+    llmSettings: () => call<LlmConfigState>('/api/llm/settings'),
+    saveLlmSettings: (cfg: LlmConfig) =>
+      call<LlmConfigState>('/api/llm/settings', { method: 'PUT', body: JSON.stringify(cfg) }),
+    llmHealth: () => call<LlmHealth>('/api/llm/health'),
+    documents: () => call<RagDocument[]>('/api/llm/documents'),
+    addDocument: (doc: { title: string; text: string; min_role: string; source?: string }) =>
+      call<RagDocument>('/api/llm/documents', { method: 'POST', body: JSON.stringify(doc) }),
+    approveDocument: (docId: string) =>
+      call<RagDocument>(`/api/llm/documents/${encodeURIComponent(docId)}/approve`, {
+        method: 'POST',
+      }),
+    feedback: (fb: FeedbackIn) =>
+      call<FeedbackItem>('/api/feedback', { method: 'POST', body: JSON.stringify(fb) }),
+    cancelAsk: (requestId: string) =>
+      fetchImpl(`/api/llm/ask/${encodeURIComponent(requestId)}/cancel`, {
+        method: 'POST',
+        headers: headers(),
+      }),
+    /** Stream the assistant's events (NDJSON); calls onEvent for each, resolves when the stream ends. */
+    async askStream(
+      body: { question: string; component_id?: string; request_id: string },
+      onEvent: (ev: AskEvent) => void,
+      signal?: AbortSignal,
+    ) {
+      const resp = await fetchImpl('/api/llm/ask/stream', {
+        method: 'POST',
+        headers: { ...headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal,
+      })
+      if (!resp.ok || !resp.body) {
+        throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+      }
+      const reader = resp.body.getReader()
+      const dec = new TextDecoder()
+      let buf = ''
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buf += dec.decode(value, { stream: true })
+        let i
+        while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim()
+          buf = buf.slice(i + 1)
+          if (line) onEvent(JSON.parse(line) as AskEvent)
+        }
+      }
+    },
+    registryKinds: () => call<KindSummary[]>('/api/registry/kinds'),
+    registryVersions: (kind: string) =>
+      call<DeploymentVersion[]>('/api/registry/versions', {}, { kind }),
+    proposeConfig: (candidateId: string, comment: string) =>
+      call<DeploymentVersion>('/api/registry/decision-config/candidates', {
+        method: 'POST',
+        body: JSON.stringify({ candidate_id: candidateId, comment }),
+      }),
+    promote: (versionId: string, comment: string) =>
+      call<DeploymentVersion>(`/api/registry/versions/${encodeURIComponent(versionId)}/promote`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+    reject: (versionId: string, comment: string) =>
+      call<DeploymentVersion>(`/api/registry/versions/${encodeURIComponent(versionId)}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+    rollback: (kind: string, comment: string) =>
+      call<DeploymentVersion>('/api/registry/rollback', {
+        method: 'POST',
+        body: JSON.stringify({ kind, comment }),
+      }),
+    latestOptimization: () => call<OptimizationRun>('/api/optimization/runs/latest'),
+    runOptimization: (candidates = 12, seed = 0) =>
+      call<OptimizationRun>('/api/optimization/runs', {
+        method: 'POST',
+        body: JSON.stringify({ candidates, seed }),
+      }),
+    resolve: (alarmId: string, comment: string) =>
+      call<Alarm>(`/api/alarms/${encodeURIComponent(alarmId)}/resolve`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+  }
+}
+
+export type AskEvent =
+  | { type: 'context'; citations: unknown[]; health_state: string | null }
+  | { type: 'token'; text: string }
+  | { type: 'answer'; response: AssistantResponse }
+  | { type: 'error'; code: string; message: string }
+
+export type MonitoringApi = ReturnType<typeof createMonitoringApi>
+export const monitoringApi = createMonitoringApi()

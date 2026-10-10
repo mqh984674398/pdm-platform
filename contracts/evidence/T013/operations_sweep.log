@@ -1,0 +1,108 @@
+SIMULATED data only. Reference period for regimes: 0-96 h of each scenario.
+S01_healthy
+  states (observation windows/records): {'RUNNING': 50, 'IDLE': 4}; UNKNOWN 334.2 h
+  known regimes: ['RG1[M01-BS1.speed≈1501, M01-LM1.speed≈0.3998] x3', 'RG2[M01-BS1.speed≈2999, M01-LM1.speed≈0.7992] x10']
+  running windows by regime status: {'KNOWN': 50}
+  M01-VC1.release_time VACUUM_RELEASE: 1156 ops, 0 incomplete, 0 implausible, median completed 0.0856 s
+  M01-CY1.extend_time EXTEND: 1161 ops, 0 incomplete, 0 implausible, median completed 0.3703 s
+  M01-CY1.retract_time RETRACT: 1161 ops, 0 incomplete, 0 implausible, median completed 0.3172 s
+S02_multi_regime
+  states (observation windows/records): {'RUNNING': 52, 'IDLE': 1}; UNKNOWN 334.3 h
+  known regimes: ['RG1[M01-BS1.speed≈1500, M01-LM1.speed≈0.4001] x3', 'RG2[M01-BS1.speed≈2200, M01-LM1.speed≈0.5808] x6', 'RG3[M01-BS1.speed≈2999, M01-LM1.speed≈0.7973] x6']
+  running windows by regime status: {'KNOWN': 52}
+  M01-VC1.release_time VACUUM_RELEASE: 1241 ops, 0 incomplete, 0 implausible, median completed 0.0822 s
+  M01-CY1.extend_time EXTEND: 1242 ops, 0 incomplete, 0 implausible, median completed 0.3525 s
+  M01-CY1.retract_time RETRACT: 1242 ops, 0 incomplete, 0 implausible, median completed 0.3034 s
+S03_normal_aging
+  states (observation windows/records): {'RUNNING': 211, 'IDLE': 16}; UNKNOWN 2872.5 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x5']
+  running windows by regime status: {'KNOWN': 118, 'UNSUPPORTED': 93}
+  M01-CY1.extend_time EXTEND: 4724 ops, 0 incomplete, 0 implausible, median completed 0.3752 s
+  M01-CY1.retract_time RETRACT: 4724 ops, 0 incomplete, 0 implausible, median completed 0.3214 s
+S04_torque_drift
+  states (observation windows/records): {'RUNNING': 102, 'IDLE': 10}; UNKNOWN 716.3 h
+  known regimes: ['RG1[M01-BS1.speed≈1500, M01-LM1.speed≈0.3999] x6', 'RG2[M01-BS1.speed≈2999, M01-LM1.speed≈0.7983] x9']
+  running windows by regime status: {'KNOWN': 102}
+S05_linear_motor_instability
+  states (observation windows/records): {'RUNNING': 53, 'IDLE': 1}; UNKNOWN 334.2 h
+  known regimes: ['RG1[M01-BS1.speed≈1500, M01-LM1.speed≈0.3999] x7', 'RG2[M01-BS1.speed≈3000, M01-LM1.speed≈0.7988] x8']
+  running windows by regime status: {'KNOWN': 53}
+S06_vacuum_release_increase
+  states (observation windows/records): {'RUNNING': 109}; UNKNOWN 716.5 h
+  known regimes: none (no speed signal)
+  running windows by regime status: {'NOT_EVALUATED': 109}
+  M01-VC1.release_time VACUUM_RELEASE: 2551 ops, 0 incomplete, 0 implausible, median completed 0.1007 s
+  M01-CY1.extend_time EXTEND: 2550 ops, 0 incomplete, 0 implausible, median completed 0.3588 s
+  M01-CY1.retract_time RETRACT: 2550 ops, 0 incomplete, 0 implausible, median completed 0.3074 s
+S07_cylinder_extend_slowdown
+  states (observation windows/records): {'RUNNING': 76}; UNKNOWN 501.6 h
+  known regimes: none (no speed signal)
+  running windows by regime status: {'NOT_EVALUATED': 76}
+  M01-CY1.extend_time EXTEND: 1682 ops, 0 incomplete, 0 implausible, median completed 0.4168 s
+  M01-CY1.retract_time RETRACT: 1682 ops, 0 incomplete, 0 implausible, median completed 0.3053 s
+S08_cylinder_retract_slowdown
+  states (observation windows/records): {'RUNNING': 79}; UNKNOWN 501.5 h
+  known regimes: none (no speed signal)
+  running windows by regime status: {'NOT_EVALUATED': 79}
+  M01-CY1.extend_time EXTEND: 1751 ops, 0 incomplete, 0 implausible, median completed 0.3638 s
+  M01-CY1.retract_time RETRACT: 1751 ops, 0 incomplete, 0 implausible, median completed 0.3585 s
+S09_lubrication_improvement
+  states (observation windows/records): {'RUNNING': 104, 'IDLE': 14, 'MAINTENANCE': 1}; UNKNOWN 715.6 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x5', 'RG2[M01-BS1.speed≈3000] x11']
+  running windows by regime status: {'KNOWN': 104}
+S10_lubrication_deterioration
+  states (observation windows/records): {'RUNNING': 109, 'IDLE': 10, 'MAINTENANCE': 1}; UNKNOWN 715.6 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x6', 'RG2[M01-BS1.speed≈2999] x8']
+  running windows by regime status: {'KNOWN': 109}
+S11_partial_repair
+  states (observation windows/records): {'RUNNING': 148, 'MAINTENANCE': 1}; UNKNOWN 954.8 h
+  known regimes: none (no speed signal)
+  running windows by regime status: {'NOT_EVALUATED': 148}
+  M01-CY1.extend_time EXTEND: 3474 ops, 0 incomplete, 0 implausible, median completed 0.4351 s
+  M01-CY1.retract_time RETRACT: 3474 ops, 0 incomplete, 0 implausible, median completed 0.3074 s
+S12_component_replacement
+  states (observation windows/records): {'RUNNING': 138, 'IDLE': 18, 'MAINTENANCE': 1}; UNKNOWN 954.4 h
+  known regimes: ['RG1[M01-BS1.speed≈1469] x9', 'RG2[M01-BS1.speed≈2999] x6']
+  running windows by regime status: {'KNOWN': 138}
+S13_missing_duplicate
+  states (observation windows/records): {'RUNNING': 27, 'IDLE': 1}; UNKNOWN 167.1 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x10', 'RG2[M01-BS1.speed≈2999] x5']
+  running windows by regime status: {'KNOWN': 27}
+  M01-CY1.extend_time EXTEND: 656 ops, 0 incomplete, 0 implausible, median completed 0.3561 s
+  M01-CY1.retract_time RETRACT: 595 ops, 0 incomplete, 0 implausible, median completed 0.3042 s
+S14_jitter_out_of_order
+  states (observation windows/records): {'IDLE': 1, 'RUNNING': 27}; UNKNOWN 167.1 h
+  known regimes: ['RG1[M01-BS1.speed≈1500, M01-LM1.speed≈0.4003] x7', 'RG2[M01-BS1.speed≈2999, M01-LM1.speed≈0.7995] x7']
+  running windows by regime status: {'KNOWN': 27}
+S15_speed_torque_desync
+  states (observation windows/records): {'RUNNING': 24, 'IDLE': 2}; UNKNOWN 167.1 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x9', 'RG2[M01-BS1.speed≈2998] x5']
+  running windows by regime status: {'KNOWN': 24}
+S16_bias_unit_mismatch
+  states (observation windows/records): {'RUNNING': 31, 'IDLE': 7}; UNKNOWN 238.8 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x3', 'RG2[M01-BS1.speed≈2999] x10']
+  running windows by regime status: {'KNOWN': 31}
+  M01-VC1.release_time VACUUM_RELEASE: 732 ops, 0 incomplete, 129 implausible, median completed 0.0860 s
+S17_unknown_regime
+  states (observation windows/records): {'RUNNING': 35, 'IDLE': 5}; UNKNOWN 238.7 h
+  known regimes: ['RG1[M01-BS1.speed≈1500] x8', 'RG2[M01-BS1.speed≈2999] x7']
+  running windows by regime status: {'KNOWN': 28, 'UNSUPPORTED': 7}
+  M01-CY1.extend_time EXTEND: 826 ops, 0 incomplete, 0 implausible, median completed 0.3696 s
+  M01-CY1.retract_time RETRACT: 826 ops, 0 incomplete, 0 implausible, median completed 0.3172 s
+S18_incomplete_operations
+  states (observation windows/records): {'RUNNING': 34}; UNKNOWN 238.9 h
+  known regimes: none (no speed signal)
+  running windows by regime status: {'NOT_EVALUATED': 34}
+  M01-CY1.extend_time EXTEND: 768 ops, 4 incomplete, 0 implausible, median completed 0.3429 s timeout 2 s (inferred)
+  M01-CY1.retract_time RETRACT: 768 ops, 8 incomplete, 0 implausible, median completed 0.2946 s timeout 2 s (inferred)
+  M01-VC1.release_time VACUUM_RELEASE: 760 ops, 7 incomplete, 0 implausible, median completed 0.0858 s timeout 2 s (inferred)
+S19_shared_drive_chain
+  states (observation windows/records): {'RUNNING': 76, 'IDLE': 2}; UNKNOWN 501.4 h
+  known regimes: ['RG1[M01-BS1.speed≈1500, M01-BS2.speed≈1500, M01-LM1.speed≈0.4] x9', 'RG2[M01-BS1.speed≈2999, M01-BS2.speed≈2999, M01-LM1.speed≈0.7984] x5']
+  running windows by regime status: {'KNOWN': 76}
+S20_source_interruption
+  states (observation windows/records): {'RUNNING': 28, 'IDLE': 4}; UNKNOWN 238.9 h
+  known regimes: ['RG1[M01-BS1.speed≈1499] x7', 'RG2[M01-BS1.speed≈2999] x4']
+  running windows by regime status: {'KNOWN': 28}
+  M01-CY1.extend_time EXTEND: 625 ops, 0 incomplete, 0 implausible, median completed 0.3584 s
+  M01-CY1.retract_time RETRACT: 625 ops, 0 incomplete, 0 implausible, median completed 0.3080 s

@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/claude/pdm/backend
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 14 items
+
+tests/maintenance_impact/test_analysis.py ........                       [ 57%]
+tests/maintenance_impact/test_workflow.py ......                         [100%]
+
+============================== 14 passed in 2.36s ==============================

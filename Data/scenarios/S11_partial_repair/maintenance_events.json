@@ -1,0 +1,13 @@
+[
+  {
+    "event_id": "SIM-ME-0001",
+    "component_id": "M01-CY1",
+    "lifecycle_id": "M01-CY1-LC1",
+    "type": "PARTIAL_REPAIR",
+    "performed_at": "2026-02-23T00:00:00Z",
+    "performed_by": "sim-technician",
+    "notes": "simulated maintenance event",
+    "new_lifecycle_id": null,
+    "is_simulated": true
+  }
+]

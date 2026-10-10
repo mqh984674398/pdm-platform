@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S14",
+  "slug": "jitter_out_of_order",
+  "title": {
+    "zh": "时间戳抖动与乱序",
+    "en": "Timestamp jitter and out-of-order records"
+  },
+  "seed": 5014,
+  "dataset_id": "s14_jitter_out_of_order",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第2–5天丝杠时间戳抖动约0.3s；直线电机约10%记录乱序。",
+    "en": "Days 2–5: ball-screw timestamps jitter about 0.3 s; about 10% of linear-motor rows arrive out of order."
+  },
+  "ground_truth": {
+    "zh": "仅时间戳缺陷，设备健康。",
+    "en": "Timestamp defects only; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "报告抖动与乱序并排序后分析；不得误报。",
+    "en": "Report jitter and disorder, analyze after ordering; no false alarms."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S14-01",
+    "GC-S14-02"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S16",
+  "slug": "bias_unit_mismatch",
+  "title": {
+    "zh": "传感器偏置与单位错配",
+    "en": "Sensor bias and unit mismatch"
+  },
+  "seed": 5016,
+  "dataset_id": "s16_bias_unit_mismatch",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第3–5天转矩偏置+5%额定（静止时也偏高）；第6–8天释放时间被放大1000倍（ms→µs）。",
+    "en": "Days 3–5: torque biased +5% rated (also high at standstill); days 6–8: release time scaled ×1000 (ms→µs)."
+  },
+  "ground_truth": {
+    "zh": "仅传感/配置缺陷，设备健康。",
+    "en": "Sensor/configuration defects only; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "单位异常标记 UNIT_SUSPECT/OUT_OF_RANGE 并弃权；偏置期间最多 WATCH（提示检查传感器），不得 WARNING。",
+    "en": "Flag UNIT_SUSPECT/OUT_OF_RANGE and abstain; at most WATCH during bias (check sensor), never WARNING."
+  },
+  "abstention_cases": [
+    {
+      "zh": "单位错配期间释放时间分析必须弃权（DATA_QUALITY）。",
+      "en": "Release-time analysis must abstain during unit mismatch (DATA_QUALITY)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S16-01",
+    "GC-S16-02"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "scenario_id": "S19",
+  "slug": "shared_drive_chain",
+  "title": {
+    "zh": "共用传动链异常",
+    "en": "Shared drive-chain abnormality"
+  },
+  "seed": 5019,
+  "dataset_id": "s19_shared_drive_chain",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第7–17天共用传动链的两根丝杠转矩同时上升。",
+    "en": "Days 7–17: torque of both ball screws on the shared drive chain rises simultaneously."
+  },
+  "ground_truth": {
+    "zh": "传动链 M01-DC1 摩擦 +0.5（线性）。",
+    "en": "Drive chain M01-DC1 friction +0.5 (linear)."
+  },
+  "expected_health_response": {
+    "zh": "两根丝杠均 WARNING；证据融合应提示共同原因（传动链），不应各自判定为丝杠磨损。",
+    "en": "Both ball screws WARNING; evidence fusion should indicate a common cause (drive chain) rather than separate ball-screw wear."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "转矩升高只说明负载/摩擦变化，不能单独证明丝杠磨损。",
+      "en": "Higher torque indicates a load/friction change; it does not alone prove ball-screw wear."
+    }
+  ],
+  "golden_case_ids": [
+    "GC-S19-01",
+    "GC-S19-02",
+    "GC-S19-03"
+  ]
+}

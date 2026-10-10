@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s20_source_interruption",
+  "description": "S20 Data-source interruption and recovery (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5020,
+  "config_sha256": "68c7ee2b845cde1ebae165ad492dfc270cb7dcfc4fab3bd0dc31f3bfe0b22712",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 240.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "81bb6b3f83a71172b163bf922dc5c06849f1a2d9e16073957f88994851152333",
+      "bytes": 302651,
+      "rows": 5090,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "04ab7ed7a76d2eabd0c82d2cf5e83a425acb99b516496cbb499ea25db9222f9e",
+      "bytes": 464584,
+      "rows": 5090,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "a08b1f18feeacaaa16aff7771c33374f61c1e3b4360e03776e1b9b757563129c",
+      "bytes": 2799,
+      "rows": 40,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "cb6858f3c1beadd9dc6b15c01c97ba752ec489f4041993944c47f4612117d634",
+      "bytes": 7077,
+      "rows": 80,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "b34ee3b1e865dbc98b10e3a775899f4e76ad7ca5eec4ed7710d1ce74dc3d0355",
+      "bytes": 4352
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "62aa72f3cfe65369e8830ee0c2816b43611e2b93c9643bac04e2506c3f916fb1",
+      "bytes": 905
+    },
+    "config.json": {
+      "sha256": "e1f6e6f366d8aec22a99ec93d7738afe65ae3809c614cf96f6084dd43e2f1bff",
+      "bytes": 2349
+    }
+  }
+}

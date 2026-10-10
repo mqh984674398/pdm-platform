@@ -1,0 +1,32 @@
+{
+  "data_faults": [
+    {
+      "fault_index": 0,
+      "kind": "JITTER",
+      "device_id": "SIM-S14",
+      "key_name": "M01_BS1_SPD",
+      "rows_in_interval": 720,
+      "rows_before": 1680,
+      "rows_after": 1680
+    },
+    {
+      "fault_index": 0,
+      "kind": "JITTER",
+      "device_id": "SIM-S14",
+      "key_name": "M01_BS1_TRQ",
+      "rows_in_interval": 720,
+      "rows_before": 1680,
+      "rows_after": 1680
+    },
+    {
+      "fault_index": 1,
+      "kind": "OUT_OF_ORDER",
+      "device_id": "SIM-S14",
+      "key_name": "M01_LM1_SPD",
+      "rows_in_interval": 720,
+      "rows_before": 1680,
+      "rows_after": 1680
+    }
+  ],
+  "incomplete_operations": []
+}

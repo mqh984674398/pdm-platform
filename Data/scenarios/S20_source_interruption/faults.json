@@ -1,0 +1,41 @@
+{
+  "data_faults": [
+    {
+      "fault_index": 0,
+      "kind": "INTERRUPTION",
+      "device_id": "SIM-S20",
+      "key_name": "M01_BS1_SPD",
+      "rows_in_interval": 420,
+      "rows_before": 2340,
+      "rows_after": 1920
+    },
+    {
+      "fault_index": 0,
+      "kind": "INTERRUPTION",
+      "device_id": "SIM-S20",
+      "key_name": "M01_BS1_TRQ",
+      "rows_in_interval": 420,
+      "rows_before": 2340,
+      "rows_after": 1920
+    },
+    {
+      "fault_index": 0,
+      "kind": "INTERRUPTION",
+      "device_id": "SIM-S20",
+      "key_name": "M01_CY1_EXT",
+      "rows_in_interval": 128,
+      "rows_before": 753,
+      "rows_after": 625
+    },
+    {
+      "fault_index": 0,
+      "kind": "INTERRUPTION",
+      "device_id": "SIM-S20",
+      "key_name": "M01_CY1_RET",
+      "rows_in_interval": 128,
+      "rows_before": 753,
+      "rows_after": 625
+    }
+  ],
+  "incomplete_operations": []
+}

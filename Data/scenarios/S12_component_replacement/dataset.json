@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s12_component_replacement",
+  "description": "S12 Complete component replacement (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5012,
+  "config_sha256": "70c12725ce27dfc44287418c06312dd3de7d8e957b73a40a1a64611a6ceda6b1",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 960.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "831c19c1a50c6f6633ee662838cb4e9791fb5a4cd539931c6c82923021d53930",
+      "bytes": 1109450,
+      "rows": 18720,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "4bd775d5082f486a484111f77a3fc585cd0857c277dc12dac7863f74f112eaf4",
+      "bytes": 1683139,
+      "rows": 18720,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "00b2772f5f9f331cd0d17776e4f6a071e4c1a3d03acdc848bda5bc3e0086d795",
+      "bytes": 11100,
+      "rows": 160,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "772e54263003fddd399f4414efcb42eb1006da74b39365b8f0d63a887bc4acdb",
+      "bytes": 13373,
+      "rows": 160,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "1cfb00edbb1232f8a5d7c6be46ba9a2380e1bc2b438e1cefc29815eb6d511ae5",
+      "bytes": 2624
+    },
+    "maintenance_events.json": {
+      "sha256": "eaf8ca89f894950c699bd9ee220be1de8f3975d108b910a97005fbb701d3bdae",
+      "bytes": 326
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "b9a2a1189fa0c03995eaaeb8518b30dd717eea7ea5fc4f5936ce1d07a2d78f64",
+      "bytes": 2014
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "scenario_id": "S06",
+  "slug": "vacuum_release_increase",
+  "title": {
+    "zh": "真空释放时间增加",
+    "en": "Vacuum-release duration increase"
+  },
+  "seed": 5006,
+  "dataset_id": "s06_vacuum_release_increase",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第10–25天释放时间由约80ms升至约120ms。",
+    "en": "Days 10–25: release time rises from about 80 ms to about 120 ms."
+  },
+  "ground_truth": {
+    "zh": "释放参数线性增加 0.5。",
+    "en": "Release parameter ramps +0.5."
+  },
+  "expected_health_response": {
+    "zh": "10天前 NORMAL；漂移期 WATCH/WARNING；之后 WARNING/CRITICAL。不得推断泄漏率。",
+    "en": "NORMAL before day 10; WATCH/WARNING during; WARNING/CRITICAL after. Leakage rate must not be inferred."
+  },
+  "abstention_cases": [
+    {
+      "zh": "泄漏率估计必须返回不支持（INELIGIBLE_INPUT）：仅有释放时间。",
+      "en": "Leakage-rate estimation must return unsupported (INELIGIBLE_INPUT): only release time is available."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "释放时间不能单独推断泄漏率。",
+      "en": "Release duration alone cannot give a leakage rate."
+    }
+  ],
+  "golden_case_ids": [
+    "GC-S06-01"
+  ]
+}

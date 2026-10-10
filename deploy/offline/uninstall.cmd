@@ -1,0 +1,10 @@
+@echo off
+rem Stops and removes the platform's startup task and firewall rule. Keeps the database and settings.
+cd /d "%~dp0"
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+  powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup\offline_uninstall.ps1"
+pause

@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s16_bias_unit_mismatch",
+  "description": "S16 Sensor bias and unit mismatch (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5016,
+  "config_sha256": "161476462d9126897fa8219ba0048f07239120530b36f5d24153f1b0c4225fa1",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 240.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "e9d62ba775c8fd7b0bc2e923c8a5d6d4b13842762f7cef55ac3a2a5ca5f3da92",
+      "bytes": 313632,
+      "rows": 5292,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "d61e1c97a6257e80bd64c7c32e04a2bf577494c8a9848e7decabefea93b324fe",
+      "bytes": 480240,
+      "rows": 5292,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "f3d3bfe7956b0efbfe6d9494b74e078b8e90870741d5ba3f71533ce597cd31d4",
+      "bytes": 2793,
+      "rows": 40,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "74f407974644d70c9fe34c20aea42d44de45ce3e98ba54240de42f31a449bf26",
+      "bytes": 6745,
+      "rows": 80,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "c6083c0b184e80b4f935251b7fed4591bc6efb0c60fdc090ce546bfb4045f54e",
+      "bytes": 3597
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "78e80625743341461655c69f45cb6714aeb7054d1d6cfc40f3096011c4edd597",
+      "bytes": 471
+    },
+    "config.json": {
+      "sha256": "66388d3288d3a462e377b246bba0d6df4d2302b6eb44adf1e5f80116493d8213",
+      "bytes": 2537
+    }
+  }
+}
