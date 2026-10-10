@@ -76,6 +76,12 @@ def main(argv: list[str] | None = None) -> None:
                     print(
                         f"SIMULATED {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms"
                     )
+    from app.datasource.query_service.defaults import ensure_standard_templates
+
+    with Session(get_engine()) as session:
+        created = ensure_standard_templates(session, sources)
+    if created:
+        print(f"Registered built-in read-only query templates: {', '.join(created)}")
     uvicorn.run(
         create_app(sources=sources), host=args.host, port=args.port, log_level="info"
     )

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { session } from '@/api/session'
 import type { StudioRole } from '@/api/studio'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SegmentedControl from '@/components/base/SegmentedControl.vue'
@@ -46,8 +47,16 @@ const role = computed({
   set: (r: StudioRole) => void s.setRole(r),
 })
 
+// With local sign-in the server decides the role; the switch is only for development login (D-010).
+const signedIn = computed(() => session.mode === 'local')
+
 onMounted(async () => {
   try {
+    if (signedIn.value) {
+      const r: StudioRole = session.role === 'admin' ? 'admin' : 'operator'
+      if (s.source) await s.setRole(r)
+      else s.role = r
+    }
     if (!s.source) await s.init()
   } catch {
     error.value = true
@@ -62,7 +71,7 @@ onMounted(async () => {
         <h1>{{ t('nav.datasource') }}</h1>
         <SimBadge />
       </div>
-      <label class="role">
+      <label v-if="!signedIn" class="role">
         <span>{{ t('studio.role') }}</span>
         <SegmentedControl
           v-model="role"

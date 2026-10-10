@@ -1,6 +1,6 @@
 # 预测性维护平台 · 离线一键部署说明 / Offline one-click deployment guide
 
-版本 Version 0.1.0 · 适用于 Windows 10/11、Windows Server 2019+（64 位）· 服务器**无需联网**
+版本 Version 0.1.1 · 适用于 Windows 10/11、Windows Server 2019+（64 位）· 服务器**无需联网**
 
 ## 1. 安装包内容 / What is in the bundle
 
@@ -27,7 +27,7 @@ Verified on PostgreSQL **17.10** before packaging (2026-10-10):
 
 ## 3. 一键安装 / One-click install
 
-1. 把 `pdm-0.1.0-offline-win64.zip` 拷贝到服务器，解压到固定位置，例如 `C:\PDM`（路径不要放在桌面或下载目录，安装后不要移动）。
+1. 把 `pdm-0.1.1-offline-win64.zip` 拷贝到服务器，解压到固定位置，例如 `C:\PDM`（路径不要放在桌面或下载目录，安装后不要移动）。
    Copy the zip to the server and extract it to a permanent folder such as `C:\PDM` (do not move it afterwards).
 2. 双击 `C:\PDM\pdm-offline\install.cmd`，在 UAC 提示中选“是”。
    Double-click `install.cmd` and accept the UAC prompt.

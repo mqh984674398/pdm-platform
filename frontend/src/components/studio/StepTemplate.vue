@@ -12,6 +12,9 @@ const chosen = computed(() => s.templates.find((x) => x.template_id === s.templa
 
 <template>
   <div class="st-stack">
+    <p v-if="!s.templates.length" class="locked" data-testid="no-templates">
+      {{ t('studio.template.none') }}
+    </p>
     <div class="st-choices" role="radiogroup" :aria-label="t('studio.steps.template')">
       <button
         v-for="tp in s.templates"

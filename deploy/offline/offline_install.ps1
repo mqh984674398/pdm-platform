@@ -23,11 +23,15 @@ New-Item -ItemType Directory -Force -Path $Data | Out-Null
 $Log = Join-Path $Data "install.log"
 function Step($zh, $en) { $l = "[{0:yyyy-MM-dd HH:mm:ss}] {1} / {2}" -f (Get-Date), $zh, $en; Write-Host $l -ForegroundColor Cyan; Add-Content $Log $l -Encoding UTF8 }
 function Fail($zh, $en) { Step "失败：$zh" "FAILED: $en"; throw $en }
+# Windows PowerShell 5.1 turns every stderr line of a native command into a terminating error when
+# $ErrorActionPreference is Stop and stderr is redirected (alembic logs INFO to stderr, psql reports a
+# server that is still starting there). Native tools run with Continue; callers check $LASTEXITCODE.
+function Invoke-Native([scriptblock]$Cmd) { $ErrorActionPreference = "Continue"; & $Cmd }
 function NewSecret([int]$n) { $b = New-Object byte[] $n; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); ([Convert]::ToBase64String($b) -replace '[+/=]', 'x') }
 
 Step "安装目录 $Root" "Install root $Root"
 if (-not (Test-Path $Py)) { Fail "找不到内置 Python" "bundled Python missing at $Py" }
-& $Py -c "import fastapi, sqlalchemy, psycopg, xgboost, sklearn, uvicorn, alembic" 2>&1 | Out-Null
+Invoke-Native { & $Py -c "import fastapi, sqlalchemy, psycopg, xgboost, sklearn, uvicorn, alembic, httpx" 2>&1 } | Out-Null
 if ($LASTEXITCODE -ne 0) { Fail "内置 Python 依赖不完整" "bundled packages failed to import" }
 Step "内置 Python 3.12 与依赖可用" "Bundled Python 3.12 and packages OK"
 
@@ -81,7 +85,7 @@ if ($svc) {
   Step "已初始化 PostgreSQL 17 数据库集群（服务 pdm-postgresql17，仅本机 127.0.0.1:$PgPort）" "Initialised a PostgreSQL 17 cluster as service pdm-postgresql17 on 127.0.0.1:$PgPort"
 }
 
-function Sql($db, $q) { & $psql -h 127.0.0.1 -p $PgPort -U $SuperUser -d $db -v ON_ERROR_STOP=1 -tAc $q }
+function Sql($db, $q) { Invoke-Native { & $psql -h 127.0.0.1 -p $PgPort -U $SuperUser -d $db -v ON_ERROR_STOP=1 -tAc $q } }
 for ($i = 0; $i -lt 30; $i++) { if ((Sql "postgres" "select 1" 2>$null) -eq "1") { break }; Start-Sleep 1 }
 if ((Sql "postgres" "select 1" 2>$null) -ne "1") { Fail "无法连接 PostgreSQL（检查密码或端口）" "cannot connect to PostgreSQL (check password/port)" }
 
@@ -122,7 +126,7 @@ Step "已写入配置 pdm\backend\.env（仅 SYSTEM 与管理员可读）" "Wrot
 # --- 3. Schema and first administrator ----------------------------------------------------------------
 Push-Location $Backend
 try {
-  & $Py -m alembic upgrade head 2>&1 | Add-Content $Log -Encoding UTF8
+  Invoke-Native { & $Py -m alembic upgrade head 2>&1 } | ForEach-Object { "$_" } | Add-Content $Log -Encoding UTF8
   if ($LASTEXITCODE -ne 0) { Fail "数据库迁移失败，详见 $Log" "migration failed, see $Log" }
   Step "数据库结构已更新" "Database schema migrated"
   $users = & $Py ..\deploy\manage_users.py list

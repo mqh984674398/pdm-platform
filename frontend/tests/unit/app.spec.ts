@@ -6,6 +6,7 @@ import App from '@/App.vue'
 import { i18n, setLocale } from '@/i18n'
 import { routes } from '@/router'
 import { NAV } from '@/router/nav'
+import PlaceholderView from '@/views/PlaceholderView.vue'
 
 async function mountApp(path = '/') {
   vi.stubGlobal('fetch', async () => {
@@ -20,9 +21,14 @@ async function mountApp(path = '/') {
 }
 
 describe('App shell', () => {
-  it('registers all 12 required interfaces as routes', () => {
-    expect(NAV).toHaveLength(12)
+  it('registers all 12 required interfaces as routes, plus administration', () => {
+    expect(NAV.filter((n) => !n.adminOnly)).toHaveLength(12)
+    expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual(['users'])
     expect(routes.map((r) => r.name)).toEqual(NAV.map((n) => n.name))
+  })
+
+  it('delivers every screen; none is left as a placeholder', () => {
+    expect(routes.filter((r) => r.component === PlaceholderView).map((r) => r.name)).toEqual([])
   })
 
   it('switches language at runtime without remounting', async () => {

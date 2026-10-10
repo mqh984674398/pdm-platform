@@ -19,6 +19,7 @@ from pydantic import Field
 from sqlalchemy.orm import Session
 
 from app.core.db import get_session
+from app.core.modules import require_module
 from app.core.schemas import ContractModel
 from app.core.security import Principal, Role, require
 from app.feedback.service import FeedbackIn, FeedbackItem, FeedbackService
@@ -55,17 +56,17 @@ def _client(cfg: LlmConfig) -> OllamaClient:
     return OllamaClient(cfg.endpoint, cfg.allowed_hosts, cfg.timeout_s)
 
 
-@router.get("/llm/settings", response_model=LlmConfigState)
+@router.get("/llm/settings", response_model=LlmConfigState, dependencies=[require_module("assistant")])
 def get_settings_(_: Admin, db: DB) -> LlmConfigState:
     return LlmSettings(db).current()
 
 
-@router.put("/llm/settings", response_model=LlmConfigState)
+@router.put("/llm/settings", response_model=LlmConfigState, dependencies=[require_module("assistant")])
 def put_settings(body: LlmConfig, who: Admin, db: DB) -> LlmConfigState:
     return LlmSettings(db).update(body, who)
 
 
-@router.get("/llm/health", response_model=LlmHealth)
+@router.get("/llm/health", response_model=LlmHealth, dependencies=[require_module("assistant")])
 def health(_: Admin, db: DB) -> LlmHealth:
     cfg = LlmSettings(db).current().config
     client = _client(cfg)
@@ -95,7 +96,7 @@ def health(_: Admin, db: DB) -> LlmHealth:
     )
 
 
-@router.post("/llm/ask", response_model=AssistantResponse)
+@router.post("/llm/ask", response_model=AssistantResponse, dependencies=[require_module("assistant")])
 def ask(body: AssistantRequest, who: Viewer, db: DB) -> AssistantResponse:
     cfg = LlmSettings(db).current().config
     client = _client(cfg)
@@ -105,7 +106,7 @@ def ask(body: AssistantRequest, who: Viewer, db: DB) -> AssistantResponse:
         client.close()
 
 
-@router.post("/llm/ask/stream")
+@router.post("/llm/ask/stream", dependencies=[require_module("assistant")])
 def ask_stream(body: AssistantRequest, who: Viewer, db: DB) -> StreamingResponse:
     """Newline-delimited JSON events; cancel with POST /llm/ask/{request_id}/cancel or by disconnecting."""
     cfg = LlmSettings(db).current().config
@@ -127,24 +128,26 @@ def ask_stream(body: AssistantRequest, who: Viewer, db: DB) -> StreamingResponse
     return StreamingResponse(events(), media_type="application/x-ndjson")
 
 
-@router.post("/llm/ask/{request_id}/cancel", status_code=204)
+@router.post("/llm/ask/{request_id}/cancel", status_code=204, dependencies=[require_module("assistant")])
 def cancel(request_id: str, _: Viewer) -> None:
     ev = _CANCEL.get(request_id)
     if ev is not None:
         ev.set()
 
 
-@router.get("/llm/documents", response_model=list[Document])
+@router.get("/llm/documents", response_model=list[Document], dependencies=[require_module("assistant")])
 def documents(who: Viewer, db: DB) -> list[Document]:
     return DocumentStore(db).documents(who)
 
 
-@router.post("/llm/documents", response_model=Document)
+@router.post("/llm/documents", response_model=Document, dependencies=[require_module("assistant")])
 def add_document(body: DocumentIn, who: Engineer, db: DB) -> Document:
     return DocumentStore(db).add(body, who)
 
 
-@router.post("/llm/documents/{doc_id}/approve", response_model=Document)
+@router.post(
+    "/llm/documents/{doc_id}/approve", response_model=Document, dependencies=[require_module("assistant")]
+)
 def approve_document(doc_id: str, who: Engineer, db: DB) -> Document:
     cfg = LlmSettings(db).current().config
     client = _client(cfg)
@@ -154,18 +157,24 @@ def approve_document(doc_id: str, who: Engineer, db: DB) -> Document:
         client.close()
 
 
-@router.post("/feedback", response_model=FeedbackItem)
+@router.post("/feedback", response_model=FeedbackItem, dependencies=[require_module("alarms", "assistant")])
 def submit_feedback(body: FeedbackIn, who: Maintainer, db: DB) -> FeedbackItem:
     return FeedbackService(db).submit(body, who)
 
 
-@router.get("/feedback", response_model=list[FeedbackItem])
+@router.get(
+    "/feedback", response_model=list[FeedbackItem], dependencies=[require_module("alarms", "assistant")]
+)
 def list_feedback(
     _: Viewer, db: DB, status: str | None = None, alarm_id: str | None = None
 ) -> list[FeedbackItem]:
     return FeedbackService(db).items(status, alarm_id)
 
 
-@router.post("/feedback/{feedback_id}/review", response_model=FeedbackItem)
+@router.post(
+    "/feedback/{feedback_id}/review",
+    response_model=FeedbackItem,
+    dependencies=[require_module("alarms", "assistant")],
+)
 def review_feedback(feedback_id: str, body: Review, who: Engineer, db: DB) -> FeedbackItem:
     return FeedbackService(db).review(feedback_id, body.note, who)

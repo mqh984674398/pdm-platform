@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.db import get_session
+from app.core.modules import require_module
 from app.core.security import Principal, Role, require
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentStore
 from app.equipment.maintenance import MaintenanceService
@@ -112,7 +113,12 @@ def list_events(component_id: str, _: Viewer, db: DB) -> list[MaintenanceEvent]:
     return MaintenanceService(db).events(component_id)
 
 
-@router.post("/maintenance-events", response_model=MaintenanceRecordResult, status_code=201)
+@router.post(
+    "/maintenance-events",
+    response_model=MaintenanceRecordResult,
+    status_code=201,
+    dependencies=[require_module("maintenance")],
+)
 def record_event(body: MaintenanceEventCreate, who: Maintainer, db: DB) -> MaintenanceRecordResult:
     out = MaintenanceService(db).record_event(body, who)
     db.commit()
@@ -134,7 +140,11 @@ def get_workflow(workflow_id: str, _: Viewer, db: DB) -> MaintenanceWorkflow:
     return MaintenanceService(db).workflow(workflow_id)
 
 
-@router.post("/maintenance-workflows/{workflow_id}/transitions", response_model=MaintenanceWorkflow)
+@router.post(
+    "/maintenance-workflows/{workflow_id}/transitions",
+    response_model=MaintenanceWorkflow,
+    dependencies=[require_module("maintenance")],
+)
 def transition(
     workflow_id: str, body: WorkflowTransitionRequest, who: Maintainer, db: DB
 ) -> MaintenanceWorkflow:

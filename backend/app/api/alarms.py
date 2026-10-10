@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.db import get_session
+from app.core.modules import require_module
 from app.core.security import Principal, Role, require
 from app.decision.fleet import FleetHealthService
 from app.equipment.lifecycle import EquipmentStore
@@ -43,14 +44,16 @@ def get_rules(_: Viewer, db: DB) -> RuleSetStatus:
     return RuleSettings(db).status()
 
 
-@router.put("/rules/{rule_id}", response_model=RuleSetStatus)
+@router.put("/rules/{rule_id}", response_model=RuleSetStatus, dependencies=[require_module("alarms")])
 def change_rule(rule_id: str, body: RuleChange, who: Engineer, db: DB) -> RuleSetStatus:
     out = RuleSettings(db).change(rule_id, body, who)
     db.commit()
     return out
 
 
-@router.post("/alarms/evaluate", response_model=AlarmEvaluationResult)
+@router.post(
+    "/alarms/evaluate", response_model=AlarmEvaluationResult, dependencies=[require_module("alarms")]
+)
 def evaluate_alarms(body: AlarmEvaluationRequest, who: Engineer, db: DB) -> AlarmEvaluationResult:
     EquipmentStore(db).component(body.component_id)
     vectors = FeatureStore(db).vectors(body.component_id, body.feature_ref)
@@ -77,14 +80,14 @@ def list_alarms(
     return AlarmService(db).alarms(component_id, status)
 
 
-@router.post("/alarms/{alarm_id}/acknowledge", response_model=Alarm)
+@router.post("/alarms/{alarm_id}/acknowledge", response_model=Alarm, dependencies=[require_module("alarms")])
 def acknowledge_alarm(alarm_id: str, body: AlarmAction, who: Maintainer, db: DB) -> Alarm:
     out = AlarmService(db).acknowledge(alarm_id, who, body.comment)
     db.commit()
     return out
 
 
-@router.post("/alarms/{alarm_id}/resolve", response_model=Alarm)
+@router.post("/alarms/{alarm_id}/resolve", response_model=Alarm, dependencies=[require_module("alarms")])
 def resolve_alarm(alarm_id: str, body: AlarmAction, who: Maintainer, db: DB) -> Alarm:
     out = AlarmService(db).resolve(alarm_id, who, body.comment)
     db.commit()

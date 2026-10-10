@@ -70,6 +70,7 @@ class NewUser(ContractModel):
 
 
 class UserChange(ContractModel):
+    display_name: str | None = Field(default=None, min_length=1, max_length=120)
     role: Role | None = None
     active: bool | None = None
     password: str | None = Field(default=None, min_length=MIN_PASSWORD, max_length=200)
@@ -165,6 +166,10 @@ class UserStore:
             raise AccountError(f"no account {user_id}")
         if user_id == who.user_id and (ch.active is False or (ch.role and ch.role != Role.ADMIN)):
             raise AccountError("you cannot deactivate or demote your own account")
+        if (ch.active is False or (ch.role and ch.role != Role.ADMIN)) and self._last_admin(r):
+            raise AccountError("the last active administrator cannot be deactivated or demoted")
+        if ch.display_name is not None:
+            r.display_name = ch.display_name
         if ch.role is not None:
             r.role = ch.role.value
         if ch.active is not None:
@@ -177,12 +182,36 @@ class UserStore:
             "user.change",
             "user",
             user_id,
+            display_name=ch.display_name,
             role=ch.role and ch.role.value,
             active=ch.active,
             password_reset=ch.password is not None,
         )
         self.session.commit()
         return self._info(r)
+
+    def delete(self, user_id: str, who: Principal) -> None:
+        """Remove an account. Its audit history stays; the user name can be registered again later."""
+        if not who.at_least(Role.ADMIN):
+            raise AuthError("managing accounts requires an administrator")
+        r = self.session.get(UserRecord, user_id)
+        if r is None:
+            raise AccountError(f"no account {user_id}")
+        if user_id == who.user_id:
+            raise AccountError("you cannot delete your own account")
+        if self._last_admin(r):
+            raise AccountError("the last active administrator cannot be deleted")
+        self.session.delete(r)
+        audit(self.session, who, "user.delete", "user", user_id, role=r.role)
+        self.session.commit()
+
+    def _last_admin(self, r: UserRecord) -> bool:
+        if r.role != Role.ADMIN.value or not r.active:
+            return False
+        admins = self.session.scalars(
+            select(UserRecord.user_id).where(UserRecord.role == Role.ADMIN.value, UserRecord.active)
+        ).all()
+        return list(admins) == [r.user_id]
 
     def login(self, user_id: str, password: str) -> Principal:
         r = self.session.get(UserRecord, user_id)

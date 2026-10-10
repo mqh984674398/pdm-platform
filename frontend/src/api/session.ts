@@ -11,10 +11,17 @@ export type AuthMode = 'unknown' | 'dev' | 'local'
 export const UI_USER = { user: 'ui-engineer', role: 'engineer' }
 const DEV_ROLES = ['viewer', 'maintenance', 'engineer', 'admin']
 
-export const session = reactive<{ mode: AuthMode; user: string | null; role: string | null }>({
+export const session = reactive<{
+  mode: AuthMode
+  user: string | null
+  role: string | null
+  /** Screens this role may use (D-033); null until the server has answered. */
+  modules: string[] | null
+}>({
   mode: 'unknown',
   user: null,
   role: null,
+  modules: null,
 })
 
 /** Development header auth only (D-010): a reviewer may act as another role. */
@@ -38,12 +45,13 @@ export function authHeaders(): Record<string, string> {
   }
 }
 
-type Me = { user_id: string; role: string; mode: string }
+type Me = { user_id: string; role: string; mode: string; modules?: string[] }
 
 function apply(me: Me | null, mode?: AuthMode) {
   session.mode = mode ?? (me?.mode === 'local' ? 'local' : 'dev')
   session.user = me?.user_id ?? null
   session.role = me?.role ?? null
+  session.modules = me?.modules ?? null
 }
 
 /** Ask the server who we are. A 401 without dev headers working means local sign-in is needed. */

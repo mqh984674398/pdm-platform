@@ -17,6 +17,8 @@ import ModelsView from '@/views/ModelsView.vue'
 import OptimizationView from '@/views/OptimizationView.vue'
 import OverviewView from '@/views/OverviewView.vue'
 import PlaceholderView from '@/views/PlaceholderView.vue'
+import SignalsView from '@/views/SignalsView.vue'
+import UsersView from '@/views/UsersView.vue'
 import { NAV } from './nav'
 
 // Screens delivered so far; the rest show a placeholder naming their task.
@@ -25,6 +27,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   machine: { component: MachineView, param: ':id?' },
   component: { component: ComponentView, param: ':id?' },
   datasource: { component: DataSourceStudioView },
+  signals: { component: SignalsView },
   analysis: { component: AnalysisView },
   baselines: { component: BaselinesView },
   maintenance: { component: MaintenanceView },
@@ -32,6 +35,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   optimization: { component: OptimizationView },
   models: { component: ModelsView },
   assistant: { component: AssistantView },
+  users: { component: UsersView },
 }
 
 export const routes: RouteRecordRaw[] = NAV.map((item) => {

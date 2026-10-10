@@ -1291,6 +1291,41 @@ export interface paths {
     /** Change User */
     put: operations['change_user_api_auth_users__user_id__put']
     post?: never
+    /** Delete User */
+    delete: operations['delete_user_api_auth_users__user_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/auth/role-modules': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Role Modules */
+    get: operations['role_modules_api_auth_role_modules_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/auth/role-modules/{role}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Set Role Modules */
+    put: operations['set_role_modules_api_auth_role_modules__role__put']
+    post?: never
     delete?: never
     options?: never
     head?: never
@@ -3236,6 +3271,11 @@ export interface components {
       role: components['schemas']['Role']
       /** Mode */
       mode: string
+      /**
+       * Modules
+       * @description Screens this role may use (D-033)
+       */
+      modules: string[]
     }
     /** ModelProposal */
     ModelProposal: {
@@ -3860,6 +3900,19 @@ export interface components {
      * @enum {string}
      */
     Role: 'viewer' | 'maintenance' | 'engineer' | 'admin'
+    /** RoleModules */
+    RoleModules: {
+      role: components['schemas']['Role']
+      /** Modules */
+      modules: string[]
+      /** Editable */
+      editable: boolean
+    }
+    /** RoleModulesChange */
+    RoleModulesChange: {
+      /** Modules */
+      modules: string[]
+    }
     /** Rollback */
     Rollback: {
       /** Comment */
@@ -4611,6 +4664,8 @@ export interface components {
     }
     /** UserChange */
     UserChange: {
+      /** Display Name */
+      display_name?: string | null
       role?: components['schemas']['Role'] | null
       /** Active */
       active?: boolean | null
@@ -7870,6 +7925,108 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['UserInfo']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_user_api_auth_users__user_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        user_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  role_modules_api_auth_role_modules_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RoleModules'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  set_role_modules_api_auth_role_modules__role__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        role: components['schemas']['Role']
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RoleModulesChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RoleModules']
         }
       }
       /** @description Validation Error */
