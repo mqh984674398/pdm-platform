@@ -14,15 +14,17 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from app.api.studio import UnknownDeviceError
 from app.core.auth import AccountError, AuthError
+from app.core.modules import ModuleError
 from app.core.registry import RegistryError, RegistryNotFoundError, RegistryPermissionError
 from app.core.schemas import ApiError, LocalizedText
 from app.datasource.query_service.registry import TemplateConflictError, TemplateNotFoundError
 from app.datasource.query_service.service import ParameterError
-from app.datasource.query_service.sources import UnknownSourceError
+from app.datasource.query_service.sources import SourceAccessError, UnknownSourceError
 from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
+from app.equipment.plant import PlantPermissionError
 from app.feedback.service import FeedbackNotFoundError, FeedbackPermissionError
 from app.llm.assistant import AssistantDisabled, AssistantResponseError
 from app.llm.client import LlmCancelled, LlmTimeout, LlmUnavailable
@@ -54,6 +56,7 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (EquipmentNotFoundError, 404, "unknown_equipment", "未找到该设备、部件、生命周期或工作流。", "Machine, component, lifecycle or workflow not found."),
     (EquipmentConflictError, 409, "equipment_conflict", "与已记录的设备或维护历史冲突，未保存。", "Conflicts with the recorded equipment or maintenance history; nothing was saved."),
     (WorkflowTransitionError, 409, "workflow_transition_refused", "不允许该维护工作流状态转换。", "This maintenance workflow transition is not allowed."),
+    (PlantPermissionError, 403, "plant_role", "设备结构只能由管理员修改。", "Only an administrator can change the plant structure."),
     (WorkflowPermissionError, 403, "workflow_review_role", "关闭复核需要工程师角色。", "Closing a review requires the engineer role."),
     (AlarmNotFoundError, 404, "unknown_alarm", "未找到该报警。", "Alarm not found."),
     (AlarmTransitionError, 409, "alarm_transition_refused", "不允许该报警状态变更。", "This alarm status change is not allowed."),
@@ -64,6 +67,7 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),
     (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
     (AuthError, 401, "sign_in_failed", "用户名或密码错误，或账户已锁定/停用。", "Wrong user name or password, or the account is locked or deactivated."),
+    (ModuleError, 422, "modules_refused", "模块权限设置无效，未保存。", "The module settings are invalid; nothing was saved."),
     (AccountError, 409, "account_refused", "账户操作被拒绝，未保存。", "The account change was refused; nothing was saved."),
     (EndpointRejected, 422, "llm_endpoint_rejected", "只允许本机或局域网内的 Ollama 地址，已拒绝远程/云端地址。", "Only a local or LAN Ollama endpoint is allowed; remote or cloud endpoints are refused."),
     (ModelRejected, 422, "llm_model_rejected", "该模型不允许使用（云端路由、未安装或不在允许列表中）。", "This model is not allowed (cloud-routed, not installed, or not on the allowlist)."),
@@ -85,6 +89,7 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (NoSuiteError, 409, "no_regression_suite", "没有可用于回放评估的回归用例（Golden Case）。", "No regression suite (Golden Cases) is available for replay."),
     (NoRunError, 404, "no_optimization_run", "还没有参数优化运行。", "No optimization run yet."),
     (SafetyChangeError, 422, "safety_rule_change", "候选配置修改了安全规则，已拒绝。", "The candidate changes a safety rule and was refused."),
+    (SourceAccessError, 403, "source_forbidden", "仿真数据库仅限管理员使用，请使用涛思数据库。", "The simulation database is for administrators only; use the TDengine database."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),
     (TemplateConflictError, 409, "template_conflict", "查询模板冲突。", "Query template conflict."),

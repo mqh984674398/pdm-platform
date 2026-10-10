@@ -7,12 +7,11 @@ import { loadSession, session, signOut } from '@/api/session'
 import SegmentedControl from '@/components/base/SegmentedControl.vue'
 import SignIn from '@/components/shell/SignIn.vue'
 import { setLocale, type Locale } from '@/i18n'
-import { NAV, NAV_GROUPS } from '@/router/nav'
-import { useTheme, type ThemeChoice } from '@/composables/useTheme'
+import { canOpen, NAV, NAV_GROUPS } from '@/router/nav'
+import { resolvedTheme, toggleTheme } from '@/composables/useTheme'
 
 const { t, locale } = useI18n()
 const route = useRoute()
-const theme = useTheme()
 const sidebarOpen = ref(
   typeof window === 'undefined' || !window.matchMedia
     ? true
@@ -29,16 +28,19 @@ const langOptions = [
   { value: 'zh-CN' as Locale, label: '中文' },
   { value: 'en-US' as Locale, label: 'EN' },
 ]
-const themeOptions = computed(() => [
-  { value: 'system' as ThemeChoice, label: t('shell.themeSystem') },
-  { value: 'light' as ThemeChoice, label: t('shell.themeLight') },
-  { value: 'dark' as ThemeChoice, label: t('shell.themeDark') },
-])
+const themeLabel = computed(() =>
+  resolvedTheme.value === 'dark' ? t('shell.toLight') : t('shell.toDark'),
+)
 const title = computed(() =>
   route.name === 'design' ? t('design.title') : route.name ? t(`nav.${String(route.name)}`) : '',
 )
 
 const needsSignIn = computed(() => session.mode === 'local' && !session.user)
+const nav = computed(() => NAV.filter((n) => canOpen(n.name, session.role, session.modules)))
+const groups = computed(() => NAV_GROUPS.filter((g) => nav.value.some((n) => n.group === g)))
+const allowed = computed(
+  () => !route.name || canOpen(String(route.name), session.role, session.modules),
+)
 
 onMounted(async () => {
   loadSession()
@@ -58,10 +60,10 @@ onMounted(async () => {
         <span class="brand-name">{{ t('app.name') }}</span>
       </div>
       <nav>
-        <div v-for="group in NAV_GROUPS" :key="group" class="nav-group">
+        <div v-for="group in groups" :key="group" class="nav-group">
           <h2 class="nav-heading">{{ t(`nav.${group}`) }}</h2>
           <RouterLink
-            v-for="item in NAV.filter((n) => n.group === group)"
+            v-for="item in nav.filter((n) => n.group === group)"
             :key="item.name"
             :to="item.path"
             class="nav-item"
@@ -121,7 +123,40 @@ onMounted(async () => {
             :label="t('shell.language')"
             data-testid="lang-switch"
           />
-          <SegmentedControl v-model="theme" :options="themeOptions" :label="t('shell.theme')" />
+          <button
+            type="button"
+            class="theme-toggle"
+            data-testid="theme-toggle"
+            :aria-label="themeLabel"
+            :title="themeLabel"
+            @click="toggleTheme()"
+          >
+            <svg v-if="resolvedTheme === 'dark'" viewBox="0 0 24 24" aria-hidden="true">
+              <circle
+                cx="12"
+                cy="12"
+                r="4.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <span v-if="session.mode === 'local' && session.user" class="who" data-testid="who">
             {{ session.user }} ({{ t(`models.roles.${session.role}`) }})
             <button type="button" class="link" data-testid="sign-out" @click="signOut()">
@@ -132,16 +167,47 @@ onMounted(async () => {
       </header>
       <main class="content">
         <SignIn v-if="needsSignIn" />
-        <RouterView v-else-if="session.mode !== 'unknown'" />
+        <template v-else-if="session.mode !== 'unknown'">
+          <RouterView v-if="allowed" />
+          <div v-else class="no-access" data-testid="no-access">
+            <p>{{ t('shell.noAccess') }}</p>
+            <RouterLink v-if="nav[0]" :to="nav[0].path">{{ t(`nav.${nav[0].name}`) }}</RouterLink>
+          </div>
+        </template>
       </main>
     </div>
+    <footer class="app-footer" data-testid="app-footer">
+      {{ t('app.copyright') }}
+    </footer>
   </div>
 </template>
 
 <style scoped>
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
 .shell {
   display: grid;
   grid-template-columns: 232px 1fr;
+  grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
   transition: grid-template-columns var(--dur) var(--ease);
 }
@@ -294,6 +360,25 @@ nav {
   flex: 1;
   overflow: auto;
   padding: var(--space-5);
+}
+.no-access {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  color: var(--ink-soft);
+}
+/* Fixed site footer: its own grid row, so it never scrolls with or covers the page content. */
+.app-footer {
+  grid-column: 1 / -1;
+  padding: 6px var(--space-4);
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @media (max-width: 860px) {
   .shell,

@@ -7,6 +7,7 @@ const s = useStudioStore()
 const source = computed(() => s.source!)
 const { t, n } = useI18n()
 const testing = ref(false)
+const hasTdengine = computed(() => s.sources.some((c) => c.kind === 'TDENGINE'))
 
 async function test() {
   testing.value = true
@@ -21,15 +22,29 @@ async function test() {
 <template>
   <div class="st-stack">
     <div class="st-choices" role="radiogroup" :aria-label="t('studio.connection.source')">
-      <button type="button" class="st-choice" role="radio" aria-checked="true">
-        <strong>{{ t('studio.connection.demoSource') }}</strong>
-        <span class="muted">{{ t('studio.connection.demoSourceNote') }}</span>
-      </button>
-      <button type="button" class="st-choice" role="radio" aria-checked="false" disabled>
-        <strong>{{ t('studio.connection.production') }}</strong>
-        <span class="muted">{{ t('studio.connection.productionLocked') }}</span>
+      <button
+        v-for="c in s.sources"
+        :key="c.data_source_id"
+        type="button"
+        class="st-choice"
+        role="radio"
+        :aria-checked="c.data_source_id === source.data_source_id"
+        :data-testid="`source-${c.data_source_id}`"
+        @click="s.selectSource(c.data_source_id)"
+      >
+        <strong>{{ c.kind === 'SIMULATED' ? t('studio.connection.demoSource') : c.name }}</strong>
+        <span class="muted">{{
+          c.kind === 'SIMULATED'
+            ? t('studio.connection.demoSourceNote')
+            : c.kind === 'TDENGINE'
+              ? t('studio.connection.tdengineNote')
+              : t('studio.connection.production')
+        }}</span>
       </button>
     </div>
+    <p v-if="!hasTdengine" class="st-note" data-testid="no-tdengine">
+      {{ t('studio.connection.noTdengine') }}
+    </p>
 
     <div class="st-form">
       <label class="st-field">

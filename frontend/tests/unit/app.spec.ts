@@ -6,6 +6,7 @@ import App from '@/App.vue'
 import { i18n, setLocale } from '@/i18n'
 import { routes } from '@/router'
 import { NAV } from '@/router/nav'
+import PlaceholderView from '@/views/PlaceholderView.vue'
 
 async function mountApp(path = '/') {
   vi.stubGlobal('fetch', async () => {
@@ -20,20 +21,25 @@ async function mountApp(path = '/') {
 }
 
 describe('App shell', () => {
-  it('registers all 12 required interfaces as routes', () => {
-    expect(NAV).toHaveLength(12)
+  it('registers all 12 required interfaces as routes, plus administration', () => {
+    expect(NAV.filter((n) => !n.adminOnly)).toHaveLength(12)
+    expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual(['users', 'plant'])
     expect(routes.map((r) => r.name)).toEqual(NAV.map((n) => n.name))
+  })
+
+  it('delivers every screen; none is left as a placeholder', () => {
+    expect(routes.filter((r) => r.component === PlaceholderView).map((r) => r.name)).toEqual([])
   })
 
   it('switches language at runtime without remounting', async () => {
     setLocale('zh-CN')
     const wrapper = await mountApp('/datasource')
     const nav = wrapper.get('[data-nav="datasource"]')
-    expect(nav.text()).toBe('数据源工作室')
+    expect(nav.text()).toBe('算法配置')
     expect(wrapper.get('[data-testid="backend-status"]').text()).toBe('无法连接后端服务')
     setLocale('en-US')
     await flushPromises()
-    expect(nav.text()).toBe('Data Source Studio')
+    expect(nav.text()).toBe('Algorithm configuration')
     expect(wrapper.get('[data-testid="backend-status"]').text()).toBe('Cannot reach the backend')
     expect(document.documentElement.lang).toBe('en-US')
     setLocale('zh-CN')

@@ -13,6 +13,7 @@ from app.api import (
     health,
     llm,
     optimization,
+    plant,
     quality,
     query,
     registry,
@@ -21,6 +22,7 @@ from app.api import (
     timeseries,
 )
 from app.core.config import get_settings
+from app.core.modules import require_module
 from app.datasource.query_service.service import QueryService
 from app.datasource.query_service.sources import DataSourceRegistry
 
@@ -50,17 +52,21 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
         return resp
 
     app.include_router(health.router, prefix="/api")
-    app.include_router(query.router, prefix="/api")
+    app.include_router(query.router, prefix="/api", dependencies=[require_module("datasource")])
     app.include_router(signals.router, prefix="/api")
-    app.include_router(studio.router, prefix="/api")
-    app.include_router(quality.router, prefix="/api")
+    app.include_router(studio.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(quality.router, prefix="/api", dependencies=[require_module("datasource")])
     app.include_router(equipment.router, prefix="/api")
+    app.include_router(plant.router, prefix="/api")
     app.include_router(baselines.router, prefix="/api")
     app.include_router(alarms.router, prefix="/api")
     app.include_router(timeseries.router, prefix="/api")
     app.include_router(fleet.router, prefix="/api")
-    app.include_router(optimization.router, prefix="/api")
-    app.include_router(registry.router, prefix="/api")
+    app.include_router(optimization.router, prefix="/api", dependencies=[require_module("optimization")])
+    # the optimization screen proposes decision-config candidates to the registry
+    app.include_router(
+        registry.router, prefix="/api", dependencies=[require_module("models", "optimization")]
+    )
     app.include_router(llm.router, prefix="/api")
     app.include_router(auth.router, prefix="/api")
     if settings.static_dir:

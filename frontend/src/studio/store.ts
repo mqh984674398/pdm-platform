@@ -88,6 +88,8 @@ export const useStudioStore = defineStore('studio', () => {
   const visited = ref(0)
 
   const source = ref<DataSourceConfig | null>(null)
+  const sources = ref<DataSourceConfig[]>([])
+  const loaded = ref(false)
   const checks = ref<ConnectionCheck[] | null>(null)
   const schema = ref<Awaited<ReturnType<StudioApi['inspectSchema']>> | null>(null)
   const devices = ref<StudioDevice[]>([])
@@ -121,15 +123,60 @@ export const useStudioStore = defineStore('studio', () => {
       api.value = chosen.api
       apiKind.value = chosen.kind
     }
-    source.value = await api.value.source()
+    api.value.setPersona?.(role.value)
+    await loadSources()
+  }
+
+  /** Sources depend on the role: the simulation database is for administrators only (D-035). */
+  async function loadSources() {
+    const a = api.value!
+    sources.value = await a.sources()
+    const keep = sources.value.find((c) => c.data_source_id === source.value?.data_source_id)
+    if (!sources.value.length) {
+      source.value = null
+      devices.value = []
+      templates.value = []
+    } else if (!keep) {
+      source.value = await a.source()
+      resetSelection()
+      devices.value = await a.devices()
+      versions.value = await a.versions()
+      await loadTemplates()
+    } else {
+      await loadTemplates()
+    }
+    loaded.value = true
+  }
+
+  function resetSelection() {
+    step.value = 0
+    visited.value = 0
+    checks.value = null
+    schema.value = null
+    deviceId.value = null
+    selectedKeys.value = []
+    templateId.value = null
+  }
+
+  async function loadTemplates() {
+    const id = source.value?.data_source_id
+    const all = await api.value!.templates(role.value)
+    templates.value = all.filter((tp) => !id || !tp.data_source_id || tp.data_source_id === id)
+  }
+
+  async function selectSource(id: string) {
+    if (!api.value || source.value?.data_source_id === id) return
+    source.value = await api.value.source(id)
+    resetSelection()
     devices.value = await api.value.devices()
-    versions.value = await api.value.versions()
-    templates.value = await api.value.templates(role.value)
+    await loadTemplates()
   }
 
   async function setRole(r: StudioRole) {
     role.value = r
-    if (api.value) templates.value = await api.value.templates(r)
+    if (!api.value) return
+    api.value.setPersona?.(r)
+    await loadSources()
   }
 
   async function testConnection() {
@@ -363,6 +410,9 @@ export const useStudioStore = defineStore('studio', () => {
     step,
     visited,
     source,
+    sources,
+    loaded,
+    selectSource,
     checks,
     schema,
     devices,

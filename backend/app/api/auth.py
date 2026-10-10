@@ -2,7 +2,8 @@
 
 ``POST /auth/login`` sets the session cookie (local mode only); ``/auth/me`` reports who is signed in
 and the provider in use, so the browser can show sign-in or the development role selector.
-Account management needs an administrator.
+Account management (create, change role or password, deactivate, delete) and the per-role module
+visibility (D-033) need an administrator.
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import COOKIE, SESSION_HOURS, NewUser, UserChange, UserInfo, UserStore, issue_token
 from app.core.config import get_settings
 from app.core.db import get_session
+from app.core.modules import ModuleStore, RoleModules, RoleModulesChange
 from app.core.schemas import ContractModel
 from app.core.security import Principal, Role, get_principal, require
 
@@ -33,6 +35,7 @@ class Me(ContractModel):
     user_id: str
     role: Role
     mode: str
+    modules: list[str] = Field(description="Screens this role may use (D-033)")
 
 
 @router.post("/auth/login", response_model=Me)
@@ -50,7 +53,7 @@ def login(body: Login, response: Response, db: DB) -> Me:
         secure=s.cookie_secure,
         path="/",
     )
-    return Me(user_id=p.user_id, role=p.role, mode=s.auth_mode)
+    return Me(user_id=p.user_id, role=p.role, mode=s.auth_mode, modules=ModuleStore(db).visible(p.role))
 
 
 @router.post("/auth/logout", status_code=204)
@@ -59,8 +62,13 @@ def logout(response: Response) -> None:
 
 
 @router.get("/auth/me", response_model=Me)
-def me(who: Annotated[Principal, Depends(get_principal)]) -> Me:
-    return Me(user_id=who.user_id, role=who.role, mode=get_settings().auth_mode)
+def me(who: Annotated[Principal, Depends(get_principal)], db: DB) -> Me:
+    return Me(
+        user_id=who.user_id,
+        role=who.role,
+        mode=get_settings().auth_mode,
+        modules=ModuleStore(db).visible(who.role),
+    )
 
 
 @router.get("/auth/users", response_model=list[UserInfo])
@@ -76,3 +84,19 @@ def create_user(body: NewUser, who: Admin, db: DB) -> UserInfo:
 @router.put("/auth/users/{user_id}", response_model=UserInfo)
 def change_user(user_id: str, body: UserChange, who: Admin, db: DB) -> UserInfo:
     return UserStore(db).change(user_id, body, who)
+
+
+@router.delete("/auth/users/{user_id}", status_code=204)
+def delete_user(user_id: str, who: Admin, db: DB) -> Response:
+    UserStore(db).delete(user_id, who)
+    return Response(status_code=204)
+
+
+@router.get("/auth/role-modules", response_model=list[RoleModules])
+def role_modules(_: Admin, db: DB) -> list[RoleModules]:
+    return ModuleStore(db).all()
+
+
+@router.put("/auth/role-modules/{role}", response_model=RoleModules)
+def set_role_modules(role: Role, body: RoleModulesChange, who: Admin, db: DB) -> RoleModules:
+    return ModuleStore(db).set(role, body.modules, who)

@@ -1,5 +1,5 @@
-/** Navigation model for the 12 required interfaces (REQUIREMENTS UI-01..UI-12). */
-export type NavGroup = 'groupMonitor' | 'groupConfigure' | 'groupImprove'
+/** Navigation model for the 12 required interfaces (REQUIREMENTS UI-01..UI-12) plus administration. */
+export type NavGroup = 'groupMonitor' | 'groupConfigure' | 'groupImprove' | 'groupAdmin'
 
 export interface NavItem {
   name: string // route name and i18n key under nav.*
@@ -7,6 +7,7 @@ export interface NavItem {
   group: NavGroup
   task: string // contract task that delivers the screen
   icon: string // 16x16 SVG path data
+  adminOnly?: boolean // administration screens: administrators only, never configurable per role
 }
 
 export const NAV: NavItem[] = [
@@ -94,6 +95,41 @@ export const NAV: NavItem[] = [
     task: 'T027',
     icon: 'M3 3h10v7H7l-3 3v-3H3z',
   },
+  {
+    name: 'users',
+    path: '/users',
+    group: 'groupAdmin',
+    task: 'D-033',
+    icon: 'M6 7a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM1.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5M11 4.5h4M13 2.5v4',
+    adminOnly: true,
+  },
+  {
+    name: 'plant',
+    path: '/plant',
+    group: 'groupAdmin',
+    task: 'D-037',
+    icon: 'M2 14V7l4-3v3l4-3v3l4-3v10zM5 11h2M9 11h2',
+    adminOnly: true,
+  },
 ]
 
-export const NAV_GROUPS: NavGroup[] = ['groupMonitor', 'groupConfigure', 'groupImprove']
+export const NAV_GROUPS: NavGroup[] = [
+  'groupMonitor',
+  'groupConfigure',
+  'groupImprove',
+  'groupAdmin',
+]
+
+/** The modules an administrator can switch on or off per role (everything but administration). */
+export const MODULES = NAV.filter((n) => !n.adminOnly).map((n) => n.name)
+
+/**
+ * Whether a role may open a screen. Until the server has said which modules the role has, nothing is
+ * hidden (the server still refuses what the role may not use).
+ */
+export function canOpen(name: string, role: string | null, modules: string[] | null): boolean {
+  const item = NAV.find((n) => n.name === name)
+  if (!item) return true
+  if (item.adminOnly) return role === 'admin'
+  return modules === null || modules.includes(name)
+}

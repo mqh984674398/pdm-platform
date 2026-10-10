@@ -1,0 +1,73 @@
+[
+  {
+    "config": {
+      "data_source_id": "sim-iot",
+      "name": "仿真数据库 Simulation database",
+      "kind": "SIMULATED",
+      "engine": null,
+      "host": "sim-iot.local",
+      "port": 5432,
+      "database": "iot_telemetry",
+      "credential_ref": "secret://pdm/sim-iot-readonly",
+      "read_only": true,
+      "statement_timeout_s": 30.0,
+      "max_rows": 200000,
+      "is_simulated": true
+    },
+    "simulated_datasets": [
+      {
+        "dir": "../Data/scenarios/S01_healthy",
+        "preview_window": {
+          "start": "2026-02-02T00:00:00Z",
+          "end": "2026-02-03T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../Data/scenarios/S13_missing_duplicate",
+        "preview_window": {
+          "start": "2026-02-05T00:00:00Z",
+          "end": "2026-02-06T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../Data/scenarios/S14_jitter_out_of_order",
+        "preview_window": {
+          "start": "2026-02-04T00:00:00Z",
+          "end": "2026-02-05T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../Data/scenarios/S16_bias_unit_mismatch",
+        "preview_window": {
+          "start": "2026-02-07T12:00:00Z",
+          "end": "2026-02-08T12:00:00Z"
+        }
+      }
+    ]
+  },
+  {
+    "config": {
+      "data_source_id": "taos-plant",
+      "name": "涛思数据库 TDengine",
+      "kind": "TDENGINE",
+      "engine": "tdengine",
+      "host": "192.168.1.20",
+      "port": 6041,
+      "database": "plant_iot",
+      "credential_ref": "secret://pdm/taos-readonly",
+      "read_only": true,
+      "statement_timeout_s": 30.0,
+      "max_rows": 200000,
+      "is_simulated": false
+    },
+    "scheme": "http",
+    "tdengine_layout": {
+      "stable": "meters",
+      "device_tag": "device_id",
+      "time_column": "ts",
+      "value_columns": [],
+      "naive_time_zone": "Asia/Shanghai",
+      "verified": false
+    }
+  }
+]

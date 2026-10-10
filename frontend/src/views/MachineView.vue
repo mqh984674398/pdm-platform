@@ -52,7 +52,7 @@ function selectComponent(id: string) {
       <p class="sub">
         {{
           t('machine.snapshot', {
-            source: machine.line ?? '',
+            source: machine.path ? lt(machine.path) : (machine.line ?? ''),
             time: machine.as_of ? fmtDate(machine.as_of) : '',
           })
         }}

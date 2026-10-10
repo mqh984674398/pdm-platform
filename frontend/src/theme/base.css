@@ -68,3 +68,27 @@ select {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Scrollbars follow the page theme instead of the operating system's (light thumb on a light page,
+   dark on a dark page). Firefox and Chromium 121+ use scrollbar-color; older Chromium the pseudo-elements. */
+* {
+  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ink-faint);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

@@ -15,10 +15,12 @@ export default defineConfig({
   outputDir: 'test-results',
   use: { baseURL: 'http://127.0.0.1:4173', locale: 'zh-CN', launchOptions: { executablePath } },
   // Promoting a configuration changes health for every component, so the registry test runs alone,
-  // after everything else, on the shared demo server.
+  // after the main tests, on the shared demo server; the plant test runs last.
   projects: [
-    { name: 'main', testIgnore: /models\.spec\.ts/ },
+    { name: 'main', testIgnore: /(models|plant)\.spec\.ts/ },
     { name: 'registry', testMatch: /models\.spec\.ts/, dependencies: ['main'] },
+    // Adds a machine to the demo plant, so it runs after the tests that count the demo fleet.
+    { name: 'plant', testMatch: /plant\.spec\.ts/, dependencies: ['registry'] },
   ],
   webServer: [
     {

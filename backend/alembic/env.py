@@ -5,10 +5,13 @@ from sqlalchemy import engine_from_config, pool
 
 # Import model modules so their tables are part of Base.metadata.
 import app.core.audit  # noqa: E402,F401
+import app.core.auth  # noqa: E402,F401
+import app.core.modules  # noqa: E402,F401
 import app.datasource.query_service.registry  # noqa: E402,F401
 import app.equipment.lifecycle  # noqa: E402,F401
 import app.equipment.maintenance  # noqa: E402,F401
 import app.equipment.maintenance_impact.service  # noqa: E402,F401
+import app.equipment.plant  # noqa: E402,F401
 import app.monitoring.alarms.service  # noqa: E402,F401
 import app.monitoring.baselines.verified  # noqa: E402,F401
 import app.monitoring.features.store  # noqa: E402,F401

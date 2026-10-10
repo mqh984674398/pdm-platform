@@ -161,3 +161,43 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-10 · **Status:** APPROVED by user (Mira, G4 decision card, 2026-10-10T00:32:48Z, option "批准 Approve").
 - **Decision:** Release 0.1.0 accepted for LAN Windows deployment with local sign-in and simulated data, including residual risks SR-07, SR-10, SR-14, SR-15. This approval does not enable a production data connection (`PDM_PRODUCTION_DATA_APPROVED` stays false) or official alerting; each still needs separate explicit approval.
 - **Rationale:** ACCEPTANCE.md §G4, SEC-06.
+
+## D-032 — Built-in read-only query templates are registered at service start
+- **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (post-deployment fix requested by Mira; no user gate).
+- **Decision:** A fresh install had an empty template registry (only the e2e demo server seeded templates), so the Studio stopped at step 4. `deploy/serve.py` now calls `ensure_standard_templates`, which registers two bounded SELECT templates (key over a time range, incremental watermark read) for every loaded source that has never had a template, as `system:install`. The SQL is generated from the source's table layout and passes the same `sql_guard` checks as an administrator's template; creation is audited. Sources with any template history, including retired templates, are left alone. Production sources still load only after explicit approval (D-031).
+- **Rationale:** L1-05, SEC-02, UI-04.
+
+## D-033 — User administration and per-role module visibility
+- **Date:** 2026-10-10 · **Status:** APPROVED by user request (Mira, 2026-10-10T06:53Z, item 3); design choices by Principal Agent.
+- **Decision:** Administrators register accounts (no self-registration on the LAN), rename, change role, reset password, deactivate and delete them; nobody can delete, deactivate or demote themselves or the last active administrator. Table `role_modules` (migration 0011) stores the visible screens per role; a role without a row sees all twelve screens (previous behavior); the administrator role always has every screen. `/api/auth/me` returns the role's modules; the browser hides other screens and shows a no-access notice on direct links. The API enforces the same setting on module-owned endpoints (`require_module`): Studio, query templates and quality report (datasource), signal configuration writes and previews (datasource or signals), optimization, registry (models or optimization), assistant, alarm actions and feedback (alarms or assistant), maintenance records and workflow transitions. Shared monitoring reads (fleet, machines, components, time series, baselines, alarm lists, current signal configuration) stay governed by role only, because several screens depend on them. All changes are audited.
+- **Rationale:** SEC-01, SEC-02.
+
+## D-034 — Signal setup screen delivered; placeholder audit
+- **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (gap found after deployment; no user gate).
+- **Decision:** T008 delivered UI-05 only inside the Studio's preview step; the `/signals` route still rendered the placeholder. `SignalsView` now lists saved signals with their mapping, lets engineers and administrators correct a signal definition (saved as a new configuration version), previews the full history downsampled plus a full-resolution quality summary of the latest stretch of data, and shows version history. A unit test now fails if any route renders the placeholder. The same audit found that the Studio's development role switch was ignored under local sign-in; the Studio now follows the signed-in role. No other screen used the placeholder. Remaining gap: query templates are managed through the admin API only; there is no template editor screen.
+- **Rationale:** UI-05, ACCEPTANCE §1.
+
+## D-035 — TDengine as the production source; simulation database for administrators only
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (Mira, 2026-10-10T13:34Z: "本平台管理员权限可以使用模拟IOT采集遥测库,其余权限必须连接涛思数据库(连接生产数据库不需要管理员审批并使用只读账号)").
+- **Decision:** A `TDENGINE` data source kind reads TDengine through the taosAdapter REST API with a read-only account (`secret://pdm/...` as `user:password`). TDengine sources load without `PDM_PRODUCTION_DATA_APPROVED`; generic SQL production sources keep that gate. The adapter sends only SELECT/SHOW/DESCRIBE statements it builds from validated identifiers and escaped literals; templates still pass `sql_guard`; the Studio read-only check fails for super users or accounts with write grants. Sources of kind `SIMULATED` (renamed "仿真数据库 / Simulation database") are listed and usable for administrators only; other roles get 403 `source_forbidden` and see only TDengine sources. Monitoring screens built from the labeled simulated demo fleet are unchanged. Wide (column per signal) and narrow (key column) super-table layouts are supported.
+- **Risks:** not run against a real TDengine server (faked REST responses in tests); the real layout must be configured and verified.
+- **Rationale:** user instruction; REQ data-source read-only rules (L1-02) kept.
+
+## D-036 — Theme: one sun/moon toggle; scrollbars follow the theme
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (same message, items 1–2).
+- **Decision:** The three-way System/Light/Dark control is replaced by one button that flips the shown theme (moon on a light page, sun on a dark page); the first visit still follows the operating system. Scrollbars are styled from theme tokens (`scrollbar-color` and `::-webkit-scrollbar`) so they match light and dark pages.
+
+## D-037 — Plant structure: workshop → process → machine, configured by administrators
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (Mira, 2026-10-10T14:25Z, item 1).
+- **Decision:** New `plant_nodes` table (WORKSHOP, PROCESS) and two machine columns, `process_id` and `device_id` (migration 0012). Administrators maintain the tree, create machines under a process, bind each machine to its device id in the data source (unique per machine), and maintain its components on the new admin screen "设备结构 / Plant structure"; every change is audited. Machines carry a derived `path` ("workshop / process") shown on the overview tiles, machine map header and component history crumb. In Algorithm configuration the device can be read from the database (as before, now showing the bound machine) or picked through workshop → process → machine; the machine's bound device id is what data is read with. For real sources the Components step offers the bound machine's components. Simulator datasets do not carry plant fields.
+- **Rationale:** user instruction; L3-01 topology.
+
+## D-038 — Shared drive chain: common-cause check and admin configuration
+- **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (gap found on the user's request, item 2).
+- **Finding:** `drive_chain_id` existed in the topology and the machine map drew the link, but nothing used it: S19 expects evidence fusion to point to the shared drive chain instead of separate ball-screw wear, and only the health levels were checked. There was also no screen to set components or drive chains (API `PUT /components` for engineers only).
+- **Decision:** When two or more components on one drive chain are WARNING or CRITICAL at the same time, the fleet overview and component report carry `common_cause` (drive chain, members, bilingual note to check the chain first). Health states are unchanged. Components and drive-chain ids are configured on the Plant structure screen (administrators only), not in the Algorithm configuration flow or Signal setup: drive chains are machine topology, independent of which signals are mapped, and the Algorithm configuration's Components step reads them from there.
+- **Verification:** S19 replay: both chained ball screws report the shared cause; no other demo machine does.
+
+## D-039 — "Data Source Studio" renamed "算法配置 / Algorithm configuration"
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (item 3). Route `/datasource` and module key `datasource` are unchanged so saved role-module settings keep working.
+

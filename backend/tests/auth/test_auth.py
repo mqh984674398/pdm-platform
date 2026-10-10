@@ -14,6 +14,7 @@ from app.core.audit import entries
 from app.core.auth import AuthError, NewUser, UserStore, issue_token, read_token
 from app.core.config import get_settings
 from app.core.db import Base, get_session
+from app.core.modules import MODULES
 from app.core.security import Principal, Role
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.main import create_app
@@ -85,7 +86,8 @@ def test_sign_in_sets_httponly_cookie_and_me(monkeypatch, factory):
     c = _app(monkeypatch, factory)
     assert c.get("/api/auth/me").status_code == 401
     r = _login(c)
-    assert r.status_code == 200 and r.json() == {"user_id": "adm", "role": "admin", "mode": "local"}
+    assert r.status_code == 200
+    assert r.json() == {"user_id": "adm", "role": "admin", "mode": "local", "modules": list(MODULES)}
     cookie = r.headers["set-cookie"].lower()
     assert "httponly" in cookie and "samesite=strict" in cookie
     assert c.get("/api/auth/me").json()["role"] == "admin"

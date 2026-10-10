@@ -58,11 +58,12 @@ export interface StudioContent {
 
 export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalThis)): StudioApi {
   let sourceId: string | null = null
+  let persona: StudioRole = 'operator'
   const deviceCache = new Map<string, StudioDevice>()
   const suggestionCache = new Map<string, Promise<DeviceSuggestions>>()
 
   async function call<T>(path: string, role: StudioRole, init: RequestInit = {}): Promise<T> {
-    const who = ROLE_HEADER[role]
+    const who = ROLE_HEADER[role === 'admin' ? 'admin' : persona]
     const resp = await fetchImpl(`/api${path}`, {
       ...init,
       headers: {
@@ -106,12 +107,24 @@ export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalT
   }
 
   return {
-    async source() {
+    setPersona(role) {
+      persona = role
+    },
+
+    sources() {
+      return call<DataSourceConfig[]>('/datasources', 'operator')
+    },
+
+    async source(id?: string) {
       const all = await call<DataSourceConfig[]>('/datasources', 'operator')
-      const first = all[0]
-      if (!first) throw new StudioApiError(404, 'no_sources', null, 'no data source is configured')
-      sourceId = first.data_source_id
-      return first
+      const chosen = all.find((c) => c.data_source_id === id) ?? all[0]
+      if (!chosen) throw new StudioApiError(404, 'no_sources', null, 'no data source is configured')
+      if (chosen.data_source_id !== sourceId) {
+        deviceCache.clear()
+        suggestionCache.clear()
+      }
+      sourceId = chosen.data_source_id
+      return chosen
     },
 
     async testConnection() {
@@ -142,6 +155,8 @@ export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalT
           scenario_id: d.dataset_id ?? '',
           scenario_title: d.label ?? { zh: d.device_id, en: d.device_id },
           keys: d.keys.map((k) => ({ key_name: k.key_name, rows: k.rows ?? null })),
+          machine_id: d.machine_id ?? null,
+          machine_path: d.machine_path ?? null,
         }
         deviceCache.set(d.device_id, device)
         return device

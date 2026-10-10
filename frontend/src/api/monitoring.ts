@@ -23,9 +23,19 @@ import type {
   FeedbackIn,
   DeploymentVersion,
   KindSummary,
+  PreviewResponse,
+  RoleModules,
   SignalConfigState,
+  SignalConfigVersion,
+  SignalDefinition,
   TimeWindow,
+  UserInfo,
   VisualizationSeries,
+  ComponentChange,
+  MachineCreate,
+  MachinePlacement,
+  PlantNodeChange,
+  PlantTree,
 } from './contracts'
 import { authHeaders } from './session'
 
@@ -64,8 +74,76 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
     return (await resp.json()) as T
   }
 
+  async function remove(path: string): Promise<void> {
+    const resp = await fetchImpl(url(path), { method: 'DELETE', headers: headers() })
+    if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+  }
+
   return {
     signalConfig: () => call<SignalConfigState>('/api/signal-config'),
+    signalVersions: () => call<SignalConfigVersion[]>('/api/signal-config/versions'),
+    /** Saved mapping of one signal over a window: normalized samples and the chart series (UI-05). */
+    signalPreview: (signalId: string, start: string, end: string, maxPoints = 1000) =>
+      call<PreviewResponse>(
+        `/api/signals/${encodeURIComponent(signalId)}/preview`,
+        {},
+        { start, end, max_points: maxPoints },
+      ),
+    saveSignal: (item: SignalDefinition, comment: string, baseVersion: number) =>
+      call<SignalConfigVersion>(
+        `/api/signal-config/signals/${encodeURIComponent(item.signal_id)}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ item, comment, base_version: baseVersion }),
+        },
+      ),
+    users: () => call<UserInfo[]>('/api/auth/users'),
+    createUser: (u: { user_id: string; display_name: string; role: string; password: string }) =>
+      call<UserInfo>('/api/auth/users', { method: 'POST', body: JSON.stringify(u) }),
+    changeUser: (
+      userId: string,
+      ch: { display_name?: string; role?: string; active?: boolean; password?: string },
+    ) =>
+      call<UserInfo>(`/api/auth/users/${encodeURIComponent(userId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(ch),
+      }),
+    async deleteUser(userId: string) {
+      const resp = await fetchImpl(`/api/auth/users/${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+        headers: headers(),
+      })
+      if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+    },
+    roleModules: () => call<RoleModules[]>('/api/auth/role-modules'),
+    setRoleModules: (role: string, modules: string[]) =>
+      call<RoleModules>(`/api/auth/role-modules/${encodeURIComponent(role)}`, {
+        method: 'PUT',
+        body: JSON.stringify({ modules }),
+      }),
+    plantTree: () => call<PlantTree>('/api/plant-tree'),
+    putPlantNode: (n: PlantNodeChange) =>
+      call<PlantTree>(`/api/plant-nodes/${encodeURIComponent(n.node_id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(n),
+      }),
+    deletePlantNode: (nodeId: string) => remove(`/api/plant-nodes/${encodeURIComponent(nodeId)}`),
+    createMachine: (m: MachineCreate) =>
+      call<Machine>('/api/plant-machines', { method: 'POST', body: JSON.stringify(m) }),
+    placeMachine: (machineId: string, p: MachinePlacement) =>
+      call<Machine>(`/api/plant-machines/${encodeURIComponent(machineId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(p),
+      }),
+    deleteMachine: (machineId: string) =>
+      remove(`/api/plant-machines/${encodeURIComponent(machineId)}`),
+    putComponent: (machineId: string, c: ComponentChange) =>
+      call<ComponentInstance>(
+        `/api/plant-machines/${encodeURIComponent(machineId)}/components/${encodeURIComponent(c.component_id)}`,
+        { method: 'PUT', body: JSON.stringify(c) },
+      ),
+    deleteComponent: (componentId: string) =>
+      remove(`/api/plant-components/${encodeURIComponent(componentId)}`),
     fleet: () => call<FleetOverview>('/api/fleet'),
     health: (componentId: string) =>
       call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),
