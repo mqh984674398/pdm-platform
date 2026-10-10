@@ -1,0 +1,209 @@
+{
+ "is_simulated": true,
+ "title": "SIMULATED PERFORMANCE \u2014 not evidence of real-world accuracy",
+ "seed": 7,
+ "time_split": {
+  "cutoff_h": 360.0,
+  "embargo_h": 24.0
+ },
+ "types": [
+  {
+   "component_type": "BALL_SCREW",
+   "feature_ref": "ball_screw@1.1.0",
+   "features": [
+    "speed_cruise",
+    "speed_ripple",
+    "speed_rms",
+    "torque_cruise",
+    "torque_cruise_residual",
+    "torque_p95",
+    "torque_rms"
+   ],
+   "windows": 910,
+   "positives": 315,
+   "groups": 17,
+   "scenarios": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S09",
+    "S10",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S19",
+    "S20"
+   ],
+   "label": "SIMULATED truth: max(friction_factor) >= 1.15 in the window -> degraded",
+   "models": {
+    "decision_tree": {
+     "model_id": "dt-ball-screw@1.0.0",
+     "sha256": "93696e955732fbe479e9588ca846e4e98e44b553e9ee4217e8e02fa4d2264bd3",
+     "grouped_cv": {
+      "n": 910,
+      "positives": 315,
+      "tp": 280,
+      "fp": 95,
+      "tn": 500,
+      "fn": 35,
+      "precision": 0.7466666666666667,
+      "recall": 0.8888888888888888,
+      "f1": 0.8115942028985508,
+      "roc_auc": 0.8730425503534746,
+      "brier": 0.12318374366525253
+     },
+     "time_split": {
+      "n": 450,
+      "positives": 190,
+      "tp": 185,
+      "fp": 54,
+      "tn": 206,
+      "fn": 5,
+      "precision": 0.7740585774058577,
+      "recall": 0.9736842105263158,
+      "f1": 0.8624708624708625,
+      "roc_auc": 0.9094939271255061,
+      "brier": 0.11029321678776566
+     }
+    },
+    "xgboost": {
+     "model_id": "xgb-ball-screw@1.0.0",
+     "sha256": "5fef6fa9c58c327dd3a967dc73e267509d8d95b7bdd6bb7f0314d218945f1951",
+     "grouped_cv": {
+      "n": 910,
+      "positives": 315,
+      "tp": 278,
+      "fp": 42,
+      "tn": 553,
+      "fn": 37,
+      "precision": 0.86875,
+      "recall": 0.8825396825396825,
+      "f1": 0.8755905511811024,
+      "roc_auc": 0.966375883686808,
+      "brier": 0.0687276457774838
+     },
+     "time_split": {
+      "n": 450,
+      "positives": 190,
+      "tp": 184,
+      "fp": 14,
+      "tn": 246,
+      "fn": 6,
+      "precision": 0.9292929292929293,
+      "recall": 0.968421052631579,
+      "f1": 0.9484536082474226,
+      "roc_auc": 0.991578947368421,
+      "brier": 0.03486122190952301
+     }
+    }
+   }
+  },
+  {
+   "component_type": "LINEAR_MOTOR",
+   "skipped": "fewer than 2 degraded installations"
+  },
+  {
+   "component_type": "PNEUMATIC_CYLINDER",
+   "feature_ref": "pneumatic_cylinder@1.0.0",
+   "features": [
+    "extend_incomplete_ratio",
+    "extend_median",
+    "extend_p90",
+    "extend_residual",
+    "operation_count",
+    "retract_incomplete_ratio",
+    "retract_median",
+    "retract_p90",
+    "retract_residual"
+   ],
+   "windows": 698,
+   "positives": 203,
+   "groups": 11,
+   "scenarios": [
+    "S01",
+    "S02",
+    "S03",
+    "S06",
+    "S07",
+    "S08",
+    "S11",
+    "S13",
+    "S17",
+    "S18",
+    "S20"
+   ],
+   "label": "SIMULATED truth: max(extend_factor, retract_factor) >= 1.15 in the window -> degraded",
+   "models": {
+    "decision_tree": {
+     "model_id": "dt-pneumatic-cylinder@1.0.0",
+     "sha256": "caf286e7c867199fdfbf0150a3860caab478b7a2f46771ec88611f7535ac4439",
+     "grouped_cv": {
+      "n": 698,
+      "positives": 203,
+      "tp": 42,
+      "fp": 5,
+      "tn": 490,
+      "fn": 161,
+      "precision": 0.8936170212765957,
+      "recall": 0.20689655172413793,
+      "f1": 0.336,
+      "roc_auc": 0.5992337164750958,
+      "brier": 0.23735577473232575
+     },
+     "time_split": {
+      "n": 366,
+      "positives": 132,
+      "tp": 127,
+      "fp": 1,
+      "tn": 233,
+      "fn": 5,
+      "precision": 0.9921875,
+      "recall": 0.9621212121212122,
+      "f1": 0.9769230769230769,
+      "roc_auc": 0.9802350427350428,
+      "brier": 0.021359440285846798
+     }
+    },
+    "xgboost": {
+     "model_id": "xgb-pneumatic-cylinder@1.0.0",
+     "sha256": "6173cda788ee56690b549ca1d46cf429c898a0ed105bb51deb3e1d076d864e33",
+     "grouped_cv": {
+      "n": 698,
+      "positives": 203,
+      "tp": 79,
+      "fp": 10,
+      "tn": 485,
+      "fn": 124,
+      "precision": 0.8876404494382022,
+      "recall": 0.3891625615763547,
+      "f1": 0.541095890410959,
+      "roc_auc": 0.7585510275165449,
+      "brier": 0.14282963328114523
+     },
+     "time_split": {
+      "n": 366,
+      "positives": 132,
+      "tp": 127,
+      "fp": 0,
+      "tn": 234,
+      "fn": 5,
+      "precision": 1.0,
+      "recall": 0.9621212121212122,
+      "f1": 0.9806949806949807,
+      "roc_auc": 0.9797656047656047,
+      "brier": 0.024608571082353592
+     }
+    }
+   }
+  },
+  {
+   "component_type": "VACUUM_CUP",
+   "skipped": "fewer than 2 degraded installations"
+  }
+ ]
+}

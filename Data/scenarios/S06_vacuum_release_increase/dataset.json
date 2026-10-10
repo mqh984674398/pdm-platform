@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s06_vacuum_release_increase",
+  "description": "S06 Vacuum-release duration increase (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5006,
+  "config_sha256": "7880f13897555c8a85c2e3c16b22d69d1198ee653d3c2ee2515f6b25488ad72c",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 720.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "bc0bf69b37eb8b40d59f02118485bacdd8b8fa9efb63e1821414fe635ce089f7",
+      "bytes": 457845,
+      "rows": 7651,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "a78dd033fd02469d97a358b49af4257ffa3540d7c4c18aa9c2d2795fc004250d",
+      "bytes": 731182,
+      "rows": 7651,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "8c945693e3f9147aa407b7d37ce7b93293f50c537e6d99439900f886346cd090",
+      "bytes": 8330,
+      "rows": 120,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "c8359d389d672511d4a8580aaf4cc30322f199734863c7547546a4fdb395e6ec",
+      "bytes": 20979,
+      "rows": 240,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "c8e45a09475b44ed5737ec93ec1ded93c2af0e7806d8142355335e20d810a4f1",
+      "bytes": 3663
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "4139b51185b8cec8d918809f4af70c370c6dae8dc2f81086c015e232e96df4a1",
+      "bytes": 2165
+    }
+  }
+}

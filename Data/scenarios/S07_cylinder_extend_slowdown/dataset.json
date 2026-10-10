@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s07_cylinder_extend_slowdown",
+  "description": "S07 Cylinder extension slowdown (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5007,
+  "config_sha256": "dbcfe7ed0e183bfe45aedfafa2c357bd4b7b53efa2ae791167d11acbb90fefa2",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 504.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "08e367a2f6741901f98914540a96bab3c08adf5b793707cfc9d1fa29e613815c",
+      "bytes": 201882,
+      "rows": 3364,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "5eb8edba7eeb7e3f4b395aa50ff980ee692d02d22a2d5ec168daaf13368c2f86",
+      "bytes": 320978,
+      "rows": 3364,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "bd0bc267752d3b0564fe8d5ae8a1f44a2432048b296ae2115b51ba20462b0f71",
+      "bytes": 5832,
+      "rows": 84,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "b9cee0e2f9a595fd64a1cd78511e4c89b25d90d674497be6bb9a1083211053fe",
+      "bytes": 7773,
+      "rows": 84,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "85363888ad1883c2982dfb2face33aa1a3aaa859b05802c1ebf23cc1b5c3b7cd",
+      "bytes": 2366
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "35dcb8856dfd02c7789bdb19d895f3bf15aeecfa6c40ed3c6a4eada05fd2d0be",
+      "bytes": 1793
+    }
+  }
+}

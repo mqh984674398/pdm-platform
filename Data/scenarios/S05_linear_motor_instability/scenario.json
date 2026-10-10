@@ -1,0 +1,38 @@
+{
+  "scenario_id": "S05",
+  "slug": "linear_motor_instability",
+  "title": {
+    "zh": "直线电机速度不稳定",
+    "en": "Linear-motor speed instability"
+  },
+  "seed": 5005,
+  "dataset_id": "s05_linear_motor_instability",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第7天起匀速段速度波动幅度明显增大。",
+    "en": "From day 7 the speed ripple during constant-speed segments grows markedly."
+  },
+  "ground_truth": {
+    "zh": "纹波参数阶跃 +0.04（约 0.5%→4.5%）。",
+    "en": "Ripple parameter step +0.04 (about 0.5% → 4.5%)."
+  },
+  "expected_health_response": {
+    "zh": "7天前 NORMAL；8天后 WARNING/CRITICAL。",
+    "en": "NORMAL before day 7; WARNING/CRITICAL after day 8."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S05-01",
+    "GC-S05-02"
+  ]
+}

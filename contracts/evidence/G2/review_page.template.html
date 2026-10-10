@@ -1,0 +1,326 @@
+<title>G2 Data and Domain Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one reading column of instrument-panel sections; charts span the column; status as ISO 3864 chips. */
+:root {
+  --bg: #f3f5f7;
+  --panel: #ffffff;
+  --ink: #1b2430;
+  --muted: #5a6675;
+  --rule: #d5dbe2;
+  --accent: #1d5d9b;
+  --ok: #2e7d32;
+  --watch: #b7791f;
+  --bad: #c62828;
+  --unknown: #6b7480;
+  --band: rgba(198, 40, 40, 0.08);
+  --band2: rgba(29, 93, 155, 0.07);
+  --display: "Barlow Semi Condensed", "Noto Sans SC", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", "Noto Sans SC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171d; --panel: #1a2129; --ink: #e4e9ef; --muted: #9aa6b4; --rule: #2d3742;
+    --accent: #6aa8e8; --ok: #66bb6a; --watch: #e0a83a; --bad: #ef6b6b; --unknown: #8d97a3;
+    --band: rgba(239, 107, 107, 0.12); --band2: rgba(106, 168, 232, 0.10); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171d; --panel: #1a2129; --ink: #e4e9ef; --muted: #9aa6b4; --rule: #2d3742;
+  --accent: #6aa8e8; --ok: #66bb6a; --watch: #e0a83a; --bad: #ef6b6b; --unknown: #8d97a3;
+  --band: rgba(239, 107, 107, 0.12); --band2: rgba(106, 168, 232, 0.10); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6; padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 20px; }
+header.top { padding-block: 28px 8px; display: grid; gap: 10px; }
+.gate { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.05; letter-spacing: 0.01em; text-wrap: balance; margin: 0; }
+.gate .code { color: var(--accent); }
+.meta { color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
+.lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.lang button { font: 500 13px var(--body); background: var(--panel); color: var(--muted); border: 0; padding: 4px 12px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+.lang button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sim { border-left: 4px solid var(--watch); background: var(--panel); padding: 10px 14px; font-size: 14px; }
+section.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 20px; display: grid; gap: 12px; min-width: 0; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 4px 0 0; }
+p { margin: 0; max-width: 72ch; }
+.small { font-size: 13px; color: var(--muted); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; }
+code, .mono { font-family: var(--mono); font-size: 13px; }
+.chip { display: inline-block; font: 500 12px var(--mono); padding: 1px 7px; border-radius: 3px; margin: 1px 4px 1px 0; border: 1px solid currentColor; }
+.chip.bad { color: var(--bad); } .chip.watch { color: var(--watch); } .chip.ok { color: var(--ok); } .chip.na { color: var(--unknown); border-style: dashed; }
+.chart { width: 100%; height: 320px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.asks { display: grid; gap: 12px; counter-reset: ask; padding: 0; margin: 0; list-style: none; }
+.asks li { display: grid; grid-template-columns: 2.2em 1fr; gap: 4px 10px; }
+.asks li::before { counter-increment: ask; content: "A" counter(ask); font: 600 15px var(--display); color: var(--accent); }
+.asks li > div { min-width: 0; display: grid; gap: 2px; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 500 13px var(--mono); }
+.flow span.st { border: 1px solid var(--rule); padding: 3px 8px; border-radius: 3px; background: var(--bg); }
+.flow span.ar { color: var(--muted); }
+.timeline { position: relative; height: 64px; margin-top: 8px; }
+.timeline .lc { position: absolute; top: 10px; height: 26px; border-radius: 3px; color: var(--panel); font: 500 12px var(--mono); padding: 4px 8px; white-space: nowrap; overflow: hidden; }
+.timeline .ev { position: absolute; top: 4px; height: 40px; border-left: 2px dashed var(--bad); }
+.timeline .ax { position: absolute; top: 44px; font-size: 12px; color: var(--muted); }
+[lang-zh], [lang-en] { display: none; }
+html[data-lang="zh"] [lang-zh], html[data-lang="en"] [lang-en] { display: revert; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="meta">
+      <span lang-zh>工业预测性维护平台 V5.2 · 任务 T009–T014</span><span lang-en>Industrial Predictive Maintenance Platform V5.2 · Tasks T009–T014</span>
+      <span>2026-10-09</span>
+      <span class="lang" role="group" aria-label="Language"><button id="b-zh" type="button" aria-pressed="true">中文</button><button id="b-en" type="button" aria-pressed="false">English</button></span>
+    </div>
+    <h1 class="gate"><span class="code">G2</span> <span lang-zh>数据与领域验证</span><span lang-en>Data and domain validation</span></h1>
+    <p lang-zh>请确认下面的工业数据语义。批准后 T015–T018（特征、基线、规则、维护影响）按这些语义构建。沉默不视为批准。</p>
+    <p lang-en>Please confirm the industrial data semantics below. After approval, T015–T018 (features, baselines, rules, maintenance impact) are built on them. Silence is not approval.</p>
+  </header>
+
+  <div class="sim">
+    <span lang-zh>全部为模拟数据（Data/ 中的 20 个场景）。真实 IoT 数据库结构仍未核实，需要只读访问或样例导出。图表中的数字由 T012–T014 服务直接计算。</span>
+    <span lang-en>All data is simulated (the 20 scenarios in Data/). The real IoT database schema is still unverified; read-only access or a sample export is needed. Every number in the charts is computed by the T012–T014 services.</span>
+  </div>
+
+  <section class="panel" id="checklist">
+    <h2 lang-zh>检查清单</h2><h2 lang-en>Checklist</h2>
+    <div class="scroll"><table>
+      <thead><tr><th lang-zh>项目</th><th lang-en>Item</th><th lang-zh>结果</th><th lang-en>Result</th><th lang-zh>证据</th><th lang-en>Evidence</th></tr></thead>
+      <tbody id="checklist-rows"></tbody>
+    </table></div>
+    <p class="small"><span lang-zh>本地 CI（含 PostgreSQL）：后端 301 项通过（Python 3.11 与 3.12），前端单元 33 项、端到端 5 项通过。</span><span lang-en>Local CI with PostgreSQL: backend 301 passed on Python 3.11 and 3.12; frontend 33 unit and 5 end-to-end tests passed.</span> <code>contracts/evidence/T014/ci_local.log</code></p>
+  </section>
+
+  <section class="panel" id="quality">
+    <h2 lang-zh>数据质量报告</h2><h2 lang-en>Data quality reporting</h2>
+    <p lang-zh>按全分辨率数据检查，只报告不修正。无法评估的检查列为“未评估”，不当作正常。S01 是对照：没有任何标记。</p>
+    <p lang-en>Checks run on full-resolution rows and are reported, never corrected. Checks that cannot run are listed as not evaluated rather than clean. S01 is the control: no flags at all.</p>
+    <div class="scroll"><table>
+      <thead><tr><th lang-zh>场景 / 时段</th><th lang-en>Scenario / hours</th><th lang-zh>信号</th><th lang-en>Signal</th><th lang-zh>标记</th><th lang-en>Flags</th><th lang-zh>数量</th><th lang-en>Counts</th></tr></thead>
+      <tbody id="quality-rows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel" id="regimes">
+    <h2 lang-zh>工况解释</h2><h2 lang-en>Operating-regime interpretation</h2>
+    <p lang-zh>没有配方信号，工况由可观测量判断：每个运行窗口的巡航速度和执行器动作间隔。转矩和动作时间不参与判断，否则劣化会被当成“新工况”而被掩盖。</p>
+    <p lang-en>There is no recipe signal, so regimes come from observables: each running window's cruise speed and the interval between actuator operations. Torque and durations never decide the regime; otherwise degradation would be hidden as a "new regime".</p>
+    <h3 lang-zh>S17：未登记配方 R-X（第 96–144 小时）被判为“不支持”，预测须弃权</h3>
+    <h3 lang-en>S17: the unregistered recipe R-X (hours 96–144) is UNSUPPORTED, so predictions must abstain</h3>
+    <div class="legend" id="lg-s17"></div>
+    <div class="chart" id="c-s17" role="img" aria-label="S17 cruise speed per running window"></div>
+    <p class="small" id="s17-note"></p>
+    <h3 lang-zh>S02：转矩随配方变化，按所属工况归一化后保持在参考水平附近</h3>
+    <h3 lang-en>S02: torque changes with the recipe; normalized within its regime it stays near the reference level</h3>
+    <div class="chart" id="c-s02" role="img" aria-label="S02 torque per window and normalized residual"></div>
+    <p class="small"><span lang-zh>左轴：巡航转矩原值（N·m）；右轴：工况归一化残差（稳健标准差单位）。仅显示真正采到巡航段的窗口。</span><span lang-en>Left axis: raw cruise torque (N·m). Right axis: regime-normalized residual in robust units. Only windows that sampled the cruise phase are shown.</span></p>
+  </section>
+
+  <section class="panel" id="cycles">
+    <h2 lang-zh>执行器动作与未完成动作</h2><h2 lang-en>Actuator operations and incomplete operations</h2>
+    <p lang-zh>S18 第 72–168 小时注入了未完成动作，控制器上报超时值 2.0 s。检测到的未完成动作与注入记录逐条一致（部件、类型、时间）。超时值不作为动作时间，不进入统计。</p>
+    <p lang-en>S18 has incomplete operations injected in hours 72–168, reported by the controller as the 2.0 s timeout. The detected ones match the injected log one for one (component, kind, time). Timeouts never count as durations.</p>
+    <div class="legend" id="lg-s18"></div>
+    <div class="chart" id="c-s18" role="img" aria-label="S18 operation durations with incomplete operations"></div>
+    <div class="scroll"><table>
+      <thead><tr><th lang-zh>信号</th><th lang-en>Signal</th><th lang-zh>动作数</th><th lang-en>Operations</th><th lang-zh>未完成</th><th lang-en>Incomplete</th><th lang-zh>超时（推断）</th><th lang-en>Timeout (inferred)</th><th lang-zh>完成动作中位时间</th><th lang-en>Median completed</th></tr></thead>
+      <tbody id="cycle-rows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel" id="lifecycle">
+    <h2 lang-zh>部件生命周期与维护流程</h2><h2 lang-en>Component lifecycle and maintenance workflow</h2>
+    <p lang-zh>只有“更换”会开始新的生命周期：旧生命周期退役但保留全部历史。润滑、调整、局部维修、检查都不重置老化计数。S12 的更换结果与模拟器记录完全一致。</p>
+    <p lang-en>Only a replacement starts a new lifecycle: the old one is retired and keeps its full history. Lubrication, adjustment, partial repair and inspection never reset aging. The S12 replacement result equals the simulator's record exactly.</p>
+    <div class="timeline" id="tl-s12" aria-label="S12 lifecycle timeline"></div>
+    <h3 lang-zh>维护后流程（每次维护事件一个流程，检查除外）</h3><h3 lang-en>Post-maintenance workflow (one per maintenance event, except inspection)</h3>
+    <div class="flow"><span class="st">MAINTENANCE_EVENT</span><span class="ar">→</span><span class="st">STABILIZATION</span><span class="ar">→</span><span class="st">POST_MAINTENANCE_VALIDATION</span><span class="ar">→</span><span class="st">NORMAL_MONITORING</span><span class="ar" lang-zh>或</span><span class="ar" lang-en>or</span><span class="st">REVIEW_REQUIRED</span></div>
+    <p lang-zh>其他任何转换都被拒绝且不留记录；每次转换都写入审计日志。关闭“需复核”需要工程师并填写复核结论。T018 之前，稳定期和验证步骤由人推进。该流程只记录状态，不发出任何报警。</p>
+    <p lang-en>Any other move is refused and leaves no record; every transition is written to the audit log. Closing REVIEW_REQUIRED needs an engineer and a review comment. Until T018, the stabilization and validation steps are moved by people. The workflow only tracks state and sends no alerts.</p>
+  </section>
+
+  <section class="panel" id="asks">
+    <h2 lang-zh>请确认的数据语义</h2><h2 lang-en>Data semantics to confirm</h2>
+    <p lang-zh>批准 G2 即接受以下假设；如需修改，请指出编号。</p>
+    <p lang-en>Approving G2 accepts these assumptions; to change one, name its number.</p>
+    <ol class="asks">
+      <li><div><strong lang-zh>未完成动作的表示</strong><strong lang-en>How an incomplete operation is reported</strong><span lang-zh>控制器在动作未完成时上报固定的超时值（模拟为 2000 ms）。已知超时值时请提供，系统可直接配置。</span><span lang-en>The controller reports a fixed timeout value when an operation does not finish (2000 ms in the simulation). If you know the real timeout, it can be configured directly.</span></div></li>
+      <li><div><strong lang-zh>工况来源</strong><strong lang-en>Where regimes come from</strong><span lang-zh>由速度和动作间隔判断。若真实系统有配方或程序号信号，应优先使用。参考期需由人确认，并覆盖所有常用配方。</span><span lang-en>From speeds and operation interval. If the real system has a recipe or program-number signal, it should take precedence. A person confirms the reference period, which must cover every routine recipe.</span></div></li>
+      <li><div><strong lang-zh>停机与故障状态</strong><strong lang-en>Stopped and fault states</strong><span lang-zh>需要设备状态或报警信号才判断；没有数据的时段显示为“未知”，不推测为停机。</span><span lang-en>Derived only from a machine status or alarm signal; periods without data show UNKNOWN and are never guessed as stopped.</span></div></li>
+      <li><div><strong lang-zh>维护流程规则</strong><strong lang-en>Workflow rules</strong><span lang-zh>检查不启动流程；关闭复核需要工程师；新的维护事件取代该部件未结束的流程。</span><span lang-en>Inspection starts no workflow; closing a review needs an engineer; a new maintenance event supersedes the component's open workflow.</span></div></li>
+      <li><div><strong lang-zh>质量阈值（仅用模拟数据调校）</strong><strong lang-en>Quality thresholds (tuned on simulated data only)</strong><span lang-zh>缺失超过 2%，间隔离散超过 5%，停顿超过常规 4 倍（事件信号 6 倍，至少 1 小时）为缺口，水平变化 20 倍为单位可疑。</span><span lang-en>Missing above 2 %, interval spread above 5 %, a pause over 4× the usual one (6× for event signals, at least 1 h) is a gap, a 20× level change is unit-suspect.</span></div></li>
+    </ol>
+    <p lang-zh><strong>仍缺：</strong>真实 IoT 数据库的只读访问或样例导出（几天的数据即可），用于核实信号映射和上述假设。</p>
+    <p lang-en><strong>Still missing:</strong> read-only access to the real IoT database or a sample export (a few days is enough), to verify the signal mapping and the assumptions above.</p>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script id="g2-data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById("g2-data").textContent);
+  const root = document.documentElement;
+  let lang = "zh";
+  try { lang = localStorage.getItem("g2-lang") || "zh"; } catch (e) {}
+  const css = (n) => getComputedStyle(root).getPropertyValue(n).trim();
+  const charts = [];
+  const T = (zh, en) => (lang === "zh" ? zh : en);
+
+  function setLang(l) {
+    lang = l;
+    root.setAttribute("data-lang", l);
+    root.setAttribute("lang", l === "zh" ? "zh-CN" : "en");
+    document.getElementById("b-zh").setAttribute("aria-pressed", String(l === "zh"));
+    document.getElementById("b-en").setAttribute("aria-pressed", String(l === "en"));
+    try { localStorage.setItem("g2-lang", l); } catch (e) {}
+    render();
+  }
+  document.getElementById("b-zh").onclick = () => setLang("zh");
+  document.getElementById("b-en").onclick = () => setLang("en");
+
+  const flagClass = (f) => (["MISALIGNED", "BIAS_SUSPECT", "UNIT_SUSPECT", "OUT_OF_RANGE", "GAP"].includes(f) ? "bad" : "watch");
+  const chip = (t, c) => `<span class="chip ${c}">${t}</span>`;
+
+  function checklist() {
+    const rows = [
+      ["信号映射（模拟适配器）", "Source-to-signal mapping (simulated adapter)", "通过；真实结构未核实", "Pass; real schema not yet verified", "T011 Studio E2E, signal config versions"],
+      ["工况解释", "Operating-regime interpretation", "通过（S02、S17）", "Pass (S02, S17)", "tests/equipment, operations_sweep.log"],
+      ["生命周期：更换与润滑", "Lifecycle incl. replacement and lubrication", "通过（S12、S09、S10、S11）", "Pass (S12, S09, S10, S11)", "tests/lifecycle (PostgreSQL)"],
+      ["维护干预流程", "Maintenance intervention workflow", "通过；转换受控并审计", "Pass; transitions enforced and audited", "tests/lifecycle/test_workflow.py"],
+      ["数据质量报告", "Data quality reporting", "通过（S13–S16、S20）", "Pass (S13–S16, S20)", "tests/quality, quality_sweep.log"],
+      ["用户批准工业数据语义", "User approval of industrial data semantics", "等待您的决定", "Awaiting your decision", "A1–A5 below"],
+    ];
+    document.getElementById("checklist-rows").innerHTML = rows.map((r, i) =>
+      `<tr><td>${T(r[0], r[1])}</td><td>${chip(T(r[2], r[3]), i === 5 ? "watch" : i === 0 ? "na" : "ok")}</td><td class="mono">${r[4]}</td></tr>`).join("");
+  }
+
+  function quality() {
+    const out = [];
+    for (const q of D.quality) {
+      const items = q.signals.map((s) => ({ name: s.signal, flags: s.flags, counts: `n=${s.samples} · miss ${s.missing} · dup ${s.duplicates} · ooo ${s.out_of_order} · gap ${s.gaps}` }))
+        .concat(q.pairs.map((p) => ({ name: p.pair, flags: p.flags, counts: `${T("一致率", "agreement")} ${p.agreement == null ? "–" : p.agreement.toFixed(2)} · ${T("容差", "tolerance")} ${p.tolerance_s} s` })));
+      items.forEach((it, i) => out.push(`<tr><td>${i === 0 ? `<strong>${q.scenario}</strong> ${q.window_h[0]}–${q.window_h[1]} h` : ""}</td><td class="mono">${it.name}</td><td>${it.flags.length ? it.flags.map((f) => chip(f, flagClass(f))).join("") : chip(T("无", "none"), "ok")}</td><td class="mono small">${it.counts}</td></tr>`));
+    }
+    document.getElementById("quality-rows").innerHTML = out.join("");
+  }
+
+  function base() {
+    return {
+      textStyle: { color: css("--ink"), fontFamily: css("--body") },
+      grid: { left: 72, right: 60, top: 24, bottom: 44 },
+      tooltip: { trigger: "item" },
+    };
+  }
+  const axis = (name, extra) => Object.assign({ name, nameLocation: "middle", nameGap: 30, axisLine: { lineStyle: { color: css("--rule") } }, axisLabel: { color: css("--muted") }, splitLine: { lineStyle: { color: css("--rule"), opacity: 0.6 } } }, extra || {});
+
+  function s17() {
+    const d = D.regimes_s17;
+    const pal = { RG1: css("--accent"), RG2: css("--ok"), UNSUPPORTED: css("--bad") };
+    const groups = { RG1: [], RG2: [], UNSUPPORTED: [] };
+    for (const w of d.windows) {
+      if (w.state !== "RUNNING" || w.speed == null) continue;
+      const k = w.status === "UNSUPPORTED" ? "UNSUPPORTED" : w.regime;
+      (groups[k] = groups[k] || []).push([w.h, w.speed]);
+    }
+    const label = { RG1: `RG1 ≈1500 rpm`, RG2: `RG2 ≈3000 rpm`, UNSUPPORTED: T("不支持（无匹配工况）", "UNSUPPORTED (no known regime)") };
+    document.getElementById("lg-s17").innerHTML = Object.keys(groups).map((k) => `<span><i style="background:${pal[k]}"></i>${label[k]}</span>`).join("") +
+      `<span><i style="background:${css("--band2")};border-radius:2px"></i>${T("参考期 0–96 h", "reference period 0–96 h")}</span><span><i style="background:${css("--band")};border-radius:2px"></i>${T("实际运行 R-X", "R-X actually running")}</span>`;
+    const c = echarts.init(document.getElementById("c-s17"));
+    c.setOption(Object.assign(base(), {
+      xAxis: axis(T("小时", "hours"), { type: "value", min: 0, max: 240 }),
+      yAxis: axis(T("巡航速度 rpm", "cruise speed rpm"), { type: "value", min: 0, nameGap: 50 }),
+      series: Object.entries(groups).map(([k, pts], i) => ({
+        name: label[k], type: "scatter", data: pts, symbolSize: 9, itemStyle: { color: pal[k] },
+        markArea: i === 0 ? { silent: true, data: [[{ xAxis: 0, itemStyle: { color: css("--band2") } }, { xAxis: 96 }], [{ xAxis: 96, itemStyle: { color: css("--band") } }, { xAxis: 144 }]] } : undefined,
+        tooltip: { formatter: (p) => `${p.seriesName}<br>${p.value[0].toFixed(1)} h · ${p.value[1].toFixed(0)} rpm` },
+      })),
+    }));
+    charts.push(c);
+    const n = d.windows.filter((w) => w.state === "RUNNING");
+    const un = n.filter((w) => w.status === "UNSUPPORTED");
+    document.getElementById("s17-note").textContent = T(
+      `运行窗口 ${n.length} 个，其中 ${un.length} 个不支持，全部位于 96–144 h；其余全部匹配已知工况。参考期学到的工况：${d.regimes.map((r) => `${r.id}（${r.windows} 个窗口）`).join("、")}。`,
+      `${n.length} running windows; ${un.length} are UNSUPPORTED, all inside 96–144 h; all others match a known regime. Regimes learned from the reference period: ${d.regimes.map((r) => `${r.id} (${r.windows} windows)`).join(", ")}.`);
+  }
+
+  function s02() {
+    const d = D.regimes_s02;
+    const pal = [css("--accent"), css("--ok"), css("--watch")];
+    const ids = d.regimes.map((r) => r.id);
+    const c = echarts.init(document.getElementById("c-s02"));
+    const series = [];
+    ids.forEach((id, i) => {
+      const r = d.regimes[i];
+      const pts = d.windows.filter((w) => w.regime === id && w.z != null);
+      series.push({ name: `${id} ${r.band.split(",")[0].replace("M01-BS1.speed", "")} rpm`, type: "scatter", yAxisIndex: 0, symbolSize: 8, itemStyle: { color: pal[i] }, data: pts.map((w) => [w.h, w.torque]) });
+      series.push({ name: `${id} z`, type: "scatter", yAxisIndex: 1, symbol: "diamond", symbolSize: 7, itemStyle: { color: "transparent", borderColor: pal[i], borderWidth: 1.5 }, data: pts.map((w) => [w.h, w.z]) });
+    });
+    c.setOption(Object.assign(base(), {
+      legend: { top: 0, textStyle: { color: css("--muted") }, data: series.filter((s, i) => i % 2 === 0).map((s) => s.name) },
+      grid: { left: 72, right: 60, top: 40, bottom: 44 },
+      xAxis: axis(T("小时", "hours"), { type: "value", min: 0, max: 336 }),
+      yAxis: [axis(T("巡航转矩 N·m", "cruise torque N·m"), { type: "value", min: 0, nameGap: 40 }), axis(T("归一化残差", "normalized residual"), { type: "value", min: -6, max: 6, nameGap: 36, splitLine: { show: false } })],
+      series,
+      tooltip: { trigger: "item", formatter: (p) => `${p.seriesName}<br>${p.value[0].toFixed(1)} h · ${p.value[1].toFixed(2)}` },
+    }));
+    charts.push(c);
+  }
+
+  function s18() {
+    const d = D.cycles_s18;
+    const pal = { "M01-CY1.extend_time": css("--accent"), "M01-CY1.retract_time": css("--ok"), "M01-VC1.release_time": css("--watch") };
+    const names = { "M01-CY1.extend_time": T("气缸伸出", "cylinder extend"), "M01-CY1.retract_time": T("气缸缩回", "cylinder retract"), "M01-VC1.release_time": T("真空释放", "vacuum release") };
+    const series = Object.keys(pal).map((sid) => ({ name: names[sid], type: "scatter", symbolSize: 3, itemStyle: { color: pal[sid], opacity: 0.55 }, data: d.cycles.filter((c) => c.signal === sid && c.complete).map((c) => [c.h, c.value]) }));
+    series.push({ name: T("未完成（上报超时值）", "incomplete (timeout reported)"), type: "scatter", symbol: "triangle", symbolSize: 11, itemStyle: { color: css("--bad") }, data: d.cycles.filter((c) => !c.complete).map((c) => [c.h, c.reported]),
+      markArea: { silent: true, data: [[{ xAxis: 72, itemStyle: { color: css("--band") } }, { xAxis: 168 }]] } });
+    document.getElementById("lg-s18").innerHTML = series.map((s) => `<span><i style="background:${s.itemStyle.color}"></i>${s.name}</span>`).join("");
+    const c = echarts.init(document.getElementById("c-s18"));
+    c.setOption(Object.assign(base(), {
+      xAxis: axis(T("小时", "hours"), { type: "value", min: 0, max: 240 }),
+      yAxis: axis(T("动作时间 s", "duration s"), { type: "value", min: 0, max: 2.2, nameGap: 40 }),
+      series,
+      tooltip: { trigger: "item", formatter: (p) => `${p.seriesName}<br>${p.value[0].toFixed(2)} h · ${p.value[1].toFixed(3)} s` },
+    }));
+    charts.push(c);
+    document.getElementById("cycle-rows").innerHTML = d.summaries.map((s) => `<tr><td class="mono">${s.signal_id}</td><td>${s.operation_count}</td><td>${s.incomplete_count}</td><td>${s.timeout_s == null ? "–" : s.timeout_s + " s"}</td><td>${s.median_duration_s.toFixed(3)} s</td></tr>`).join("");
+  }
+
+  function timeline() {
+    const d = D.lifecycle_s12;
+    const t0 = Date.parse(d.lifecycles[0].installed_at), t1 = t0 + 40 * 86400e3;
+    const x = (t) => `${((Date.parse(t) - t0) / (t1 - t0)) * 100}%`;
+    const el = document.getElementById("tl-s12");
+    const lc = d.lifecycles.map((l, i) => {
+      const end = l.retired_at || new Date(t1).toISOString();
+      const w = `calc(${x(end)} - ${x(l.installed_at)} - 2px)`;
+      const bg = i === 0 ? css("--unknown") : css("--accent");
+      const label = `${l.lifecycle_id} · ${l.status} · ${T("运行", "run")} ${l.accumulated_operating_hours} h`;
+      return `<div class="lc" style="left:${x(l.installed_at)};width:${w};background:${bg}" title="${label}">${label}</div>`;
+    });
+    const ev = d.events.map((e) => `<div class="ev" style="left:${x(e.performed_at)}" title="${e.type} ${e.performed_at}"></div><div class="ax" style="left:${x(e.performed_at)}">${e.type} · ${e.performed_at.slice(0, 10)}</div>`);
+    el.innerHTML = lc.join("") + ev.join("") + `<div class="ax" style="left:0">${d.lifecycles[0].installed_at.slice(0, 10)}</div>`;
+  }
+
+  function render() {
+    charts.splice(0).forEach((c) => c.dispose());
+    checklist(); quality(); timeline();
+    if (window.echarts) { s17(); s02(); s18(); }
+  }
+  window.addEventListener("resize", () => charts.forEach((c) => c.resize()));
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", render);
+  new MutationObserver(render).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  setLang(lang === "en" ? "en" : "zh");
+})();
+</script>

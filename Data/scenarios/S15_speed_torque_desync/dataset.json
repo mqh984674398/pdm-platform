@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s15_speed_torque_desync",
+  "description": "S15 Speed/torque synchronization errors (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5015,
+  "config_sha256": "f47c3f4a63c38a0c1c4cecd7624bda523aebb2e907e29cfc9c1cc1354a74277f",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 168.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "399d93c0553c4975ca2027c19f1fa83bcdb199f3203537a1282b42e62485caaa",
+      "bytes": 185001,
+      "rows": 3120,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "3ba967b57ada2d20c718ea8be5c140392f1535cc2a85df38d82fcc9b4931c652",
+      "bytes": 280598,
+      "rows": 3120,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "204b34309923720dd80da8c9de4cadaf0bd4e7fcb4a790aef75fbb311b8839d2",
+      "bytes": 1980,
+      "rows": 28,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "52595b8e4113cc4bbb4bb095a8466056ce0dbbdba8d62bf47a18bbe928b5433a",
+      "bytes": 2465,
+      "rows": 28,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "3455da97c810543977a1cc4c3a3ed833470eafacea7eb619f79feee407ed369d",
+      "bytes": 2297
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "059532ca491dd696e8593c4d116c5be1d1ad3d867dc252bda5e6204f3a2cf34e",
+      "bytes": 227
+    },
+    "config.json": {
+      "sha256": "6c1f82a66cb5d9e505103268d0519b445457e5015cdcacb39a84d588979c0084",
+      "bytes": 1909
+    }
+  }
+}

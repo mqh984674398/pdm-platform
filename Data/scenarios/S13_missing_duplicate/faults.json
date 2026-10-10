@@ -1,0 +1,23 @@
+{
+  "data_faults": [
+    {
+      "fault_index": 0,
+      "kind": "MISSING",
+      "device_id": "SIM-S13",
+      "key_name": "M01_BS1_TRQ",
+      "rows_in_interval": 480,
+      "rows_before": 1680,
+      "rows_after": 1533
+    },
+    {
+      "fault_index": 1,
+      "kind": "DUPLICATE",
+      "device_id": "SIM-S13",
+      "key_name": "M01_CY1_EXT",
+      "rows_in_interval": 263,
+      "rows_before": 595,
+      "rows_after": 656
+    }
+  ],
+  "incomplete_operations": []
+}

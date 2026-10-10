@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s14_jitter_out_of_order",
+  "description": "S14 Timestamp jitter and out-of-order records (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5014,
+  "config_sha256": "a4d12ebfb1c78ae2955a83dfd60d260fc45ad7dfa8de340a1b6bb2246f19f79f",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 168.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "81cc0f5d20b8e09b8b30e7e7f31d3fec2067d55134e2e055865bda157fd2a820",
+      "bytes": 299494,
+      "rows": 5040,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "cbe2ab850d22eba4a71487d66cfcc93c5feb8444a6038a892dc0a76d82360677",
+      "bytes": 455564,
+      "rows": 5040,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "7adfc0a663dc3c593e94285e3d04f4e485acc0bbca75d9bd83d9d512f3f51031",
+      "bytes": 1983,
+      "rows": 28,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "d68e2f89f2ebdf6b50967c66cb3800922db2661f0986f16f9dc0b912659e9d0c",
+      "bytes": 4789,
+      "rows": 56,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "14a07532c4019587ca47b236c64fa87f14c6b4bd587b1ab2d6e5684f830667d2",
+      "bytes": 3579
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "dd5508ff6233f3b4b1e9fe876b5ec522503d4ca285d684c3450231dfc7633452",
+      "bytes": 684
+    },
+    "config.json": {
+      "sha256": "338f6dfd7a71c850339f0b18b793da86a3876a16bb95387f304ab5782e10e90f",
+      "bytes": 2581
+    }
+  }
+}

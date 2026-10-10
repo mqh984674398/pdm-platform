@@ -1,0 +1,47 @@
+{
+  "scenario_id": "S04",
+  "slug": "torque_drift",
+  "title": {
+    "zh": "异常转矩漂移",
+    "en": "Abnormal torque drift"
+  },
+  "seed": 5004,
+  "dataset_id": "s04_torque_drift",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第10–25天同工况下转矩残差持续上升；转速不变。",
+    "en": "Days 10–25: torque residual rises steadily under the same regimes; speed unchanged."
+  },
+  "ground_truth": {
+    "zh": "丝杠摩擦参数线性增加 0.6（第10→25天）。",
+    "en": "Ball-screw friction parameter ramps +0.6 (day 10→25)."
+  },
+  "expected_health_response": {
+    "zh": "10天前 NORMAL；漂移期 WATCH→WARNING；22天后 WARNING/CRITICAL。直线电机保持 NORMAL。",
+    "en": "NORMAL before day 10; WATCH→WARNING during the drift; WARNING/CRITICAL after day 22. Linear motor stays NORMAL."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    },
+    {
+      "zh": "无失效数据：失效概率/RUL 必须返回不支持（NO_FAILURE_EVIDENCE）。",
+      "en": "No failure data: failure probability/RUL must return unsupported (NO_FAILURE_EVIDENCE)."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "转矩升高只说明负载/摩擦变化，不能单独证明丝杠磨损。",
+      "en": "Higher torque indicates a load/friction change; it does not alone prove ball-screw wear."
+    }
+  ],
+  "golden_case_ids": [
+    "GC-S04-01",
+    "GC-S04-02"
+  ]
+}

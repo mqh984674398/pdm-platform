@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s04_torque_drift",
+  "description": "S04 Abnormal torque drift (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5004,
+  "config_sha256": "efb3dfab3bde1071fb63f94697d94124db5f2731c32ca4fc7ad224ce0f1e7d01",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 720.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "468ae036595149c6aea8d06cb9c4b1d92585e66149f7c3e3989c977600795213",
+      "bytes": 1196307,
+      "rows": 20160,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "4c7828aa7498e5e40e40e70969b5064df52ab3432e662d25dfa2f01f4e179672",
+      "bytes": 1821033,
+      "rows": 20160,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "8e4ffdd44aec3ef7827367ee6bd7b40a4d20d2a85969fae46a5d89847622cba1",
+      "bytes": 8324,
+      "rows": 120,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "a0c954ee5526ff6bbd32809d161c1e457153833f065eac9242d9cebc6af2ec2a",
+      "bytes": 20007,
+      "rows": 240,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "5335cdf4f536d0a4bb955a301d67b5c14817fdeb2db8195a715ded1d82c2345c",
+      "bytes": 3579
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "00cb63bde0533ccfa866c8d2da8bf7d3baf05da99e6c56cfb92280920f816118",
+      "bytes": 2156
+    }
+  }
+}

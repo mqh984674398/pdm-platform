@@ -1,0 +1,119 @@
+{
+  "dataset_id": "s14_jitter_out_of_order",
+  "description": "S14 Timestamp jitter and out-of-order records (SIMULATED)",
+  "seed": 5014,
+  "start": "2026-02-02T00:00:00Z",
+  "duration_hours": 168.0,
+  "observation": {
+    "windows_per_day": 4,
+    "window_minutes": 2.0,
+    "servo_sample_s": 2.0,
+    "linear_sample_s": 2.0,
+    "idle_fraction": 0.08,
+    "stopped_fraction": 0.04
+  },
+  "recipes": [
+    {
+      "recipe_id": "R-A",
+      "servo_speed_rpm": 1500.0,
+      "load_nm": 1.5,
+      "linear_speed_mm_s": 400.0,
+      "cycle_period_s": 6.0,
+      "pressure_factor": 1.0,
+      "part_factor": 1.0
+    },
+    {
+      "recipe_id": "R-B",
+      "servo_speed_rpm": 3000.0,
+      "load_nm": 2.5,
+      "linear_speed_mm_s": 800.0,
+      "cycle_period_s": 4.5,
+      "pressure_factor": 1.05,
+      "part_factor": 1.1
+    }
+  ],
+  "machines": [
+    {
+      "machine_id": "M01",
+      "name": {
+        "zh": "模拟设备 S14",
+        "en": "Simulated machine S14"
+      },
+      "device_id": "SIM-S14",
+      "components": [
+        {
+          "component_id": "M01-BS1",
+          "type": "BALL_SCREW",
+          "name": {
+            "zh": "X轴滚珠丝杠",
+            "en": "X-axis ball screw"
+          },
+          "drive_chain_id": "M01-DC1",
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        },
+        {
+          "component_id": "M01-LM1",
+          "type": "LINEAR_MOTOR",
+          "name": {
+            "zh": "传送直线电机",
+            "en": "Transfer linear motor"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        }
+      ],
+      "recipes": [
+        "R-A",
+        "R-B"
+      ],
+      "recipe_schedule": []
+    }
+  ],
+  "aging": [
+    {
+      "target": "M01-BS1",
+      "rate_per_1000h": 0.05
+    },
+    {
+      "target": "M01-LM1",
+      "rate_per_1000h": 0.05
+    }
+  ],
+  "effects": [],
+  "maintenance": [],
+  "data_faults": [
+    {
+      "kind": "JITTER",
+      "key_names": [
+        "M01_BS1_SPD",
+        "M01_BS1_TRQ"
+      ],
+      "device_id": "SIM-S14",
+      "start_h": 48.0,
+      "end_h": 120.0,
+      "rate": 0.0,
+      "jitter_s": 0.3,
+      "offset_s": 0.0,
+      "bias": 0.0,
+      "scale": 1.0
+    },
+    {
+      "kind": "OUT_OF_ORDER",
+      "key_names": [
+        "M01_LM1_SPD"
+      ],
+      "device_id": "SIM-S14",
+      "start_h": 48.0,
+      "end_h": 120.0,
+      "rate": 0.1,
+      "jitter_s": 0.0,
+      "offset_s": 0.0,
+      "bias": 0.0,
+      "scale": 1.0
+    }
+  ],
+  "incomplete_ops": [],
+  "timestamp_format": "iso_utc"
+}

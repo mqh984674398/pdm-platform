@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s13_missing_duplicate",
+  "description": "S13 Missing and duplicated telemetry (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5013,
+  "config_sha256": "cfbad7990e995a8449f198daa8516788c7e63b1e5880dc1f0892fff6b4beaada",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 168.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "9c198286e56feb68296b2f229e20668beaa7bc1d38dfea696b6dce5df1a2a8d8",
+      "bytes": 265869,
+      "rows": 4464,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "206c56441a4cb25ba990553bef83aa0bea990087fe35256c95cdb3f4b6586ab6",
+      "bytes": 408407,
+      "rows": 4464,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "1fcba21d5018a43ae529d588aa30d6c85433c5c17ec773d3149bac05a4f8233b",
+      "bytes": 1983,
+      "rows": 28,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "adcd462ab165bb03069747759bbcae053f083329b9d659d4c78ce02107c02c8e",
+      "bytes": 5013,
+      "rows": 56,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "0f2fd5281740cda0e931a2fff347f9531fd75b5d20251ff11e8569f08b2b82e3",
+      "bytes": 4346
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "8eaa865fec887f8337c1ae3a368f71286e9a2555f65d90d2e7a840be07a33ef7",
+      "bytes": 473
+    },
+    "config.json": {
+      "sha256": "e0510ec65c60bdae0ea1474c4419a10e4de04beebd29193c03adb80d55d5481b",
+      "bytes": 2537
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S15",
+  "slug": "speed_torque_desync",
+  "title": {
+    "zh": "速度/转矩不同步",
+    "en": "Speed/torque synchronization errors"
+  },
+  "seed": 5015,
+  "dataset_id": "s15_speed_torque_desync",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第2–5天转矩值滞后时间戳0.5s，转矩-速度关系变散。",
+    "en": "Days 2–5: torque values lag their timestamps by 0.5 s, smearing the torque–speed relationship."
+  },
+  "ground_truth": {
+    "zh": "同步偏移 0.5s；设备健康。",
+    "en": "Sync offset 0.5 s; equipment healthy."
+  },
+  "expected_health_response": {
+    "zh": "检测到未对齐（MISALIGNED）；转矩残差分析弃权；不得误报 WARNING。",
+    "en": "Misalignment detected (MISALIGNED); torque-residual analysis abstains; no false WARNING."
+  },
+  "abstention_cases": [
+    {
+      "zh": "对齐不可靠时转矩残差必须弃权（DATA_QUALITY）。",
+      "en": "Torque residuals must abstain when alignment is unreliable (DATA_QUALITY)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S15-01"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s19_shared_drive_chain",
+  "description": "S19 Shared drive-chain abnormality (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5019,
+  "config_sha256": "8cb24608d3aa5ee7351ea68d7e62604cc21ccfe439788c0dc0d8e15b68b310e6",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 504.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "119cab4ba489d839cb0e3169f1939bfb414badc2c7b350962eb312fdfb864ddb",
+      "bytes": 1389985,
+      "rows": 23400,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "013783dde6dd8513fd285f59f1587dabf17344ee2394539d4d8fab415b30709b",
+      "bytes": 2111327,
+      "rows": 23400,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "54594fb57f45545b237248ce903a263eb3b62c51cf554af7be0f0b3e69dc7756",
+      "bytes": 5844,
+      "rows": 84,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "a900c32521af667fad56680029fa6262a60ce62daa278357eaa177f6c6a10e80",
+      "bytes": 21045,
+      "rows": 252,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "02fb7d3dfc5b326ff45d9de4b86cf7a5275e024b0175c8896c094ccb0090d9f1",
+      "bytes": 5571
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "69c36e42a6d422314333a4cab22af23a1da59cf40267468d3b6213ccb68dd0da",
+      "bytes": 2543
+    }
+  }
+}

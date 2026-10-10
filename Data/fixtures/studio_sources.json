@@ -1,0 +1,48 @@
+[
+  {
+    "config": {
+      "data_source_id": "sim-iot",
+      "name": "SIM IoT telemetry",
+      "kind": "SIMULATED",
+      "engine": null,
+      "host": "sim-iot.local",
+      "port": 5432,
+      "database": "iot_telemetry",
+      "credential_ref": "secret://pdm/sim-iot-readonly",
+      "read_only": true,
+      "statement_timeout_s": 30.0,
+      "max_rows": 200000,
+      "is_simulated": true
+    },
+    "simulated_datasets": [
+      {
+        "dir": "../scenarios/S01_healthy",
+        "preview_window": {
+          "start": "2026-02-02T00:00:00Z",
+          "end": "2026-02-03T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../scenarios/S13_missing_duplicate",
+        "preview_window": {
+          "start": "2026-02-05T00:00:00Z",
+          "end": "2026-02-06T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../scenarios/S14_jitter_out_of_order",
+        "preview_window": {
+          "start": "2026-02-04T00:00:00Z",
+          "end": "2026-02-05T00:00:00Z"
+        }
+      },
+      {
+        "dir": "../scenarios/S16_bias_unit_mismatch",
+        "preview_window": {
+          "start": "2026-02-07T12:00:00Z",
+          "end": "2026-02-08T12:00:00Z"
+        }
+      }
+    ]
+  }
+]

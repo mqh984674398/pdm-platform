@@ -1,0 +1,29 @@
+PostgreSQL 17.10 check 2026-10-10T00:55:33Z: backend 532 passed 1 skipped; smoke 26/26; alembic head 0010
+[2026-10-10T00:51:01Z] Unpacked pdm-0.1.0-windows.zip to /tmp/claude-0/smoke17/pdm (481 entries)
+[2026-10-10T00:51:01Z] PASS package contains backend/app/main.py
+[2026-10-10T00:51:01Z] PASS package contains backend/requirements.lock
+[2026-10-10T00:51:01Z] PASS package contains frontend/dist/index.html
+[2026-10-10T00:51:01Z] PASS package contains deploy/windows/install.ps1
+[2026-10-10T00:51:01Z] PASS package contains deploy/serve.py
+[2026-10-10T00:51:01Z] PASS package contains deploy/datasources.simulated.json
+[2026-10-10T00:51:01Z] Wrote backend/.env: local sign-in, PostgreSQL, static client, production data not approved
+[2026-10-10T00:51:02Z] PASS alembic upgrade head on PostgreSQL (INFO  [alembic.runtime.migration] Running upgrade 0009 -> 0010, local user accounts (T028))
+[2026-10-10T00:51:02Z] PASS manage_users.py create-admin (Created administrator admin1)
+[2026-10-10T00:51:04Z] PASS serve.py refuses PDM_AUTH_MODE=dev (Refusing to serve on the network with PDM_AUTH_MODE other than 'local')
+[2026-10-10T00:51:14Z] PASS server up (migrations, SIMULATED fleet replay) (10s, {"status":"ok","version":"0.1.0","llm_enabled":false,"llm_required":false})
+[2026-10-10T00:51:14Z] PASS production source skipped until approval
+[2026-10-10T00:51:14Z] PASS browser client served at / (text/html; charset=utf-8)
+[2026-10-10T00:51:14Z] PASS client routes fall back to index.html
+[2026-10-10T00:51:14Z] PASS API needs sign-in (401)
+[2026-10-10T00:51:14Z] PASS development headers ignored (401)
+[2026-10-10T00:51:14Z] PASS wrong password refused ({"code":"sign_in_failed","message":{"zh":"用户名或密码错误，或账户已锁定/停用。","en":"Wrong user name or password, or the account is locked or deactivated."},"detail":{"reason":"wrong user name or password"}})
+[2026-10-10T00:51:15Z] PASS sign-in sets HttpOnly SameSite=Strict cookie ({"user_id":"admin1","role":"admin","mode":"local"})
+[2026-10-10T00:51:15Z] PASS fleet overview after sign-in (11 machines, simulated=True)
+[2026-10-10T00:51:15Z] PASS state change without X-PDM-CSRF refused (403)
+[2026-10-10T00:51:15Z] PASS admin creates maintenance account (200)
+[2026-10-10T00:51:15Z] PASS platform runs without Ollama (LLM health reports unreachable) (Ollama is not reachable at http://127.0.0.1:11434)
+[2026-10-10T00:51:15Z] PASS non-admin cannot read LLM settings (403)
+[2026-10-10T00:51:15Z] PASS maintenance user reads fleet (200)
+[2026-10-10T00:51:15Z] PASS deactivated account loses access at once (401)
+[2026-10-10T00:51:15Z] PASS sign-out ends the session (401)
+[2026-10-10T00:51:16Z] Result: 0 failed checks

@@ -1,0 +1,83 @@
+{
+  "dataset_id": "s07_cylinder_extend_slowdown",
+  "description": "S07 Cylinder extension slowdown (SIMULATED)",
+  "seed": 5007,
+  "start": "2026-02-02T00:00:00Z",
+  "duration_hours": 504.0,
+  "observation": {
+    "windows_per_day": 4,
+    "window_minutes": 2.0,
+    "servo_sample_s": 2.0,
+    "linear_sample_s": 2.0,
+    "idle_fraction": 0.08,
+    "stopped_fraction": 0.04
+  },
+  "recipes": [
+    {
+      "recipe_id": "R-A",
+      "servo_speed_rpm": 1500.0,
+      "load_nm": 1.5,
+      "linear_speed_mm_s": 400.0,
+      "cycle_period_s": 6.0,
+      "pressure_factor": 1.0,
+      "part_factor": 1.0
+    },
+    {
+      "recipe_id": "R-B",
+      "servo_speed_rpm": 3000.0,
+      "load_nm": 2.5,
+      "linear_speed_mm_s": 800.0,
+      "cycle_period_s": 4.5,
+      "pressure_factor": 1.05,
+      "part_factor": 1.1
+    }
+  ],
+  "machines": [
+    {
+      "machine_id": "M01",
+      "name": {
+        "zh": "模拟设备 S07",
+        "en": "Simulated machine S07"
+      },
+      "device_id": "SIM-S07",
+      "components": [
+        {
+          "component_id": "M01-CY1",
+          "type": "PNEUMATIC_CYLINDER",
+          "name": {
+            "zh": "压紧气缸",
+            "en": "Clamp cylinder"
+          },
+          "drive_chain_id": null,
+          "rated_torque_nm": 10.0,
+          "initial_wear": 0.0
+        }
+      ],
+      "recipes": [
+        "R-A",
+        "R-B"
+      ],
+      "recipe_schedule": []
+    }
+  ],
+  "aging": [
+    {
+      "target": "M01-CY1",
+      "rate_per_1000h": 0.05
+    }
+  ],
+  "effects": [
+    {
+      "target": "M01-CY1",
+      "parameter": "extend",
+      "shape": "LINEAR",
+      "start_h": 168.0,
+      "end_h": 408.0,
+      "magnitude": 0.4
+    }
+  ],
+  "maintenance": [],
+  "data_faults": [],
+  "incomplete_ops": [],
+  "timestamp_format": "iso_utc"
+}

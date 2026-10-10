@@ -1,0 +1,1675 @@
+{
+  "is_simulated": true,
+  "notice": "Expectations for SIMULATED scenarios only; passing them is not evidence of real-world accuracy.",
+  "cases": [
+    {
+      "case_id": "GC-S01-01",
+      "scenario_id": "S01",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "BS1 健康基线",
+        "en": "BS1 healthy baseline"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "全程正常",
+            "en": "Normal throughout"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S01-02",
+      "scenario_id": "S01",
+      "component_id": "M01-LM1",
+      "signal_ids": [
+        "M01-LM1.speed"
+      ],
+      "title": {
+        "zh": "LM1 健康基线",
+        "en": "LM1 healthy baseline"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "全程正常",
+            "en": "Normal throughout"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S01-03",
+      "scenario_id": "S01",
+      "component_id": "M01-VC1",
+      "signal_ids": [
+        "M01-VC1.release_time"
+      ],
+      "title": {
+        "zh": "VC1 健康基线",
+        "en": "VC1 healthy baseline"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "全程正常",
+            "en": "Normal throughout"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S01-04",
+      "scenario_id": "S01",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "CY1 健康基线",
+        "en": "CY1 healthy baseline"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "全程正常",
+            "en": "Normal throughout"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S02-01",
+      "scenario_id": "S02",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "转矩随工况变化不应报警",
+        "en": "Regime-driven torque change must not alarm"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "工况变化不是劣化",
+            "en": "Regime change is not degradation"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S02-02",
+      "scenario_id": "S02",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "气压工况影响动作时间",
+        "en": "Supply-pressure regime affects durations"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "工况变化不是劣化",
+            "en": "Regime change is not degradation"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S03-01",
+      "scenario_id": "S03",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "长期退化趋势可见",
+        "en": "Long-term degradation trend visible"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 1440.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "老化初期",
+            "en": "Early aging"
+          }
+        },
+        {
+          "start_h": 1440.0,
+          "end_h": 2880.0,
+          "allowed_health": [
+            "NORMAL",
+            "WATCH"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "老化后期可提示关注",
+            "en": "Late aging may be WATCH"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S03-02",
+      "scenario_id": "S03",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "伸出/缩回同步缓慢变化",
+        "en": "Extension and retraction drift slowly together"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 1440.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "老化初期",
+            "en": "Early aging"
+          }
+        },
+        {
+          "start_h": 1440.0,
+          "end_h": 2880.0,
+          "allowed_health": [
+            "NORMAL",
+            "WATCH"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "老化后期可提示关注",
+            "en": "Late aging may be WATCH"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S04-01",
+      "scenario_id": "S04",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "转矩残差漂移",
+        "en": "Torque residual drift"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移前",
+            "en": "Before drift"
+          }
+        },
+        {
+          "start_h": 288.0,
+          "end_h": 528.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移中",
+            "en": "During drift"
+          }
+        },
+        {
+          "start_h": 528.0,
+          "end_h": 720.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移充分发展",
+            "en": "Drift fully developed"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S04-02",
+      "scenario_id": "S04",
+      "component_id": "M01-LM1",
+      "signal_ids": [
+        "M01-LM1.speed"
+      ],
+      "title": {
+        "zh": "对照部件",
+        "en": "Control component"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 720.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "无影响",
+            "en": "Unaffected"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S05-01",
+      "scenario_id": "S05",
+      "component_id": "M01-LM1",
+      "signal_ids": [
+        "M01-LM1.speed"
+      ],
+      "title": {
+        "zh": "速度稳定性下降",
+        "en": "Speed stability degrades"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 192.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "波动增大",
+            "en": "Ripple increased"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S05-02",
+      "scenario_id": "S05",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "对照部件",
+        "en": "Control component"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 336.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "无影响",
+            "en": "Unaffected"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S06-01",
+      "scenario_id": "S06",
+      "component_id": "M01-VC1",
+      "signal_ids": [
+        "M01-VC1.release_time"
+      ],
+      "title": {
+        "zh": "释放时间漂移",
+        "en": "Release-time drift"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移前",
+            "en": "Before drift"
+          }
+        },
+        {
+          "start_h": 312.0,
+          "end_h": 528.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移中",
+            "en": "During drift"
+          }
+        },
+        {
+          "start_h": 528.0,
+          "end_h": 720.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "漂移充分发展",
+            "en": "Drift fully developed"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S07-01",
+      "scenario_id": "S07",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "伸出方向异常",
+        "en": "Extend direction anomaly"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 216.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "变慢中",
+            "en": "Slowing down"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "明显变慢",
+            "en": "Clearly slower"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S08-01",
+      "scenario_id": "S08",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "缩回方向异常",
+        "en": "Retract direction anomaly"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 216.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "变慢中",
+            "en": "Slowing down"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "明显变慢",
+            "en": "Clearly slower"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S09-01",
+      "scenario_id": "S09",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "润滑后改善",
+        "en": "Improvement after lubrication"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 144.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "润滑良好",
+            "en": "Well lubricated"
+          }
+        },
+        {
+          "start_h": 240.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "润滑不足",
+            "en": "Under-lubricated"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 384.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": [
+            "MAINTENANCE_EVENT",
+            "STABILIZATION",
+            "POST_MAINTENANCE_VALIDATION",
+            "NORMAL_MONITORING"
+          ],
+          "note": {
+            "zh": "稳定期",
+            "en": "Stabilization"
+          }
+        },
+        {
+          "start_h": 408.0,
+          "end_h": 720.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "润滑后正常",
+            "en": "Normal after lubrication"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S10-01",
+      "scenario_id": "S10",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "润滑后恶化需复核",
+        "en": "Deterioration after lubrication needs review"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "维护前正常",
+            "en": "Normal before maintenance"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 384.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": [
+            "MAINTENANCE_EVENT",
+            "STABILIZATION",
+            "POST_MAINTENANCE_VALIDATION",
+            "REVIEW_REQUIRED"
+          ],
+          "note": {
+            "zh": "稳定期",
+            "en": "Stabilization"
+          }
+        },
+        {
+          "start_h": 408.0,
+          "end_h": 720.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "维护后变差",
+            "en": "Worse after maintenance"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S11-01",
+      "scenario_id": "S11",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "部分恢复",
+        "en": "Partial recovery"
+      },
+      "expectations": [
+        {
+          "start_h": 336.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "维修前劣化",
+            "en": "Degraded before repair"
+          }
+        },
+        {
+          "start_h": 504.0,
+          "end_h": 528.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": [
+            "MAINTENANCE_EVENT",
+            "STABILIZATION",
+            "POST_MAINTENANCE_VALIDATION",
+            "REVIEW_REQUIRED"
+          ],
+          "note": {
+            "zh": "稳定期",
+            "en": "Stabilization"
+          }
+        },
+        {
+          "start_h": 552.0,
+          "end_h": 960.0,
+          "allowed_health": [
+            "WATCH"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "部分恢复",
+            "en": "Partially recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S12-01",
+      "scenario_id": "S12",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "更换后新生命周期",
+        "en": "New lifecycle after replacement"
+      },
+      "expectations": [
+        {
+          "start_h": 336.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "更换前劣化",
+            "en": "Degraded before replacement"
+          }
+        },
+        {
+          "start_h": 504.0,
+          "end_h": 576.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": [
+            "MAINTENANCE_EVENT",
+            "STABILIZATION",
+            "POST_MAINTENANCE_VALIDATION",
+            "NORMAL_MONITORING"
+          ],
+          "note": {
+            "zh": "新件无基线",
+            "en": "New part without baseline"
+          }
+        },
+        {
+          "start_h": 672.0,
+          "end_h": 960.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "新件正常",
+            "en": "New part normal"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S13-01",
+      "scenario_id": "S13",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "缺失数据",
+        "en": "Missing data"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 48.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 48.0,
+          "end_h": 96.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "MISSING"
+          ],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "缺失期间",
+            "en": "During missing data"
+          }
+        },
+        {
+          "start_h": 96.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S13-02",
+      "scenario_id": "S13",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "重复数据",
+        "en": "Duplicated data"
+      },
+      "expectations": [
+        {
+          "start_h": 72.0,
+          "end_h": 144.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "DUPLICATE"
+          ],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "重复期间",
+            "en": "During duplicates"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S14-01",
+      "scenario_id": "S14",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "时间戳抖动",
+        "en": "Timestamp jitter"
+      },
+      "expectations": [
+        {
+          "start_h": 48.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "JITTER"
+          ],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "抖动期间",
+            "en": "During jitter"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S14-02",
+      "scenario_id": "S14",
+      "component_id": "M01-LM1",
+      "signal_ids": [
+        "M01-LM1.speed"
+      ],
+      "title": {
+        "zh": "记录乱序",
+        "en": "Out-of-order records"
+      },
+      "expectations": [
+        {
+          "start_h": 48.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "OUT_OF_ORDER"
+          ],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "乱序期间",
+            "en": "During disorder"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S15-01",
+      "scenario_id": "S15",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "速度/转矩未对齐",
+        "en": "Speed/torque misalignment"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 48.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 48.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "MISALIGNED"
+          ],
+          "must_abstain": "DATA_QUALITY",
+          "workflow": null,
+          "note": {
+            "zh": "未对齐",
+            "en": "Misaligned"
+          }
+        },
+        {
+          "start_h": 120.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S16-01",
+      "scenario_id": "S16",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "转矩偏置",
+        "en": "Torque bias"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 72.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 72.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "NORMAL",
+            "WATCH",
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "偏置期间",
+            "en": "During bias"
+          }
+        },
+        {
+          "start_h": 132.0,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S16-02",
+      "scenario_id": "S16",
+      "component_id": "M01-VC1",
+      "signal_ids": [
+        "M01-VC1.release_time"
+      ],
+      "title": {
+        "zh": "单位错配",
+        "en": "Unit mismatch"
+      },
+      "expectations": [
+        {
+          "start_h": 144.0,
+          "end_h": 192.0,
+          "allowed_health": [
+            "NORMAL",
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "UNIT_SUSPECT",
+            "OUT_OF_RANGE"
+          ],
+          "must_abstain": "DATA_QUALITY",
+          "workflow": null,
+          "note": {
+            "zh": "单位错配",
+            "en": "Unit mismatch"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S17-01",
+      "scenario_id": "S17",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "未知工况弃权",
+        "en": "Abstain on unknown regime"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 96.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "已知工况",
+            "en": "Known regime"
+          }
+        },
+        {
+          "start_h": 98.39999999999999,
+          "end_h": 144.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "UNSUPPORTED_REGIME",
+          "workflow": null,
+          "note": {
+            "zh": "未知工况",
+            "en": "Unknown regime"
+          }
+        },
+        {
+          "start_h": 146.39999999999998,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "回到已知工况",
+            "en": "Back to known regime"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S17-02",
+      "scenario_id": "S17",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "未知工况弃权",
+        "en": "Abstain on unknown regime"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 96.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "已知工况",
+            "en": "Known regime"
+          }
+        },
+        {
+          "start_h": 98.39999999999999,
+          "end_h": 144.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": "UNSUPPORTED_REGIME",
+          "workflow": null,
+          "note": {
+            "zh": "未知工况",
+            "en": "Unknown regime"
+          }
+        },
+        {
+          "start_h": 146.39999999999998,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "回到已知工况",
+            "en": "Back to known regime"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S18-01",
+      "scenario_id": "S18",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "未完成动作",
+        "en": "Incomplete operations"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 72.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 72.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL",
+            "WATCH",
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "存在未完成动作",
+            "en": "Incomplete operations present"
+          }
+        },
+        {
+          "start_h": 180.0,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S18-02",
+      "scenario_id": "S18",
+      "component_id": "M01-VC1",
+      "signal_ids": [
+        "M01-VC1.release_time"
+      ],
+      "title": {
+        "zh": "未完成动作",
+        "en": "Incomplete operations"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 72.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 72.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL",
+            "WATCH",
+            "UNKNOWN"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "存在未完成动作",
+            "en": "Incomplete operations present"
+          }
+        },
+        {
+          "start_h": 180.0,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S19-01",
+      "scenario_id": "S19",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "共用传动链",
+        "en": "Shared drive chain"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 216.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "上升中",
+            "en": "Rising"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "明显异常",
+            "en": "Clearly abnormal"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S19-02",
+      "scenario_id": "S19",
+      "component_id": "M01-BS2",
+      "signal_ids": [
+        "M01-BS2.speed",
+        "M01-BS2.torque"
+      ],
+      "title": {
+        "zh": "共用传动链",
+        "en": "Shared drive chain"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 168.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 216.0,
+          "end_h": 360.0,
+          "allowed_health": [
+            "WATCH",
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "上升中",
+            "en": "Rising"
+          }
+        },
+        {
+          "start_h": 360.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "WARNING",
+            "CRITICAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "明显异常",
+            "en": "Clearly abnormal"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S19-03",
+      "scenario_id": "S19",
+      "component_id": "M01-LM1",
+      "signal_ids": [
+        "M01-LM1.speed"
+      ],
+      "title": {
+        "zh": "对照部件",
+        "en": "Control component"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 504.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "无影响",
+            "en": "Unaffected"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S20-01",
+      "scenario_id": "S20",
+      "component_id": "M01-BS1",
+      "signal_ids": [
+        "M01-BS1.speed",
+        "M01-BS1.torque"
+      ],
+      "title": {
+        "zh": "中断与恢复",
+        "en": "Interruption and recovery"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 72.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 72.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "GAP"
+          ],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": null,
+          "note": {
+            "zh": "中断",
+            "en": "Interrupted"
+          }
+        },
+        {
+          "start_h": 124.80000000000001,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "GC-S20-02",
+      "scenario_id": "S20",
+      "component_id": "M01-CY1",
+      "signal_ids": [
+        "M01-CY1.extend_time",
+        "M01-CY1.retract_time"
+      ],
+      "title": {
+        "zh": "中断与恢复",
+        "en": "Interruption and recovery"
+      },
+      "expectations": [
+        {
+          "start_h": 0.0,
+          "end_h": 72.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "正常",
+            "en": "Normal"
+          }
+        },
+        {
+          "start_h": 72.0,
+          "end_h": 120.0,
+          "allowed_health": [
+            "UNKNOWN"
+          ],
+          "required_flags": [
+            "GAP"
+          ],
+          "must_abstain": "INSUFFICIENT_DATA",
+          "workflow": null,
+          "note": {
+            "zh": "中断",
+            "en": "Interrupted"
+          }
+        },
+        {
+          "start_h": 124.80000000000001,
+          "end_h": 240.0,
+          "allowed_health": [
+            "NORMAL"
+          ],
+          "required_flags": [],
+          "must_abstain": null,
+          "workflow": null,
+          "note": {
+            "zh": "恢复",
+            "en": "Recovered"
+          }
+        }
+      ]
+    }
+  ]
+}

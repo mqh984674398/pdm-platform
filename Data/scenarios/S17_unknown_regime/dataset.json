@@ -1,0 +1,58 @@
+{
+  "dataset_id": "s17_unknown_regime",
+  "description": "S17 Unknown or unsupported operating regime (SIMULATED)",
+  "is_simulated": true,
+  "notice": {
+    "zh": "模拟数据：由确定性生成器产生，仅用于开发、测试和演示，不代表真实工业设备的行为或预测结果。",
+    "en": "SIMULATED DATA: produced by a deterministic generator for development, tests, and demos only. It does not represent real industrial equipment behavior or prediction results."
+  },
+  "generator_version": "sim-1.0.0",
+  "seed": 5017,
+  "config_sha256": "43b8ae96cf651d5e3058bdd9d19709e2334fab30065adf479cf181efdfce196d",
+  "start": "2026-02-02T00:00:00+00:00",
+  "duration_hours": 240.0,
+  "raw_format": "deviceid,keyname,ts,datatype,value_double",
+  "raw_format_note": "IoT-style layout; the real source schema is unverified (L1-08)",
+  "files": {
+    "raw_telemetry.csv.gz": {
+      "sha256": "0db9451e3b8b712e55676b997a8beaa89479d51819edd135c1fe07d2e1e19b41",
+      "bytes": 383576,
+      "rows": 6452,
+      "gzip": true
+    },
+    "normalized.csv.gz": {
+      "sha256": "7e4b94fc18b63e103bddad13682cda0639a06f4241f955de5e92c5ae3a839f17",
+      "bytes": 589181,
+      "rows": 6452,
+      "gzip": true
+    },
+    "truth_windows.csv.gz": {
+      "sha256": "ed746a263c20fb454a0b784aed86ba58b5ab97495f951d1b282278ab08bf29fb",
+      "bytes": 2799,
+      "rows": 40,
+      "gzip": true
+    },
+    "truth_components.csv.gz": {
+      "sha256": "d0c379a773c076a97447226a22bfec7f030ae70760410bbf56475977b31ee498",
+      "bytes": 7077,
+      "rows": 80,
+      "gzip": true
+    },
+    "topology.json": {
+      "sha256": "9f364d6af980d355bb641b591edae4fa8143a8a3179e1f5b3e2dd645b9a6948f",
+      "bytes": 4352
+    },
+    "maintenance_events.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "faults.json": {
+      "sha256": "aa71faa9137c1486e59b719d18c3b84578d5cff29b026172e61080b823025425",
+      "bytes": 55
+    },
+    "config.json": {
+      "sha256": "b8de9de777f8cbbebecd06d4a47b53619784a0593616156f493d6a526aba8f5f",
+      "bytes": 2328
+    }
+  }
+}

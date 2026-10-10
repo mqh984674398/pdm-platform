@@ -1,0 +1,47 @@
+{
+  "scenario_id": "S03",
+  "slug": "normal_aging",
+  "title": {
+    "zh": "正常长期老化",
+    "en": "Normal long-term aging"
+  },
+  "seed": 5003,
+  "dataset_id": "s03_normal_aging",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "相对冻结的健康基准，转矩与伸出时间缓慢单调上升。",
+    "en": "Torque and extension time rise slowly and monotonically against the frozen healthy reference."
+  },
+  "ground_truth": {
+    "zh": "丝杠磨损 0.06/1000h，气缸 0.04/1000h（120天约 +17% / +12%），无突变。",
+    "en": "Wear 0.06/1000h (ball screw) and 0.04/1000h (cylinder), about +17% / +12% over 120 days; no step changes."
+  },
+  "expected_health_response": {
+    "zh": "前期 NORMAL，后期允许 WATCH；不得因正常老化升级为 WARNING；自适应基线不得吸收老化。",
+    "en": "NORMAL early, WATCH allowed late; normal aging must not escalate to WARNING; the adaptive baseline must not absorb aging."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    },
+    {
+      "zh": "无失效数据：失效概率/RUL 必须返回不支持（NO_FAILURE_EVIDENCE）。",
+      "en": "No failure data: failure probability/RUL must return unsupported (NO_FAILURE_EVIDENCE)."
+    }
+  ],
+  "limitations": [
+    {
+      "zh": "转矩升高只说明负载/摩擦变化，不能单独证明丝杠磨损。",
+      "en": "Higher torque indicates a load/friction change; it does not alone prove ball-screw wear."
+    }
+  ],
+  "golden_case_ids": [
+    "GC-S03-01",
+    "GC-S03-02"
+  ]
+}

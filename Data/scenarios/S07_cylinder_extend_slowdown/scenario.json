@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S07",
+  "slug": "cylinder_extend_slowdown",
+  "title": {
+    "zh": "气缸伸出变慢",
+    "en": "Cylinder extension slowdown"
+  },
+  "seed": 5007,
+  "dataset_id": "s07_cylinder_extend_slowdown",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "第7–17天伸出时间上升约40%，另一方向不变。",
+    "en": "Days 7–17: extend time rises about 40%; the other direction is unchanged."
+  },
+  "ground_truth": {
+    "zh": "extend 参数线性增加 0.4；retract 不变。",
+    "en": "extend parameter ramps +0.4; retract unchanged."
+  },
+  "expected_health_response": {
+    "zh": "方向特定：受影响方向的证据升级到 WARNING，另一方向证据保持正常。",
+    "en": "Direction-specific: evidence for the affected direction escalates to WARNING; the other direction stays normal."
+  },
+  "abstention_cases": [
+    {
+      "zh": "无强制弃权；空闲/停机窗口不评估健康状态。",
+      "en": "No mandatory abstention; idle/stopped windows are not assessed."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S07-01"
+  ]
+}

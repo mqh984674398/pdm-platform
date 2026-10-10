@@ -1,0 +1,118 @@
+== contracts
+checked 28 tasks, 94 requirement IDs: OK
+== backend (Python 3.11.17)
+All checks passed!
+42 files already formatted
+............................................................             [100%]
+=============================== warnings summary ===============================
+../../../..<venv>
+  <venv> StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+60 passed, 1 warning in 4.48s
+== backend (Python 3.12.3)
+All checks passed!
+42 files already formatted
+............................................................             [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/claude/pdm/backend/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+60 passed, 1 warning in 4.67s
+== schema drift
+schema drift check OK
+== frontend
+
+> pdm-frontend@0.1.0 lint
+> eslint . --max-warnings 0 && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> pdm-frontend@0.1.0 typecheck
+> vue-tsc --build --force
+
+
+> pdm-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /home/claude/pdm/frontend
+
+ ✓ tests/unit/i18n.spec.ts (3 tests) 37ms
+ ✓ tests/unit/health.badge.spec.ts (3 tests) 41ms
+ ✓ tests/unit/app.spec.ts (2 tests) 76ms
+ ✓ tests/unit/health.spec.ts (2 tests) 6ms
+ ✓ tests/unit/contracts.spec.ts (1 test) 2ms
+
+ Test Files  5 passed (5)
+      Tests  11 passed (11)
+   Start at  13:18:25
+   Duration  1.99s (transform 1.17s, setup 0ms, collect 1.79s, tests 162ms, environment 1.93s, prepare 451ms)
+
+
+> pdm-frontend@0.1.0 build
+> vue-tsc --build --force && vite build
+
+vite v6.4.4 building for production...
+transforming...
+✓ 60 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                     0.41 kB │ gzip:  0.28 kB
+dist/assets/ibm-plex-sans-vietnamese-400-normal-fK1oJ5dG.woff       6.39 kB
+dist/assets/ibm-plex-sans-vietnamese-600-normal-DgdngZtN.woff       6.58 kB
+dist/assets/ibm-plex-sans-vietnamese-500-normal-BEb3_waV.woff       6.59 kB
+dist/assets/ibm-plex-sans-vietnamese-400-normal-DG4YqDda.woff2      8.20 kB
+dist/assets/ibm-plex-sans-vietnamese-500-normal-e4dixQRQ.woff2      8.42 kB
+dist/assets/ibm-plex-sans-vietnamese-600-normal-DpPYBSTl.woff2      8.46 kB
+dist/assets/ibm-plex-sans-greek-400-normal-D9ESIMu3.woff            8.76 kB
+dist/assets/ibm-plex-sans-greek-500-normal-CuWXN6rf.woff            9.15 kB
+dist/assets/ibm-plex-sans-greek-600-normal-D-CqTdkO.woff            9.22 kB
+dist/assets/ibm-plex-sans-greek-400-normal-_efipK4i.woff2           9.94 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-400-normal-Dsrv2Tcn.woff    10.29 kB
+dist/assets/ibm-plex-sans-greek-600-normal-DzTrcv_p.woff2          10.37 kB
+dist/assets/ibm-plex-sans-greek-500-normal-JMMifIXV.woff2          10.38 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-500-normal-DB5PtV2g.woff    10.59 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-600-normal-Bz0x94Yp.woff    10.62 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-400-normal-g30qAdWV.woff2   12.15 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-600-normal-DUMzJB7m.woff2   12.30 kB
+dist/assets/ibm-plex-sans-cyrillic-ext-500-normal-Cs5J6C77.woff2   12.31 kB
+dist/assets/ibm-plex-sans-cyrillic-400-normal-BTotfTJu.woff        13.51 kB
+dist/assets/ibm-plex-sans-cyrillic-500-normal-ByOcLdNv.woff        13.86 kB
+dist/assets/ibm-plex-sans-cyrillic-600-normal-BGq0mW3O.woff        13.89 kB
+dist/assets/ibm-plex-sans-latin-ext-400-normal-RBey6euL.woff       14.36 kB
+dist/assets/ibm-plex-sans-latin-ext-500-normal-D0aIdm-b.woff       14.74 kB
+dist/assets/ibm-plex-sans-latin-ext-600-normal-DIrixKbi.woff       14.77 kB
+dist/assets/ibm-plex-sans-cyrillic-400-normal-DZqxrq2p.woff2       14.80 kB
+dist/assets/ibm-plex-sans-cyrillic-500-normal-CocWQlwt.woff2       15.00 kB
+dist/assets/ibm-plex-sans-cyrillic-600-normal-71GNu3SW.woff2       15.04 kB
+dist/assets/ibm-plex-sans-latin-ext-400-normal-C5H60-Va.woff2      15.98 kB
+dist/assets/ibm-plex-sans-latin-ext-600-normal-DOrvGEcy.woff2      16.45 kB
+dist/assets/ibm-plex-sans-latin-ext-500-normal-DakdToA3.woff2      16.46 kB
+dist/assets/ibm-plex-sans-latin-400-normal-CYLoc0-x.woff           22.10 kB
+dist/assets/ibm-plex-sans-latin-400-normal-CDDApCn2.woff2          22.59 kB
+dist/assets/ibm-plex-sans-latin-600-normal-Cu4Hd6ag.woff           23.88 kB
+dist/assets/ibm-plex-sans-latin-500-normal-BgVn5rGT.woff           23.92 kB
+dist/assets/ibm-plex-sans-latin-500-normal-6ng42L7E.woff2          24.18 kB
+dist/assets/ibm-plex-sans-latin-600-normal-CuJfVYMP.woff2          24.25 kB
+dist/assets/index-BHEZ4nFx.css                                     16.50 kB │ gzip:  3.67 kB
+dist/assets/index-wZAnpy6U.js                                     162.16 kB │ gzip: 60.06 kB
+✓ built in 1.24s
+
+> pdm-frontend@0.1.0 test:e2e
+> playwright test
+
+
+Running 1 test using 1 worker
+
+[2m[WebServer] [22m[2m1:18:35 PM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/health[39m
+[2m[WebServer] [22mError: connect ECONNREFUSED 127.0.0.1:8000
+[2m[WebServer] [22m    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+  ✓  1 tests/e2e/shell.spec.ts:3:1 › navigates all screens and switches language without reload (663ms)
+
+  1 passed (2.5s)
+== ALL CHECKS PASSED

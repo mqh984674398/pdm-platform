@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S09",
+  "slug": "lubrication_improvement",
+  "title": {
+    "zh": "润滑改善",
+    "en": "Lubrication improvement"
+  },
+  "seed": 5009,
+  "dataset_id": "s09_lubrication_improvement",
+  "is_simulated": true,
+  "known_regimes": [
+    "R-A",
+    "R-B"
+  ],
+  "expected_observable_behavior": {
+    "zh": "前14天润滑逐渐变差致转矩上升；第15天润滑后转矩回落，但累计老化不复位。",
+    "en": "Torque rises over 14 days as lubrication degrades; after lubrication on day 15 it drops, but accumulated aging is not reset."
+  },
+  "ground_truth": {
+    "zh": "润滑参数 0→+0.25（0–14天）；第15天润滑 −0.25；老化 0.05/1000h 持续。",
+    "en": "Lubrication parameter 0→+0.25 (days 0–14); lubrication on day 15 applies −0.25; aging 0.05/1000h continues."
+  },
+  "expected_health_response": {
+    "zh": "润滑前 WATCH/WARNING；维护流程经稳定期和验证后回到 NORMAL_MONITORING；之后 NORMAL。",
+    "en": "WATCH/WARNING before lubrication; workflow passes stabilization and validation back to NORMAL_MONITORING; NORMAL afterwards."
+  },
+  "abstention_cases": [
+    {
+      "zh": "维护后稳定期内不做健康结论（UNKNOWN）。",
+      "en": "No health conclusion during post-maintenance stabilization (UNKNOWN)."
+    }
+  ],
+  "limitations": [],
+  "golden_case_ids": [
+    "GC-S09-01"
+  ]
+}

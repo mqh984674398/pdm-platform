@@ -1,0 +1,23 @@
+{
+  "data_faults": [
+    {
+      "fault_index": 0,
+      "kind": "BIAS",
+      "device_id": "SIM-S16",
+      "key_name": "M01_BS1_TRQ",
+      "rows_in_interval": 480,
+      "rows_before": 2280,
+      "rows_after": 2280
+    },
+    {
+      "fault_index": 1,
+      "kind": "UNIT_SCALE",
+      "device_id": "SIM-S16",
+      "key_name": "M01_VC1_REL",
+      "rows_in_interval": 129,
+      "rows_before": 732,
+      "rows_after": 732
+    }
+  ],
+  "incomplete_operations": []
+}
