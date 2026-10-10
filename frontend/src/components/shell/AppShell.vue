@@ -8,11 +8,10 @@ import SegmentedControl from '@/components/base/SegmentedControl.vue'
 import SignIn from '@/components/shell/SignIn.vue'
 import { setLocale, type Locale } from '@/i18n'
 import { canOpen, NAV, NAV_GROUPS } from '@/router/nav'
-import { useTheme, type ThemeChoice } from '@/composables/useTheme'
+import { resolvedTheme, toggleTheme } from '@/composables/useTheme'
 
 const { t, locale } = useI18n()
 const route = useRoute()
-const theme = useTheme()
 const sidebarOpen = ref(
   typeof window === 'undefined' || !window.matchMedia
     ? true
@@ -29,11 +28,9 @@ const langOptions = [
   { value: 'zh-CN' as Locale, label: '中文' },
   { value: 'en-US' as Locale, label: 'EN' },
 ]
-const themeOptions = computed(() => [
-  { value: 'system' as ThemeChoice, label: t('shell.themeSystem') },
-  { value: 'light' as ThemeChoice, label: t('shell.themeLight') },
-  { value: 'dark' as ThemeChoice, label: t('shell.themeDark') },
-])
+const themeLabel = computed(() =>
+  resolvedTheme.value === 'dark' ? t('shell.toLight') : t('shell.toDark'),
+)
 const title = computed(() =>
   route.name === 'design' ? t('design.title') : route.name ? t(`nav.${String(route.name)}`) : '',
 )
@@ -126,7 +123,40 @@ onMounted(async () => {
             :label="t('shell.language')"
             data-testid="lang-switch"
           />
-          <SegmentedControl v-model="theme" :options="themeOptions" :label="t('shell.theme')" />
+          <button
+            type="button"
+            class="theme-toggle"
+            data-testid="theme-toggle"
+            :aria-label="themeLabel"
+            :title="themeLabel"
+            @click="toggleTheme()"
+          >
+            <svg v-if="resolvedTheme === 'dark'" viewBox="0 0 24 24" aria-hidden="true">
+              <circle
+                cx="12"
+                cy="12"
+                r="4.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <span v-if="session.mode === 'local' && session.user" class="who" data-testid="who">
             {{ session.user }} ({{ t(`models.roles.${session.role}`) }})
             <button type="button" class="link" data-testid="sign-out" @click="signOut()">
@@ -153,6 +183,27 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
 .shell {
   display: grid;
   grid-template-columns: 232px 1fr;

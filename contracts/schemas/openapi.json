@@ -8966,7 +8966,8 @@
       "DataSourceKind": {
         "enum": [
           "SQL",
-          "SIMULATED"
+          "SIMULATED",
+          "TDENGINE"
         ],
         "title": "DataSourceKind",
         "type": "string"

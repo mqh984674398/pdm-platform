@@ -9,12 +9,19 @@ const VIEWER = { 'X-PDM-User': 'e2e', 'X-PDM-Role': 'viewer' }
 
 // Runs against the real backend and the simulated source (T011); the database is fresh per run but
 // the demo server seeds signal configuration for its bench signal and demo fleet (T019/T020).
-test('ordinary user completes the full data source workflow without SQL', async ({ page }) => {
+// The simulation database is for administrators only (D-035); the e2e server has no TDengine source,
+// so ordinary users see the "connect TDengine" notice and the workflow runs as administrator.
+test('administrator completes the full data source workflow on the simulation database', async ({
+  page,
+}) => {
   const before = await (await page.request.get('/api/signal-config', { headers: VIEWER })).json()
   const seeded: number = before.version?.version ?? 0
   await page.goto('/datasource')
   await page.getByTestId('lang-switch').getByRole('radio', { name: 'EN' }).click()
+  await expect(page.getByTestId('no-sources')).toContainText('TDengine')
+  await page.getByTestId('role-switch').getByRole('radio').nth(1).click()
   await expect(page.getByTestId('step-title')).toHaveText('Connection')
+  await expect(page.getByTestId('source-sim-iot')).toContainText('Simulation database')
   await expect(page.getByTestId('step-next')).toBeDisabled()
 
   await page.getByTestId('test-connection').click()
@@ -28,8 +35,7 @@ test('ordinary user completes the full data source workflow without SQL', async 
 
   await next(page, 'Query template')
   await page.locator('[data-template="telemetry-by-key-range"]').click()
-  await expect(page.getByTestId('template-sql-locked')).toBeVisible()
-  await expect(page.getByTestId('template-sql')).toHaveCount(0)
+  await expect(page.getByTestId('template-sql')).toContainText(':start')
 
   await next(page, 'Field mapping')
   await expect(page.locator('[data-field="time_field"]')).toHaveValue('ts')

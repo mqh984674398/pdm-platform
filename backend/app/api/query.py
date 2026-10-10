@@ -44,28 +44,35 @@ Service = Annotated[QueryService, Depends(service)]
 
 
 @router.get("/datasources", response_model=list[DataSourceConfig])
-def list_sources(_: Viewer, reg: Sources) -> list[DataSourceConfig]:
-    return reg.configs()
+def list_sources(who: Viewer, reg: Sources) -> list[DataSourceConfig]:
+    return reg.configs_for(who)
 
 
 @router.get("/datasources/{data_source_id}/metadata", response_model=SourceMetadata)
-def source_metadata(data_source_id: str, _: Viewer, reg: Sources) -> SourceMetadata:
+def source_metadata(data_source_id: str, who: Viewer, reg: Sources) -> SourceMetadata:
+    reg.require_access(data_source_id, who)
     return reg.adapter(data_source_id).discover()
 
 
 @router.get("/datasources/{data_source_id}/schema", response_model=SourceSchema)
-def source_schema(data_source_id: str, _: Engineer, reg: Sources) -> SourceSchema:
+def source_schema(data_source_id: str, who: Engineer, reg: Sources) -> SourceSchema:
+    reg.require_access(data_source_id, who)
     return reg.adapter(data_source_id).inspect_schema()
 
 
 @router.get("/query-templates", response_model=list[QueryTemplate])
-def list_templates(_: Viewer, db: DB) -> list[QueryTemplate]:
-    return [r.to_template() for r in TemplateRegistry(db).list_active()]
+def list_templates(who: Viewer, db: DB, reg: Sources) -> list[QueryTemplate]:
+    usable = {c.data_source_id for c in reg.configs_for(who)}
+    return [r.to_template() for r in TemplateRegistry(db).list_active() if r.data_source_id in usable]
 
 
 @router.post("/query-templates/{template_id}/run", response_model=QueryResult)
-def run_template(template_id: str, body: QueryRunRequest, _: Viewer, db: DB, svc: Service) -> QueryResult:
-    return svc.run(TemplateRegistry(db).active(template_id), body)
+def run_template(
+    template_id: str, body: QueryRunRequest, who: Viewer, db: DB, svc: Service, reg: Sources
+) -> QueryResult:
+    template = TemplateRegistry(db).active(template_id)
+    reg.require_access(template.data_source_id, who)
+    return svc.run(template, body)
 
 
 @router.get("/admin/query-templates", response_model=list[QueryTemplateAdminView])

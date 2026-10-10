@@ -176,3 +176,14 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (gap found after deployment; no user gate).
 - **Decision:** T008 delivered UI-05 only inside the Studio's preview step; the `/signals` route still rendered the placeholder. `SignalsView` now lists saved signals with their mapping, lets engineers and administrators correct a signal definition (saved as a new configuration version), previews the full history downsampled plus a full-resolution quality summary of the latest stretch of data, and shows version history. A unit test now fails if any route renders the placeholder. The same audit found that the Studio's development role switch was ignored under local sign-in; the Studio now follows the signed-in role. No other screen used the placeholder. Remaining gap: query templates are managed through the admin API only; there is no template editor screen.
 - **Rationale:** UI-05, ACCEPTANCE §1.
+
+## D-035 — TDengine as the production source; simulation database for administrators only
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (Mira, 2026-10-10T13:34Z: "本平台管理员权限可以使用模拟IOT采集遥测库,其余权限必须连接涛思数据库(连接生产数据库不需要管理员审批并使用只读账号)").
+- **Decision:** A `TDENGINE` data source kind reads TDengine through the taosAdapter REST API with a read-only account (`secret://pdm/...` as `user:password`). TDengine sources load without `PDM_PRODUCTION_DATA_APPROVED`; generic SQL production sources keep that gate. The adapter sends only SELECT/SHOW/DESCRIBE statements it builds from validated identifiers and escaped literals; templates still pass `sql_guard`; the Studio read-only check fails for super users or accounts with write grants. Sources of kind `SIMULATED` (renamed "仿真数据库 / Simulation database") are listed and usable for administrators only; other roles get 403 `source_forbidden` and see only TDengine sources. Monitoring screens built from the labeled simulated demo fleet are unchanged. Wide (column per signal) and narrow (key column) super-table layouts are supported.
+- **Risks:** not run against a real TDengine server (faked REST responses in tests); the real layout must be configured and verified.
+- **Rationale:** user instruction; REQ data-source read-only rules (L1-02) kept.
+
+## D-036 — Theme: one sun/moon toggle; scrollbars follow the theme
+- **Date:** 2026-10-10 · **Status:** APPROVED by the user (same message, items 1–2).
+- **Decision:** The three-way System/Light/Dark control is replaced by one button that flips the shown theme (moon on a light page, sun on a dark page); the first visit still follows the operating system. Scrollbars are styled from theme tokens (`scrollbar-color` and `::-webkit-scrollbar`) so they match light and dark pages.
+

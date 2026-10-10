@@ -50,6 +50,8 @@ const en: typeof zh = {
     language: 'Language',
     theme: 'Appearance',
     themeLight: 'Light',
+    toLight: 'Switch to light theme',
+    toDark: 'Switch to dark theme',
     themeDark: 'Dark',
     themeSystem: 'System',
     toggleSidebar: 'Show or hide sidebar',
@@ -478,13 +480,14 @@ const en: typeof zh = {
     },
     connection: {
       source: 'Source',
-      demoSource: 'Simulated IoT telemetry',
-      demoSourceNote: 'Demo source built from simulated scenarios',
+      demoSource: 'Simulation database',
+      demoSourceNote: 'Data generated from simulated scenarios; administrators only',
       production: 'Production database',
-      productionLocked:
-        'Connecting a production database needs administrator approval and read-only credentials. Not available in this demo.',
+      tdengineNote: 'TDengine database, read-only account',
+      noTdengine:
+        'No TDengine database is configured yet. Roles other than administrator must use TDengine; add it to the data sources file.',
       engine: 'Engine',
-      engineUnverified: 'Not verified (simulated source)',
+      engineUnverified: 'Not verified (simulation database)',
       host: 'Host',
       port: 'Port',
       database: 'Database',

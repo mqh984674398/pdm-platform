@@ -2158,7 +2158,7 @@ export interface components {
      * DataSourceKind
      * @enum {string}
      */
-    DataSourceKind: 'SQL' | 'SIMULATED'
+    DataSourceKind: 'SQL' | 'SIMULATED' | 'TDENGINE'
     /** Decision */
     Decision: {
       /** Decision Id */

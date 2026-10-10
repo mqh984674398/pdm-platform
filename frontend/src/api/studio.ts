@@ -86,7 +86,12 @@ export interface StudioQualityInput {
 }
 
 export interface StudioApi {
-  source(): Promise<DataSourceConfig>
+  /** Sources the signed-in user may use; the simulation database is listed for administrators only. */
+  sources(): Promise<DataSourceConfig[]>
+  /** Development login only: who the ordinary-user calls are made as (operator or administrator). */
+  setPersona?(role: StudioRole): void
+  /** Selects a source (the first usable one when no id is given) for the calls that follow. */
+  source(id?: string): Promise<DataSourceConfig>
   testConnection(): Promise<ConnectionCheck[]>
   inspectSchema(): Promise<StudioFixture['table'] & { metadata: SourceMetadata }>
   devices(): Promise<StudioDevice[]>
@@ -120,6 +125,7 @@ export function createMockStudioApi(
   // Saved versions live only for this session: the mock has no persistence.
   const versions = [...fixture.versions]
   return {
+    sources: async () => [fixture.data_source],
     source: async () => fixture.data_source,
     testConnection: async () => [
       { key: 'reachable', ok: true },

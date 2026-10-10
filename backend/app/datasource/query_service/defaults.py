@@ -22,7 +22,8 @@ from app.datasource.query_service.registry import QueryTemplateRecord, TemplateR
 from app.datasource.query_service.service import allowed_tables
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.schemas import QueryParameter, QueryParamType, QueryTemplateSpec
-from app.datasource.sql import SqlAdapter
+from app.datasource.sql import AdapterError, SqlAdapter
+from app.datasource.tdengine import TdengineAdapter
 
 SYSTEM = Principal(user_id="system:install", role=Role.ADMIN)
 # The Studio demo source keeps the template ids its fixtures and tests use.
@@ -51,7 +52,61 @@ def template_id(data_source_id: str, base: str) -> str:
     return f"{slug[: 62 - len(base)]}-{base}".strip("-")
 
 
+def _tdengine_templates(data_source_id: str, adapter: TdengineAdapter) -> list[QueryTemplateSpec]:
+    """Wide TDengine layouts have one column per key, so the templates read every exposed column."""
+    lay = adapter.layout
+    if lay.key_column:
+        cols = ", ".join([lay.key_column, *lay.value_columns])
+        key_cond, ident = (
+            f" AND {lay.key_column} = :key_name",
+            [
+                _p("device_id", QueryParamType.IDENTIFIER, "设备", "Device"),
+                _p("key_name", QueryParamType.IDENTIFIER, "信号键", "Signal key"),
+            ],
+        )
+    else:
+        cols = ", ".join(adapter.layout.value_columns or ["*"]) if adapter.layout.value_columns else "*"
+        key_cond, ident = "", [_p("device_id", QueryParamType.IDENTIFIER, "设备", "Device")]
+    sel = f"{lay.time_column}, {cols}" if cols != "*" else "*"
+    head = f"SELECT {sel}\nFROM {lay.stable}\nWHERE {lay.device_tag} = :device_id{key_cond}\n"
+    t = lay.time_column
+    return [
+        QueryTemplateSpec(
+            template_id=template_id(data_source_id, "telemetry-by-key-range"),
+            name=LocalizedText(zh="按设备查询时间段", en="Device telemetry over a time range"),
+            description=LocalizedText(
+                zh="读取一个设备在指定时间段内的原始遥测值，按时间排序。",
+                en="Reads raw telemetry of one device within a time range, ordered by time.",
+            ),
+            data_source_id=data_source_id,
+            parameters=[
+                *ident,
+                _p("start", QueryParamType.TIMESTAMP, "开始时间", "Start"),
+                _p("end", QueryParamType.TIMESTAMP, "结束时间", "End"),
+            ],
+            sql=f"{head}  AND {t} >= :start AND {t} < :end\nORDER BY {t}\nLIMIT {RANGE_ROWS}",
+            max_rows=RANGE_ROWS,
+            max_range_hours=RANGE_HOURS,
+        ),
+        QueryTemplateSpec(
+            template_id=template_id(data_source_id, "telemetry-incremental"),
+            name=LocalizedText(zh="增量读取（水位线）", en="Incremental read (watermark)"),
+            description=LocalizedText(
+                zh="从上次读取的时间点之后继续读取，用于定时同步。",
+                en="Continues after the last timestamp read; used for scheduled sync.",
+            ),
+            data_source_id=data_source_id,
+            parameters=[*ident, _p("watermark", QueryParamType.TIMESTAMP, "水位线", "Watermark")],
+            sql=f"{head}  AND {t} > :watermark\nORDER BY {t}\nLIMIT {INCREMENTAL_ROWS}",
+            max_rows=INCREMENTAL_ROWS,
+            max_range_hours=INCREMENTAL_HOURS,
+        ),
+    ]
+
+
 def standard_templates(data_source_id: str, adapter: TimeSeriesAdapter) -> list[QueryTemplateSpec]:
+    if isinstance(adapter, TdengineAdapter):
+        return _tdengine_templates(data_source_id, adapter)
     table, device, key, time, value = _columns(adapter)
     head = (
         f"SELECT {device}, {key}, {time}, {value}\nFROM {table}\n"
@@ -104,7 +159,11 @@ def ensure_standard_templates(session: Session, sources: DataSourceRegistry) -> 
         if config.data_source_id in have:
             continue
         adapter = sources.adapter(config.data_source_id)
-        tables = allowed_tables(adapter)
+        try:
+            tables = allowed_tables(adapter)
+        except AdapterError as exc:  # e.g. TDengine not reachable at start-up: retried next start
+            print(f"Skipped built-in templates for {config.data_source_id}: {exc}")
+            continue
         for spec in standard_templates(config.data_source_id, adapter):
             if registry.history(spec.template_id):
                 continue

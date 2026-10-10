@@ -2,7 +2,7 @@
   {
     "config": {
       "data_source_id": "sim-iot",
-      "name": "SIM IoT telemetry",
+      "name": "仿真数据库 Simulation database",
       "kind": "SIMULATED",
       "engine": null,
       "host": "sim-iot.local",

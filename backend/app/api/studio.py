@@ -21,6 +21,7 @@ from app.datasource.adapter import TimeSeriesAdapter
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.simulated import RAW_COLUMNS, SimulatedAdapter
 from app.datasource.sql import AdapterError, SqlAdapter
+from app.datasource.tdengine import TdengineAdapter
 from app.equipment.schemas import ComponentInstance
 from app.signals.registry import SignalConfigStore
 from app.signals.schemas import SignalDefinition, SignalMapping
@@ -100,6 +101,8 @@ Sources = Annotated[DataSourceRegistry, Depends(_sources)]
 
 def _read_only(adapter: TimeSeriesAdapter) -> bool:
     """Ask the database session itself, not just the configuration."""
+    if isinstance(adapter, TdengineAdapter):
+        return _tdengine_read_only(adapter)
     if not isinstance(adapter, SqlAdapter):
         return adapter.is_simulated  # the simulated adapter has no write path
     with adapter.connection() as conn:
@@ -108,8 +111,30 @@ def _read_only(adapter: TimeSeriesAdapter) -> bool:
         return conn.exec_driver_sql("PRAGMA query_only").scalar() == 1
 
 
+def _tdengine_read_only(adapter: TdengineAdapter) -> bool:
+    """The account must not be able to write: TDengine reports per-user privileges in SHOW USERS
+    (``sysinfo``/``super``) and SHOW USER PRIVILEGES. A super user, or any write grant, fails."""
+    _, _, me = adapter.sql("SELECT CURRENT_USER()")
+    user = str(me[0][0]).split("@")[0] if me else ""
+    names, _, users = adapter.sql("SHOW USERS")
+    col = {n.lower(): i for i, n in enumerate(names)}
+    row = next((u for u in users if str(u[col["name"]]) == user), None)
+    if row is None or ("super" in col and int(row[col["super"]] or 0) != 0):
+        return False
+    try:
+        names, _, grants = adapter.sql("SHOW USER PRIVILEGES")
+    except AdapterError:
+        return True  # older servers without the statement: rely on the account being non-super
+    col = {n.lower(): i for i, n in enumerate(names)}
+    return not any(
+        str(g[col["user_name"]]) == user and str(g[col["privilege"]]).lower() in ("write", "all")
+        for g in grants
+    )
+
+
 @router.get("/datasources/{data_source_id}/check", response_model=list[ConnectionCheck])
-def check_source(data_source_id: str, _: Engineer, reg: Sources) -> list[ConnectionCheck]:
+def check_source(data_source_id: str, who: Engineer, reg: Sources) -> list[ConnectionCheck]:
+    reg.require_access(data_source_id, who)
     config, adapter = reg.config(data_source_id), reg.adapter(data_source_id)
     try:
         adapter.discover()
@@ -125,7 +150,8 @@ def check_source(data_source_id: str, _: Engineer, reg: Sources) -> list[Connect
 
 
 @router.get("/datasources/{data_source_id}/layout", response_model=SourceLayout)
-def source_layout(data_source_id: str, _: Engineer, reg: Sources) -> SourceLayout:
+def source_layout(data_source_id: str, who: Engineer, reg: Sources) -> SourceLayout:
+    reg.require_access(data_source_id, who)
     adapter = reg.adapter(data_source_id)
     if isinstance(adapter, SqlAdapter):
         lay = adapter.layout
@@ -142,6 +168,18 @@ def source_layout(data_source_id: str, _: Engineer, reg: Sources) -> SourceLayou
         )
         columns = [LayoutColumn(name=c.name, type=c.type, role=roles.get(c.name)) for c in table.columns]
         name, row_count = lay.table, None
+    elif isinstance(adapter, TdengineAdapter):
+        tl = adapter.layout
+        troles: dict[str, ColumnRole] = {tl.device_tag: "device", tl.time_column: "time"}
+        if tl.key_column:
+            troles[tl.key_column] = "key"
+            troles.update({c: "value" for c in tl.value_columns})
+        else:
+            troles.update({c: "value" for c in adapter.keys()})
+        columns = [
+            LayoutColumn(name=n, type=t, role=troles.get(n)) for n, t, _ in adapter.describe(tl.stable)
+        ]
+        name, row_count = tl.stable, None
     else:
         columns = [LayoutColumn(name=n, type=t, role=SIMULATED_ROLES.get(n)) for n, t, _ in RAW_COLUMNS]
         name = "raw_telemetry"
@@ -174,7 +212,8 @@ def _samples(adapter: TimeSeriesAdapter, columns: list[LayoutColumn], n: int = 5
 
 
 @router.get("/datasources/{data_source_id}/devices", response_model=list[StudioDevice])
-def source_devices(data_source_id: str, _: Viewer, reg: Sources) -> list[StudioDevice]:
+def source_devices(data_source_id: str, who: Viewer, reg: Sources) -> list[StudioDevice]:
+    reg.require_access(data_source_id, who)
     adapter = reg.adapter(data_source_id)
     counts = adapter.row_counts() if isinstance(adapter, SimulatedAdapter) else {}
     out = []
@@ -194,8 +233,9 @@ def source_devices(data_source_id: str, _: Viewer, reg: Sources) -> list[StudioD
 
 @router.get("/datasources/{data_source_id}/devices/{device_id}/suggestions", response_model=DeviceSuggestions)
 def device_suggestions(
-    data_source_id: str, device_id: str, _: Viewer, reg: Sources, db: DB
+    data_source_id: str, device_id: str, who: Viewer, reg: Sources, db: DB
 ) -> DeviceSuggestions:
+    reg.require_access(data_source_id, who)
     adapter = reg.adapter(data_source_id)
     meta = adapter.discover()
     if device_id not in {d.device_id for d in meta.devices}:

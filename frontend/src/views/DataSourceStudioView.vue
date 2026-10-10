@@ -57,7 +57,7 @@ onMounted(async () => {
       if (s.source) await s.setRole(r)
       else s.role = r
     }
-    if (!s.source) await s.init()
+    if (!s.loaded) await s.init()
   } catch {
     error.value = true
   }
@@ -86,6 +86,9 @@ onMounted(async () => {
       <p class="intro">{{ t('studio.intro') }}</p>
     </header>
     <p v-if="error" class="error">{{ t('common.loadFailed') }}</p>
+    <p v-else-if="s.loaded && !s.source" class="error" data-testid="no-sources">
+      {{ t('studio.connection.noTdengine') }}
+    </p>
     <div v-else-if="s.source" class="layout">
       <StepRail />
       <PanelBox>

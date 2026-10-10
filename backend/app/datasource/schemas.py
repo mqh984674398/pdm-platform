@@ -12,6 +12,7 @@ from app.core.schemas import ContractModel, LocalizedText
 class DataSourceKind(StrEnum):
     SQL = "SQL"
     SIMULATED = "SIMULATED"
+    TDENGINE = "TDENGINE"
 
 
 class DataSourceConfig(ContractModel):

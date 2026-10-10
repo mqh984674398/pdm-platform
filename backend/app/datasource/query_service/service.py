@@ -14,6 +14,7 @@ from app.datasource.query_service.registry import QueryTemplateRecord
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.schemas import QueryParameter, QueryParamType, QueryResult, QueryRunRequest
 from app.datasource.sql import AdapterError, QueryLimitError, SqlAdapter
+from app.datasource.tdengine import TdengineAdapter
 
 MAX_STRING = 256
 ALLOWLIST_TTL_S = 300
@@ -42,13 +43,13 @@ class QueryService:
         self._clock = clock
         self._allow: dict[str, tuple[float, set[str]]] = {}
 
-    def sql_adapter(self, data_source_id: str) -> SqlAdapter:
+    def sql_adapter(self, data_source_id: str) -> SqlAdapter | TdengineAdapter:
         adapter = self.sources.adapter(data_source_id)
-        if not isinstance(adapter, SqlAdapter):
+        if not isinstance(adapter, SqlAdapter | TdengineAdapter):
             raise AdapterError("query templates run only on SQL data sources")
         return adapter
 
-    def identifier_allowlist(self, adapter: SqlAdapter) -> set[str]:
+    def identifier_allowlist(self, adapter: SqlAdapter | TdengineAdapter) -> set[str]:
         """Device ids and key names from read-only discovery, cached briefly."""
         cached = self._allow.get(adapter.data_source_id)
         if cached and self._clock() - cached[0] < ALLOWLIST_TTL_S:
@@ -113,6 +114,19 @@ class QueryService:
                 raise QueryLimitError(f"time range exceeds {limit_h:g} h")
         params = {k: adapter.to_db_time(v) if isinstance(v, datetime) else v for k, v in params.items()}
         limit = min(spec.max_rows, config.max_rows)
+        if isinstance(adapter, TdengineAdapter):
+            columns, rows = adapter.run_template(spec.sql, params, limit)
+            return QueryResult(
+                template_id=template.template_id,
+                template_version=template.version,
+                data_source_id=spec.data_source_id,
+                columns=columns,
+                rows=[[_td_value(v) for v in r] for r in rows[:limit]],
+                row_count=min(len(rows), limit),
+                truncated=len(rows) > limit,
+                executed_at=datetime.now(UTC),
+                is_simulated=config.is_simulated,
+            )
         with adapter.connection() as conn:
             result = conn.execute(text(spec.sql), params)
             columns = list(result.keys())
@@ -142,4 +156,10 @@ def _json_value(v: object, adapter: SqlAdapter) -> str | int | float | bool | No
         return v.isoformat()
     if isinstance(v, Decimal):
         return float(v)
+    return str(v)
+
+
+def _td_value(v: object) -> str | int | float | bool | None:
+    if v is None or isinstance(v, bool | int | float | str):
+        return v  # type: ignore[return-value]
     return str(v)

@@ -19,7 +19,7 @@ from app.core.registry import RegistryError, RegistryNotFoundError, RegistryPerm
 from app.core.schemas import ApiError, LocalizedText
 from app.datasource.query_service.registry import TemplateConflictError, TemplateNotFoundError
 from app.datasource.query_service.service import ParameterError
-from app.datasource.query_service.sources import UnknownSourceError
+from app.datasource.query_service.sources import SourceAccessError, UnknownSourceError
 from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
@@ -87,6 +87,7 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (NoSuiteError, 409, "no_regression_suite", "没有可用于回放评估的回归用例（Golden Case）。", "No regression suite (Golden Cases) is available for replay."),
     (NoRunError, 404, "no_optimization_run", "还没有参数优化运行。", "No optimization run yet."),
     (SafetyChangeError, 422, "safety_rule_change", "候选配置修改了安全规则，已拒绝。", "The candidate changes a safety rule and was refused."),
+    (SourceAccessError, 403, "source_forbidden", "仿真数据库仅限管理员使用，请使用涛思数据库。", "The simulation database is for administrators only; use the TDengine database."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),
     (TemplateConflictError, 409, "template_conflict", "查询模板冲突。", "Query template conflict."),

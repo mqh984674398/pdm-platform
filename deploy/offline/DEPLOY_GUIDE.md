@@ -81,12 +81,39 @@ cd C:\PDM\pdm-offline\pdm\backend
 
 ## 6. 安全与审批 / Security and approvals
 
-- **生产数据连接默认关闭**（`PDM_PRODUCTION_DATA_APPROVED=false`），**没有正式维护告警**。开启任一项都需要您另外明确批准（G4 / D-031）。
-  **Production data connections are off** and **there is no official alerting**; each needs your separate explicit approval.
+- **涛思数据库（TDengine）无需管理员审批**，但必须使用只读账号（D-035）。其他生产数据库（PostgreSQL 等）仍默认关闭（`PDM_PRODUCTION_DATA_APPROVED=false`）。**没有正式维护告警**，开启需要您另外明确批准。
+  **TDengine needs no administrator approval** but must use a read-only account (D-035). Other production databases stay off by default; there is no official alerting.
+- **仿真数据库仅管理员可用**；工程师、维护、查看角色在数据源工作台只能看到涛思数据库。
+  **The simulation database is for administrators only**; other roles see only TDengine sources in the Data Source Studio.
 - 默认使用 HTTP。如有证书和 HTTPS 反向代理，在 `.env` 中设置 `PDM_COOKIE_SECURE=true`。
   Plain HTTP by default; behind HTTPS set `PDM_COOKIE_SECURE=true`.
 - 本地 LLM：如需使用，在本机或局域网安装 Ollama 并只监听 127.0.0.1，然后由管理员在“本地助手”页面配置。
   Local LLM: install Ollama on the server or LAN, bind it to 127.0.0.1, and configure it as an admin in the Local assistant screen.
+
+## 6a. 连接涛思数据库 / Connect TDengine
+
+平台通过 taosAdapter 的 REST 接口（默认端口 6041）读取涛思数据库，无需在服务器上安装 TDengine 客户端。
+The platform reads TDengine through taosAdapter's REST endpoint (port 6041); no TDengine client is needed on the server.
+
+1. 在 TDengine 中建立只读账号（示例）/ Create a read-only TDengine user, for example:
+   `CREATE USER pdm_reader PASS '...'; GRANT READ ON plant_iot.* TO pdm_reader;`
+2. 复制 `pdm\deploy\datasources.tdengine.example.json` 为 `pdm\deploy\datasources.json`，修改 `host`、`port`、`database`，以及 `tdengine_layout` 中的超级表 `stable`、设备标签 `device_tag`、时间列 `time_column`。
+   Copy the example to `datasources.json` and set host, port, database and the super table layout.
+   - 宽表（每个信号一列，TDengine 常见做法）：`value_columns` 留空表示读取所有数值列，或列出要使用的列。
+     Wide tables (one column per signal): leave `value_columns` empty for every numeric column, or list them.
+   - 窄表（有信号名列）：设置 `key_column`，并在 `value_columns` 中列出数值列。
+     Narrow tables: set `key_column` and list the value columns.
+3. 在 `pdm\backend\.env` 中加入账号（格式 `用户名:密码`）并指向新文件：
+   Add the account and point to the new file in `.env`:
+   ```
+   PDM_SECRET_TAOS_READONLY=pdm_reader:密码
+   PDM_DATASOURCES_FILE=..\deploy\datasources.json
+   ```
+4. 在任务计划程序中重启 “PDM Platform”。然后在数据源工作台第 1 步选择该数据源并点击“测试连接”，“只读”检查必须通过。
+   Restart "PDM Platform", then pick the source in Studio step 1 and run the connection test; the read-only check must pass.
+
+注意：平台只发送 SELECT / SHOW / DESCRIBE 语句；只读账号是最终保障。尚未连接真实涛思数据库验证（见第 8 节）。
+The platform sends only SELECT / SHOW / DESCRIBE; the read-only account is the final safeguard. Not yet verified against a real TDengine server (see section 8).
 
 ## 7. 常见问题 / Troubleshooting
 
