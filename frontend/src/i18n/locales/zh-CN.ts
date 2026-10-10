@@ -32,6 +32,15 @@ export default {
     badge: '模拟数据',
     hint: '由确定性模拟器生成，不代表真实设备结果',
   },
+  auth: {
+    title: '登录',
+    hint: '请使用管理员为您创建的账号。',
+    user: '用户名',
+    password: '密码',
+    submit: '登录',
+    failed: '用户名或密码错误，或账号已被临时锁定几分钟。',
+    signOut: '退出登录',
+  },
   shell: {
     language: '界面语言',
     theme: '外观',

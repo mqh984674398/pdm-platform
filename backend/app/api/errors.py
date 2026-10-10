@@ -13,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import StaleDataError
 
 from app.api.studio import UnknownDeviceError
+from app.core.auth import AccountError, AuthError
 from app.core.registry import RegistryError, RegistryNotFoundError, RegistryPermissionError
 from app.core.schemas import ApiError, LocalizedText
 from app.datasource.query_service.registry import TemplateConflictError, TemplateNotFoundError
@@ -62,6 +63,8 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (BaselineError, 422, "baseline_refused", "无法建立该基准，未保存。", "The baseline could not be created; nothing was saved."),
     (FeatureConflictError, 409, "feature_conflict", "与已发布的特征版本或已存储的特征冲突。", "Conflicts with a published feature version or stored features."),
     (StaleDataError, 409, "concurrent_change", "记录已被他人修改，请刷新后重试。", "The record was changed by someone else. Reload and retry."),
+    (AuthError, 401, "sign_in_failed", "用户名或密码错误，或账户已锁定/停用。", "Wrong user name or password, or the account is locked or deactivated."),
+    (AccountError, 409, "account_refused", "账户操作被拒绝，未保存。", "The account change was refused; nothing was saved."),
     (EndpointRejected, 422, "llm_endpoint_rejected", "只允许本机或局域网内的 Ollama 地址，已拒绝远程/云端地址。", "Only a local or LAN Ollama endpoint is allowed; remote or cloud endpoints are refused."),
     (ModelRejected, 422, "llm_model_rejected", "该模型不允许使用（云端路由、未安装或不在允许列表中）。", "This model is not allowed (cloud-routed, not installed, or not on the allowlist)."),
     (LlmPermissionError, 403, "llm_settings_role", "修改 Ollama 设置需要管理员角色。", "Changing the Ollama settings requires the administrator role."),

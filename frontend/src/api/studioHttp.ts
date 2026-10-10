@@ -67,6 +67,8 @@ export function createHttpStudioApi(fetchImpl: typeof fetch = fetch.bind(globalT
       ...init,
       headers: {
         'Content-Type': 'application/json',
+        // Local sign-in uses the session cookie and ignores the development identity headers (T028).
+        'X-PDM-CSRF': '1',
         'X-PDM-User': who.user,
         'X-PDM-Role': who.role,
         ...(init.headers ?? {}),

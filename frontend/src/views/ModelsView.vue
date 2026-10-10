@@ -4,6 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { DeploymentVersion, KindSummary } from '@/api/contracts'
 import { MonitoringApiError, devRole, monitoringApi } from '@/api/monitoring'
+import { session } from '@/api/session'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SimBadge from '@/components/base/SimBadge.vue'
 import { useLocalized } from '@/composables/useLocalized'
@@ -110,7 +111,7 @@ const anySimulated = computed(() =>
       <p class="lede">{{ t('models.lede') }}</p>
     </header>
     <div class="bar">
-      <label class="role">
+      <label v-if="session.mode !== 'local'" class="role">
         <span>{{ t('models.actAs') }}</span>
         <select
           :value="role"

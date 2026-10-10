@@ -28,8 +28,10 @@ async function loadSettings() {
     cfg.value = { ...(await monitoringApi.llmSettings()).config }
     hosts.value = (cfg.value.allowed_hosts ?? []).join(', ')
     health.value = await monitoringApi.llmHealth()
-  } catch {
-    settingsMsg.value = { ok: false, text: t('common.loadFailed') }
+  } catch (e) {
+    // SEC-03: only administrators see the Ollama settings; others get the assistant without the panel.
+    if (!(e instanceof MonitoringApiError && e.status === 403))
+      settingsMsg.value = { ok: false, text: t('common.loadFailed') }
   }
 }
 

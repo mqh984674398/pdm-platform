@@ -32,7 +32,7 @@ Do not add top-level tasks without Principal Agent approval; subtasks go inside 
 | [T025](contracts/tasks/TASK-025.md) | Historical replay and rapid parameter optimization | 6 | T024, T005 |  | DONE |
 | [T026](contracts/tasks/TASK-026.md) | Model registry, evaluation, and rollback | 6 | T022, T025 |  | DONE |
 | [T027](contracts/tasks/TASK-027.md) | Ollama-only LLM, local RAG, and feedback | 6 | T020, T024 |  | DONE |
-| [T028](contracts/tasks/TASK-028.md) | Windows/LAN deployment and final acceptance | 7 | T002–T027 | G4 | IN_PROGRESS |
+| [T028](contracts/tasks/TASK-028.md) | Windows/LAN deployment and final acceptance | 7 | T002–T027 | G4 | DONE |
 
 ## Milestone gates
 

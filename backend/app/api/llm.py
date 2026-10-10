@@ -32,6 +32,7 @@ DB = Annotated[Session, Depends(get_session)]
 Viewer = Annotated[Principal, Depends(require(Role.VIEWER))]
 Maintainer = Annotated[Principal, Depends(require(Role.MAINTENANCE))]
 Engineer = Annotated[Principal, Depends(require(Role.ENGINEER))]
+Admin = Annotated[Principal, Depends(require(Role.ADMIN))]  # SEC-03: endpoint and model settings
 _CANCEL: dict[str, threading.Event] = {}
 
 
@@ -55,17 +56,17 @@ def _client(cfg: LlmConfig) -> OllamaClient:
 
 
 @router.get("/llm/settings", response_model=LlmConfigState)
-def get_settings_(_: Viewer, db: DB) -> LlmConfigState:
+def get_settings_(_: Admin, db: DB) -> LlmConfigState:
     return LlmSettings(db).current()
 
 
 @router.put("/llm/settings", response_model=LlmConfigState)
-def put_settings(body: LlmConfig, who: Engineer, db: DB) -> LlmConfigState:
+def put_settings(body: LlmConfig, who: Admin, db: DB) -> LlmConfigState:
     return LlmSettings(db).update(body, who)
 
 
 @router.get("/llm/health", response_model=LlmHealth)
-def health(_: Viewer, db: DB) -> LlmHealth:
+def health(_: Admin, db: DB) -> LlmHealth:
     cfg = LlmSettings(db).current().config
     client = _client(cfg)
     try:

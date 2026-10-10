@@ -12,7 +12,7 @@ from typing import Any
 
 from app.core.schemas import LocalizedText, TimeWindow
 from app.datasource.adapter import TimeSeriesAdapter
-from app.datasource.schemas import DataSourceConfig, SqlTableLayout
+from app.datasource.schemas import DataSourceConfig, DataSourceKind, SqlTableLayout
 from app.datasource.simulated import SimulatedAdapter
 from app.datasource.sql import AdapterError, SqlAdapter
 
@@ -71,6 +71,7 @@ class DataSourceRegistry:
     def __init__(self) -> None:
         self._sources: dict[str, tuple[DataSourceConfig, TimeSeriesAdapter]] = {}
         self._datasets: dict[str, list[SimulatedDataset]] = {}
+        self.skipped: list[str] = []  # sources not loaded because production data is not approved
 
     def add(
         self,
@@ -106,14 +107,20 @@ class DataSourceRegistry:
             raise UnknownSourceError(f"unknown data source '{data_source_id}'") from exc
 
     @classmethod
-    def from_file(cls, path: Path, resolve: Callable[[str], str] = env_secret) -> DataSourceRegistry:
+    def from_file(
+        cls, path: Path, resolve: Callable[[str], str] = env_secret, allow_production: bool = True
+    ) -> DataSourceRegistry:
         """Load a JSON list of sources. Each item is ``{"config": ..., "layout": ...}`` for SQL, or
         ``{"config": ..., "simulated_dataset": "<dir>"}`` / ``{"config": ..., "simulated_datasets":
         [{"dir": "<dir>", "preview_window": {"start": ..., "end": ...}}]}`` for simulated data.
-        Relative directories resolve against the file's folder."""
+        Relative directories resolve against the file's folder. With ``allow_production=False``
+        (SEC-06, until the user approves) non-simulated sources are skipped and listed in ``skipped``."""
         reg = cls()
         for item in json.loads(path.read_text(encoding="utf-8")):
             config = DataSourceConfig.model_validate(item["config"])
+            if not allow_production and not (config.is_simulated and config.kind == DataSourceKind.SIMULATED):
+                reg.skipped.append(config.data_source_id)
+                continue
             entries = item.get("simulated_datasets")
             if entries is None and "simulated_dataset" in item:
                 entries = [{"dir": item["simulated_dataset"]}]

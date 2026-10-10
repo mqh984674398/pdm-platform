@@ -12,8 +12,17 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://pdm:pdm@localhost:5432/pdm"
     # The platform must run without Ollama (GEN-04); LLM features are opt-in.
     llm_enabled: bool = False
-    # 'dev' trusts X-PDM-User/X-PDM-Role headers; replaced by real authentication in T028 (D-010).
+    # 'local' = accounts and signed session cookies (deployment); 'dev' trusts X-PDM-User/X-PDM-Role
+    # headers and is for development and tests only (D-010).
     auth_mode: str = "dev"
+    # HMAC key for session cookies in 'local' mode; at least 32 characters, kept server-side.
+    secret_key: str = ""
+    # Mark session cookies Secure (set when the LAN server is behind HTTPS).
+    cookie_secure: bool = False
+    # Built frontend served by the API server on one port (deployment); unset in development.
+    static_dir: str | None = None
+    # SEC-06: non-simulated data sources stay disabled until the user's explicit approval (G4).
+    production_data_approved: bool = False
     # Server-side JSON file describing data sources (configs, layouts, credential references).
     datasources_file: str | None = None
     models_dir: str = "var/models"  # trained-model registry (T022); relative to the backend folder

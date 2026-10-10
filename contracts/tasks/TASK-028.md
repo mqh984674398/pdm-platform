@@ -1,7 +1,7 @@
 # TASK-028 — Windows/LAN deployment and final acceptance
 
 - **ID:** T028
-- **Status:** IN_PROGRESS
+- **Status:** DONE
 - **Phase:** 7 — Release
 - **Gate:** G4 (approval requested after this task)
 
@@ -51,4 +51,14 @@ Revert the task branch to the last green commit; record the failure and cause in
 
 ## Evidence
 
-_Filled in by the executing agent with actual commands and results._
+Commands actually run on 2026-10-10 (Linux build/test container; no Windows host available).
+
+- Full CI: `tools/ci_local.sh` → backend 532 passed, 1 skipped (live Ollama, opt-in) on Python 3.11 and 3.12; ruff clean; frontend unit 44 passed; Playwright E2E 15 passed. Log: `contracts/evidence/T028/ci_local.log`.
+- New tests: `backend/tests/auth/test_auth.py` (12), LLM settings admin checks in `tests/llm/test_llm.py`, `frontend/tests/unit/session.spec.ts` (2).
+- Package: `backend/.venv/bin/python deploy/build_package.py` → `dist/pdm-0.1.0-windows.zip` (4.4 MB), `backend/requirements.lock` (35 runtime packages).
+- Windows wheels: `pip download -r backend/requirements.lock --only-binary=:all: --platform win_amd64 --python-version 3.12` → all resolved (36 files, 114 MB). List: `windows_wheels_cp312.txt`.
+- Deployment log: `deploy/smoke_test.py` unpacked the zip and ran it in production mode (local sign-in, PostgreSQL, static client, SIMULATED fleet, a production source configured but not approved) → 26 checks passed, 0 failed. `contracts/evidence/T028/deployment_log.txt`.
+- Security review: `contracts/evidence/T028/security_review.md` (15 findings: 11 resolved, 4 accepted residual risks for G4, none open).
+- Screenshots of the production-mode package: `contracts/evidence/G4/*.png`.
+
+Not done here: `deploy/windows/install.ps1` was **not executed** on Windows (criterion 1 is verified only up to the Linux production-mode run); live Ollama was not available.

@@ -27,19 +27,9 @@ import type {
   TimeWindow,
   VisualizationSeries,
 } from './contracts'
+import { authHeaders } from './session'
 
-export const UI_USER = { user: 'ui-engineer', role: 'engineer' }
-const DEV_ROLES = ['viewer', 'maintenance', 'engineer', 'admin']
-
-/** Development header auth only (D-010): a reviewer may act as another role until real login (T028). */
-export function devRole(): string {
-  try {
-    const r = localStorage.getItem('pdm-dev-role')
-    return r && DEV_ROLES.includes(r) ? r : UI_USER.role
-  } catch {
-    return UI_USER.role
-  }
-}
+export { UI_USER, devRole } from './session'
 
 export class MonitoringApiError extends Error {
   constructor(
@@ -60,10 +50,7 @@ function url(path: string, query?: Query): string {
 }
 
 export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(...a)) {
-  const headers = () => {
-    const role = devRole()
-    return { 'X-PDM-User': role === UI_USER.role ? UI_USER.user : `ui-${role}`, 'X-PDM-Role': role }
-  }
+  const headers = authHeaders
 
   async function call<T>(path: string, init: RequestInit = {}, query?: Query): Promise<T> {
     const resp = await fetchImpl(url(path, query), {

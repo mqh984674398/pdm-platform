@@ -281,7 +281,9 @@ def test_settings_need_admin_and_reject_remote_targets(env, patched):
     assert r.status_code == 422 and r.json()["code"] == "llm_model_rejected"
     ok = c.put("/api/llm/settings", body)
     assert ok.status_code == 200 and ok.json()["config"]["chat_model"] == CFG.chat_model
-    h = c.get("/api/llm/health").json()
+    assert c.get("/api/llm/health", role="viewer").status_code == 403
+    assert c.get("/api/llm/settings", role="engineer").status_code == 403
+    h = c.get("/api/llm/health", role="admin").json()
     assert h["reachable"] and h["chat_model_installed"] and "gpt-oss:120b-cloud" in h["models"]
     with factory() as s, pytest.raises(LlmPermissionError):
         LlmSettings(s).update(CFG, ENG)
@@ -321,7 +323,7 @@ def test_platform_works_with_ollama_down(env, monkeypatch):
     assert c.get("/api/components/A02-BS1/health").json()["decision"]["health_state"] == "CRITICAL"
     r = c.post("/api/llm/ask", {"question": "why?", "component_id": "A02-BS1"})
     assert r.status_code == 503 and r.json()["code"] == "llm_unavailable"
-    assert c.get("/api/llm/health").json()["reachable"] is False
+    assert c.get("/api/llm/health", role="admin").json()["reachable"] is False
 
 
 def test_feedback_goes_to_review_and_never_into_references(env):

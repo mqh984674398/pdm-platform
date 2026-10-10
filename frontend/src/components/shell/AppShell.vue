@@ -3,7 +3,9 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { fetchHealth, type HealthResponse } from '@/api/health'
+import { loadSession, session, signOut } from '@/api/session'
 import SegmentedControl from '@/components/base/SegmentedControl.vue'
+import SignIn from '@/components/shell/SignIn.vue'
 import { setLocale, type Locale } from '@/i18n'
 import { NAV, NAV_GROUPS } from '@/router/nav'
 import { useTheme, type ThemeChoice } from '@/composables/useTheme'
@@ -36,7 +38,10 @@ const title = computed(() =>
   route.name === 'design' ? t('design.title') : route.name ? t(`nav.${String(route.name)}`) : '',
 )
 
+const needsSignIn = computed(() => session.mode === 'local' && !session.user)
+
 onMounted(async () => {
+  loadSession()
   backend.value = await fetchHealth()
   backendChecked.value = true
 })
@@ -117,10 +122,17 @@ onMounted(async () => {
             data-testid="lang-switch"
           />
           <SegmentedControl v-model="theme" :options="themeOptions" :label="t('shell.theme')" />
+          <span v-if="session.mode === 'local' && session.user" class="who" data-testid="who">
+            {{ session.user }} ({{ t(`models.roles.${session.role}`) }})
+            <button type="button" class="link" data-testid="sign-out" @click="signOut()">
+              {{ t('auth.signOut') }}
+            </button>
+          </span>
         </div>
       </header>
       <main class="content">
-        <RouterView />
+        <SignIn v-if="needsSignIn" />
+        <RouterView v-else-if="session.mode !== 'unknown'" />
       </main>
     </div>
   </div>
@@ -244,6 +256,21 @@ nav {
   margin-left: auto;
   display: flex;
   gap: var(--space-2);
+}
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+.link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
 }
 .icon-button {
   display: grid;
