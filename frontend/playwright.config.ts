@@ -33,11 +33,13 @@ export default defineConfig({
       command: `${python} ../backend/scripts/fake_ollama.py --port 11435`,
       url: 'http://127.0.0.1:11435/api/version',
       reuseExistingServer: false,
+      timeout: 120_000,
     },
     {
       command: 'npm run preview',
       url: 'http://127.0.0.1:4173',
       reuseExistingServer: true,
+      timeout: 120_000,
       env: { PDM_API_URL: `http://127.0.0.1:${API_PORT}` },
     },
   ],
