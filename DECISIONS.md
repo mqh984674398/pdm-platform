@@ -156,3 +156,8 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 - **Date:** 2026-10-10 · **Status:** APPROVED by Principal Agent (T028 security review; user acceptance at G4).
 - **Decision:** `PDM_AUTH_MODE=local` is the deployment mode: accounts in `users` (migration 0010, scrypt), HMAC-signed 12 h HttpOnly SameSite=Strict cookie, account re-read per request, `X-PDM-CSRF: 1` on state-changing requests, lockout after 5 failures for 5 minutes, all audited. `dev` header auth (D-010) remains for development and tests only; `deploy/serve.py` refuses to start in any mode but `local`. LLM settings and health become admin-only (SEC-03). Non-simulated data sources are skipped unless `PDM_PRODUCTION_DATA_APPROVED=true`, which the installer never sets; no official alerting channel exists. The package is one port (API plus built client) started by a SYSTEM scheduled task, firewall limited to the local subnet. Auth code sits in `app/core` and `app/api` (outside the literal `deploy/` scope) because the security review (SR-01) could not be resolved otherwise.
 - **Rationale:** STK-05, SEC-01/03/04/06, TST-01; `contracts/evidence/T028/security_review.md`.
+
+## D-031 — G4 approved: release accepted; production data and official alerting remain off
+- **Date:** 2026-10-10 · **Status:** APPROVED by user (Mira, G4 decision card, 2026-10-10T00:32:48Z, option "批准 Approve").
+- **Decision:** Release 0.1.0 accepted for LAN Windows deployment with local sign-in and simulated data, including residual risks SR-07, SR-10, SR-14, SR-15. This approval does not enable a production data connection (`PDM_PRODUCTION_DATA_APPROVED` stays false) or official alerting; each still needs separate explicit approval.
+- **Rationale:** ACCEPTANCE.md §G4, SEC-06.
