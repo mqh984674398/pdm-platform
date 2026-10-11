@@ -6,6 +6,8 @@ import type {
   Alarm,
   ApiError,
   Baseline,
+  BaselineVerification,
+  FeatureCoverage,
   ComponentHealthReport,
   ComponentInstance,
   DegradationHistory,
@@ -182,6 +184,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       const name = /filename="([^"]+)"/.exec(disposition)?.[1] ?? `${signalId}.csv`
       return { name, blob: await resp.blob() }
     },
+    featureCoverage: (componentId: string) =>
+      call<FeatureCoverage[]>(
+        `/api/components/${encodeURIComponent(componentId)}/feature-coverage`,
+      ),
+    verifyBaseline: (body: BaselineVerification) =>
+      call<Baseline>('/api/baselines/verified', { method: 'POST', body: JSON.stringify(body) }),
     baselines: (componentId: string) =>
       call<Baseline[]>(`/api/components/${encodeURIComponent(componentId)}/baselines`),
     degradation: (componentId: string, feature: string, featureRef: string) =>

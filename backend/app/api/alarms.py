@@ -65,7 +65,14 @@ def evaluate_alarms(body: AlarmEvaluationRequest, who: Engineer, db: DB) -> Alar
             refs[lc] = ref
     settings = RuleSettings(db)
     svc = FleetHealthService(db)  # rule set in force: registry champion or the default
-    evals = evaluate(vectors, refs, svc.config.rules, settings.disabled(), rules_version=svc.rules_version())
+    evals = evaluate(
+        vectors,
+        refs,
+        svc.config.rules,
+        settings.disabled(),
+        limits=svc.equipment.torque_limits(),
+        rules_version=svc.rules_version(),
+    )
     raised, updated = AlarmService(db).sync(evals, who)
     db.commit()
     return AlarmEvaluationResult(

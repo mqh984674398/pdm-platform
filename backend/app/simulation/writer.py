@@ -37,7 +37,9 @@ PLANT_FIELDS = {"process_id", "device_id", "path"}
 
 
 def _models(items) -> list[dict]:
-    return [i.model_dump(mode="json") for i in items]
+    # torque_limit is plant configuration (D-041), not part of a simulated scenario's topology
+    skip = {"torque_limit"}
+    return [i.model_dump(mode="json", exclude=skip & set(type(i).model_fields)) for i in items]
 
 
 def config_hash(result: SimulationResult) -> str:

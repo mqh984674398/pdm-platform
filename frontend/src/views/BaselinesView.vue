@@ -7,6 +7,7 @@ import type { Alarm, Baseline, DegradationHistory } from '@/api/contracts'
 import { monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SimBadge from '@/components/base/SimBadge.vue'
+import ReferenceForm from '@/components/fleet/ReferenceForm.vue'
 import ComponentPicker from '@/components/fleet/ComponentPicker.vue'
 import TimeSeriesChart from '@/charts/TimeSeriesChart.vue'
 import { alarmPeriods, referenceBands } from '@/charts/overlays'
@@ -38,21 +39,19 @@ const feature = computed<string | null>(() => {
   return q && features.value.includes(q) ? q : (features.value[0] ?? null)
 })
 
-watch(
-  componentId,
-  async (cid) => {
-    baselines.value = alarms.value = []
-    history.value = null
-    if (!cid) return
-    const [b, a] = await Promise.all([
-      monitoringApi.baselines(cid).catch(() => []),
-      monitoringApi.alarms({ component_id: cid }).catch(() => []),
-    ])
-    baselines.value = b
-    alarms.value = a
-  },
-  { immediate: true },
-)
+async function reload() {
+  const cid = componentId.value
+  baselines.value = alarms.value = []
+  history.value = null
+  if (!cid) return
+  const [b, a] = await Promise.all([
+    monitoringApi.baselines(cid).catch(() => []),
+    monitoringApi.alarms({ component_id: cid }).catch(() => []),
+  ])
+  baselines.value = b
+  alarms.value = a
+}
+watch(componentId, reload, { immediate: true })
 watch([componentId, feature, featureRef], async ([cid, f, ref_]) => {
   history.value = null
   if (cid && f && ref_)
@@ -156,6 +155,7 @@ const pick = (q: Record<string, string>) => router.replace({ query: { ...route.q
           </ul>
           <p class="hint">{{ t('baselines.legend') }}</p>
         </template>
+        <ReferenceForm v-if="componentId" :component-id="componentId" @verified="reload" />
       </PanelBox>
     </div>
   </div>

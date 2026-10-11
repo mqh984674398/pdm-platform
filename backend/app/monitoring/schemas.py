@@ -195,6 +195,10 @@ class Baseline(ContractModel):
     verified_at: AwareDatetime | None = None
     comment: str = ""
     superseded_by: str | None = None
+    warnings: list[LocalizedText] = Field(
+        default_factory=list,
+        description="Quality notes found when the period was verified (drift inside it, few windows)",
+    )
     meta: ResultMeta
 
     @model_validator(mode="after")
@@ -218,6 +222,17 @@ class BaselineVerification(ContractModel):
     regime_id: str | None = None
     window: TimeWindow
     comment: str = Field(min_length=1, max_length=2000, description="Why this period is known to be healthy")
+
+
+class FeatureCoverage(ContractModel):
+    """Stored feature windows of one installation: what a healthy reference can be chosen from."""
+
+    lifecycle_id: str
+    feature_ref: str
+    windows: int
+    start: AwareDatetime
+    end: AwareDatetime
+    has_reference: bool
 
 
 class AdaptivePoint(ContractModel):

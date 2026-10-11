@@ -82,6 +82,24 @@ def main(argv: list[str] | None = None) -> None:
         created = ensure_standard_templates(session, sources)
     if created:
         print(f"Registered built-in read-only query templates: {', '.join(created)}")
+    if settings.pipeline_interval_min > 0:
+        import threading
+        import time
+
+        from app.decision.pipeline import run_all
+
+        def loop() -> None:  # D-042: keeps features and alarms current for every mapped machine
+            while True:
+                try:
+                    with Session(get_engine()) as session:
+                        for r in run_all(session, sources):
+                            if r.windows_added:
+                                print(f"pipeline {r.machine_id}: +{r.windows_added} windows")
+                except Exception as exc:  # noqa: BLE001
+                    print(f"pipeline run failed: {exc}")
+                time.sleep(settings.pipeline_interval_min * 60)
+
+        threading.Thread(target=loop, name="pipeline", daemon=True).start()
     uvicorn.run(
         create_app(sources=sources), host=args.host, port=args.port, log_level="info"
     )

@@ -10,9 +10,9 @@ Order of the rules, each explicit:
 1. Preconditions. No evaluable window, no verified reference, validation running or stale data give
    UNKNOWN with the reason (abstention). No model output can turn UNKNOWN into a level.
 2. Safety floor. The highest SAFETY rule level is a floor: nothing below may lower it (L6-03).
-3. Statistical level. Each STATISTICAL hit keeps its level, except a hit whose rule history is a
-   slow, steady drift consistent with the component's age, which is capped at WATCH (D-022, see
-   ``aging``). Abrupt or accelerating drift keeps its level.
+3. Statistical level. Each STATISTICAL hit keeps its level, except a WARNING hit whose rule history is
+   a slow, steady drift consistent with the component's age, which is capped at WATCH (D-022, see
+   ``aging``). CRITICAL is never lowered (D-040). Abrupt or accelerating drift keeps its level.
 4. Model evidence. Typed results are read only through ``INTERPRETATION``; each kind maps to one
    direction (DEGRADED, HEALTHY, NEUTRAL) and nothing else. Unsupported, ineligible and failure
    probability results carry no direction. Models never raise a level above WATCH and never lower
@@ -240,7 +240,7 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
             )
             continue
         graded = lvl
-        if _max(lvl, H.WATCH) != H.WATCH:
+        if lvl == H.WARNING:  # D-040: CRITICAL is never lowered by aging grading
             a = aging[h.rule_id] = assess(_aging_points(inp, h.rule_id), policy)
             if a.is_aging:
                 graded = H.WATCH

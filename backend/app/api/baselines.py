@@ -18,7 +18,7 @@ from app.equipment.maintenance import MaintenanceService
 from app.monitoring.baselines.verified import BaselineService
 from app.monitoring.degradation.history import degradation_history
 from app.monitoring.features.store import FeatureStore
-from app.monitoring.schemas import Baseline, BaselineVerification, DegradationHistory
+from app.monitoring.schemas import Baseline, BaselineVerification, DegradationHistory, FeatureCoverage
 
 router = APIRouter(tags=["baselines"])
 DB = Annotated[Session, Depends(get_session)]
@@ -32,6 +32,25 @@ def verify_baseline(body: BaselineVerification, who: Engineer, db: DB) -> Baseli
     out = BaselineService(db).verify(body, who)
     db.commit()
     return out
+
+
+@router.get("/components/{component_id}/feature-coverage", response_model=list[FeatureCoverage])
+def feature_coverage(component_id: str, _: Viewer, db: DB) -> list[FeatureCoverage]:
+    EquipmentStore(db).component(component_id)
+    svc, groups = BaselineService(db), {}
+    for v in FeatureStore(db).vectors(component_id):
+        groups.setdefault((v.lifecycle_id, v.feature_ref), []).append(v.window)
+    return [
+        FeatureCoverage(
+            lifecycle_id=lc,
+            feature_ref=ref,
+            windows=len(ws),
+            start=min(w.start for w in ws),
+            end=max(w.end for w in ws),
+            has_reference=svc.verified(component_id, lc, ref) is not None,
+        )
+        for (lc, ref), ws in sorted(groups.items())
+    ]
 
 
 @router.get("/components/{component_id}/baselines", response_model=list[Baseline])

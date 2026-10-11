@@ -156,7 +156,18 @@ const en: typeof zh = {
     feature: 'Feature',
     noReference: 'No engineer-verified healthy reference for this lifecycle yet.',
     verifiedBy: '{lifecycle}: {start} to {end}, verified by {user}',
-    legend: 'Shaded band: healthy reference mean ±2σ. Vertical lines: maintenance events.',
+    legend:
+      'Shaded band is the verified reference mean ±2σ; vertical lines are maintenance events.',
+    verify: {
+      title: 'Verify a healthy reference',
+      hint: 'Pick a period you know is healthy and say why. Drift inside the period or too few windows is flagged, not blocked.',
+      lifecycle: 'Installation · feature set · windows',
+      start: 'Start (UTC)',
+      end: 'End (UTC)',
+      comment: 'Reason',
+      submit: 'Verify reference',
+      done: 'Healthy reference {id} verified',
+    },
   },
   maintenance: {
     lede: 'Maintenance events and the stabilization, validation and impact assessment after each.',
@@ -405,6 +416,8 @@ const en: typeof zh = {
       "The machine's device id (tag value) in TDengine. Algorithm configuration reads data with it when this machine is picked.",
     components: 'Components',
     driveChain: 'Drive chain ID',
+    torqueLimit: 'Torque limit (unit of the torque signal)',
+    torqueLimitOff: 'not set',
     chainNote:
       'Components of one machine with the same drive chain ID share a drive chain: the machine map links them, and when two or more are WARNING or CRITICAL at once the platform points to the drive chain first.',
     shared: 'shared ({n} components)',

@@ -113,6 +113,9 @@ class ComponentChange(ContractModel):
     type: ComponentType
     name: LocalizedText
     drive_chain_id: str | None = Field(default=None, pattern=ID)
+    torque_limit: float | None = Field(
+        default=None, gt=0, description="Allowed torque in the unit of the torque signal (SF-TORQUE-LIMIT)"
+    )
 
 
 def process_paths(session: Session) -> dict[str, LocalizedText]:
@@ -311,9 +314,10 @@ class PlantStore:
         elif rec.type != body.type.value:
             raise EquipmentConflictError("a component's type cannot change; create a new one")
         rec.type, rec.name, rec.drive_chain_id = body.type.value, body.name.model_dump(), body.drive_chain_id
+        rec.torque_limit = body.torque_limit
         audit(
             self.session, who, f"plant.component_{action}", "component", body.component_id,
-            drive_chain=body.drive_chain_id,
+            drive_chain=body.drive_chain_id, torque_limit=body.torque_limit,
         )  # fmt: skip
         return rec.to_model()
 

@@ -13,6 +13,7 @@ from app.api import (
     health,
     llm,
     optimization,
+    pipeline,
     plant,
     quality,
     query,
@@ -58,6 +59,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(quality.router, prefix="/api", dependencies=[require_module("datasource")])
     app.include_router(equipment.router, prefix="/api")
     app.include_router(plant.router, prefix="/api")
+    app.include_router(pipeline.router, prefix="/api", dependencies=[require_module("alarms")])
     app.include_router(baselines.router, prefix="/api")
     app.include_router(alarms.router, prefix="/api")
     app.include_router(timeseries.router, prefix="/api")

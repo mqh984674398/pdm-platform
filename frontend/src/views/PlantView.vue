@@ -212,18 +212,36 @@ function saveComponent(c?: ComponentInstance, chain?: string) {
         type: c.type,
         name: c.name,
         drive_chain_id: (chain ?? '').trim() || null,
+        torque_limit: c.torque_limit ?? null,
       }
     : {
         component_id: comp.id,
         type: comp.type as (typeof TYPES)[number],
         name: name(comp.zh, comp.en),
         drive_chain_id: comp.chain.trim() || null,
+        torque_limit: null,
       }
   if (idError(body.component_id) || !body.name.zh) return
   if (body.drive_chain_id && idError(body.drive_chain_id)) return
   run(
     () => monitoringApi.putComponent(m.machine_id, body),
     t('plant.saved', { id: body.component_id }),
+  )
+}
+function saveTorqueLimit(c: ComponentInstance, raw: string) {
+  const m = machine.value
+  const limit = raw.trim() === '' ? null : Number(raw)
+  if (!m || (limit !== null && !(limit > 0))) return
+  run(
+    () =>
+      monitoringApi.putComponent(m.machine_id, {
+        component_id: c.component_id,
+        type: c.type,
+        name: c.name,
+        drive_chain_id: c.drive_chain_id ?? null,
+        torque_limit: limit,
+      }),
+    t('plant.saved', { id: c.component_id }),
   )
 }
 function deleteComponent(c: ComponentInstance) {
@@ -415,6 +433,7 @@ const chains = computed(() => {
                   <th>{{ t('plant.type') }}</th>
                   <th>{{ t('plant.name') }}</th>
                   <th>{{ t('plant.driveChain') }}</th>
+                  <th>{{ t('plant.torqueLimit') }}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -440,6 +459,19 @@ const chains = computed(() => {
                       class="st-note"
                       >{{ t('plant.shared', { n: chains.get(c.drive_chain_id) }) }}</span
                     >
+                  </td>
+                  <td>
+                    <input
+                      class="st-input st-mono chain"
+                      type="number"
+                      min="0"
+                      step="any"
+                      :value="c.torque_limit ?? ''"
+                      :placeholder="t('plant.torqueLimitOff')"
+                      :aria-label="t('plant.torqueLimit')"
+                      data-testid="component-torque-limit"
+                      @change="saveTorqueLimit(c, ($event.target as HTMLInputElement).value)"
+                    />
                   </td>
                   <td>
                     <button

@@ -130,3 +130,14 @@ The platform sends only SELECT / SHOW / DESCRIBE; the read-only account is the f
 已验证：PostgreSQL 17.10 兼容性、全部依赖都有 Windows 64 位预编译包且已装入内置 Python、生产模式冒烟测试（Linux）。
 **尚未在真实 Windows 机器上运行过 `install.cmd`**（构建环境为 Linux，无法执行 PowerShell）。首次安装时请保留 `C:\ProgramData\PDM\install.log`，有问题发给我。
 Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 64-bit build in the bundled Python, production-mode smoke test (Linux). **`install.cmd` has not yet run on a real Windows machine** (the build environment is Linux and cannot execute PowerShell). Keep `install.log` from the first install and send it to me if anything fails.
+
+---
+
+## 0.1.2 补充 / 0.1.2 addendum
+
+- **在线特征流水线 / Online feature pipeline**：服务每 `PDM_PIPELINE_INTERVAL_MIN` 分钟（默认 15，`backend\.env` 中设为 0 关闭）为已映射信号的真实设备学习工况、提取特征并同步告警。新设备需先有 4 天以上数据，并由工程师在“基线对比”页确认健康参考，之后才会给出健康结论（此前为“未知”）。
+  Every `PDM_PIPELINE_INTERVAL_MIN` minutes (default 15; 0 in `backend\.env` turns it off) the service learns regimes, extracts features and syncs alarms for non-simulated machines with mapped signals. A new machine needs 4+ days of data and an engineer-verified healthy reference on the Baselines screen before it gets a health verdict.
+- **扭矩安全规则 / Torque safety rule**：在“设备结构”页为丝杠/直线电机部件填写扭矩限值（与扭矩信号同单位），SF-TORQUE-LIMIT 才会生效；未填写则不评估。
+  Set a torque limit (unit of the torque signal) per ball-screw / linear-motor component on the plant screen to enable SF-TORQUE-LIMIT; without it the rule is not evaluated.
+- **确认健康参考 / Verifying a reference**：选择确认为健康的时段并写明理由；若时段内已有漂移或窗口少于 10 个会给出提示（不阻止）。
+  Pick a period you know is healthy; drift inside it or fewer than 10 windows is flagged (not blocked).

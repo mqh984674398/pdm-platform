@@ -154,6 +154,16 @@ export default {
     noReference: '该生命周期还没有工程师确认的健康参考。',
     verifiedBy: '{lifecycle}：{start} 至 {end}，由 {user} 确认',
     legend: '阴影带为健康参考均值 ±2σ；竖线为维护事件。',
+    verify: {
+      title: '确认健康参考',
+      hint: '选择确认为健康的时段并写明理由。系统会提示时段内是否已有漂移或窗口太少，但不会阻止确认。',
+      lifecycle: '安装周期 · 特征集 · 窗口数',
+      start: '开始（UTC）',
+      end: '结束（UTC）',
+      comment: '理由',
+      submit: '确认参考',
+      done: '已确认健康参考 {id}',
+    },
   },
   maintenance: {
     lede: '维护事件及维护后的稳定、验证与效果评估。',
@@ -382,6 +392,8 @@ export default {
       '该机台在涛思数据库中的设备 ID（标签值）。算法配置中选择该机台时使用此 ID 读取数据。',
     components: '部件',
     driveChain: '传动链编号',
+    torqueLimit: '扭矩限值（与扭矩信号同单位）',
+    torqueLimitOff: '未配置',
     chainNote:
       '同一机台上填写相同传动链编号的部件视为共用传动链：机台图中会连线显示；当其中两个及以上部件同时为警告或严重时，系统提示优先检查传动链。',
     shared: '共用（{n} 个部件）',

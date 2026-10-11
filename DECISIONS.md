@@ -201,3 +201,20 @@ Append-only. Each entry: ID, date, status (PROPOSED / APPROVED / SUPERSEDED), de
 ## D-039 — "Data Source Studio" renamed "算法配置 / Algorithm configuration"
 - **Date:** 2026-10-10 · **Status:** APPROVED by the user (item 3). Route `/datasource` and module key `datasource` are unchanged so saved role-module settings keep working.
 
+## D-040 — Algorithm fixes from the review: aging ceiling and reference quality notes
+- **Date:** 2026-10-11 · **Status:** APPROVED by the user (Mira, 2026-10-11T15:40Z, "针对以上缺陷进行优化"; the review is `/mnt/project-files/analysis/algorithm-review/`). Amends D-022 (G3).
+- **Finding:** aging grading capped a statistical hit at WATCH whatever its level, so a slow drift far above the CRITICAL threshold (deviation 30 on day 200 against 25) stayed WATCH. A healthy reference chosen while the component was already degrading (S12, S09, S11, S03) hid that degradation, and nothing warned the engineer.
+- **Decision:** (1) Aging grading applies to WARNING hits only; CRITICAL is never lowered. (2) Verifying a reference computes notes, stored with it and shown on the Baselines screen: a Theil-Sen drift inside the period of 1.5 spreads or more on the component's main rule feature, and fewer than 10 windows. Notes never block the verification. (3) The Baselines screen can verify a reference (engineer), using `GET /components/{id}/feature-coverage`.
+- **Verification:** replay of the SIMULATED demo fleet: 1196/1310 windows within allowed levels (was 1199; 3 S03 windows at the late abrupt step now stay CRITICAL). Drift notes flag the references of A02, A03, A05, A09 and A11 and none of the clean ones.
+
+## D-041 — Torque limit per component enables SF-TORQUE-LIMIT
+- **Date:** 2026-10-11 · **Status:** APPROVED by the user (same message).
+- **Finding:** `evaluate(limits=...)` was never given limits, so the only torque safety rule never ran.
+- **Decision:** `ComponentInstance.torque_limit` (migration 0013; unit of the component's torque signal; set by an administrator on the plant screen) is passed to every evaluation (dashboard, alarms, pipeline). Without a limit the rule stays "not evaluated", as before. No limit is set for demo components, so demo results do not change. The safety thresholds themselves are unchanged.
+
+## D-042 — Online feature pipeline
+- **Date:** 2026-10-11 · **Status:** APPROVED by the user (same message).
+- **Finding:** regime learning and feature extraction ran only in the demo replay, so a real source never produced features.
+- **Decision:** `app/decision/pipeline.py` learns the regime catalog from the first 4 days after the first installation, reads the data after the newest stored window in 24 h steps, stores closed windows, and syncs alarms; a window still open is left for the next run, and a rerun with no new data changes nothing. `POST /api/pipeline/run` (engineer) runs one machine; `deploy/serve.py` runs all machines every `PDM_PIPELINE_INTERVAL_MIN` minutes (default 15, 0 = off). The health reference still needs an engineer's verification, so components without one stay UNKNOWN and are listed in the run result.
+- **Risks:** never run against a real TDengine source. The regime catalog is learned once from the first 4 days, so a machine whose first days are not representative needs a longer period (`catalog_days`, not yet configurable in the UI).
+

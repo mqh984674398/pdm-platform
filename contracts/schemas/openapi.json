@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Industrial Predictive Maintenance Platform",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "paths": {
     "/api/health": {
@@ -4208,6 +4208,81 @@
         }
       }
     },
+    "/api/pipeline/run": {
+      "post": {
+        "tags": [
+          "pipeline"
+        ],
+        "summary": "Run",
+        "operationId": "run_api_pipeline_run_post",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/baselines/verified": {
       "post": {
         "tags": [
@@ -4266,6 +4341,84 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Baseline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/components/{component_id}/feature-coverage": {
+      "get": {
+        "tags": [
+          "baselines"
+        ],
+        "summary": "Feature Coverage",
+        "operationId": "feature_coverage_api_components__component_id__feature_coverage_get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeatureCoverage"
+                  },
+                  "title": "Response Feature Coverage Api Components  Component Id  Feature Coverage Get"
                 }
               }
             }
@@ -8380,6 +8533,14 @@
             "default": null,
             "title": "Superseded By"
           },
+          "warnings": {
+            "description": "Quality notes found when the period was verified (drift inside it, few windows)",
+            "items": {
+              "$ref": "#/components/schemas/LocalizedText"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
           "meta": {
             "$ref": "#/components/schemas/ResultMeta"
           }
@@ -8398,6 +8559,7 @@
           "verified_at",
           "comment",
           "superseded_by",
+          "warnings",
           "meta"
         ],
         "title": "Baseline",
@@ -8854,6 +9016,19 @@
               }
             ],
             "title": "Drive Chain Id"
+          },
+          "torque_limit": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Limit",
+            "description": "Allowed torque in the unit of the torque signal (SF-TORQUE-LIMIT)"
           }
         },
         "additionalProperties": false,
@@ -8949,6 +9124,20 @@
             },
             "title": "Signal Ids",
             "type": "array"
+          },
+          "torque_limit": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT",
+            "title": "Torque Limit"
           }
         },
         "required": [
@@ -8957,7 +9146,8 @@
           "type",
           "name",
           "drive_chain_id",
-          "signal_ids"
+          "signal_ids",
+          "torque_limit"
         ],
         "title": "ComponentInstance",
         "type": "object"
@@ -8996,6 +9186,19 @@
             },
             "type": "array",
             "title": "Signal Ids"
+          },
+          "torque_limit": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Limit",
+            "description": "Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT"
           }
         },
         "additionalProperties": false,
@@ -9042,6 +9245,19 @@
             },
             "type": "array",
             "title": "Signal Ids"
+          },
+          "torque_limit": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Limit",
+            "description": "Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT"
           }
         },
         "additionalProperties": false,
@@ -9052,7 +9268,8 @@
           "type",
           "name",
           "drive_chain_id",
-          "signal_ids"
+          "signal_ids",
+          "torque_limit"
         ],
         "title": "ComponentInstance"
       },
@@ -10440,6 +10657,48 @@
         ],
         "title": "FallbackBehavior",
         "type": "string"
+      },
+      "FeatureCoverage": {
+        "properties": {
+          "lifecycle_id": {
+            "type": "string",
+            "title": "Lifecycle Id"
+          },
+          "feature_ref": {
+            "type": "string",
+            "title": "Feature Ref"
+          },
+          "windows": {
+            "type": "integer",
+            "title": "Windows"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "has_reference": {
+            "type": "boolean",
+            "title": "Has Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lifecycle_id",
+          "feature_ref",
+          "windows",
+          "start",
+          "end",
+          "has_reference"
+        ],
+        "title": "FeatureCoverage",
+        "description": "Stored feature windows of one installation: what a healthy reference can be chosen from."
       },
       "FeatureDef": {
         "additionalProperties": false,
@@ -13235,6 +13494,93 @@
         ],
         "title": "PhysicalQuantity",
         "type": "string"
+      },
+      "PipelineRequest": {
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "title": "Machine Id"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until",
+            "description": "Process data up to this time (default: now)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_id"
+        ],
+        "title": "PipelineRequest"
+      },
+      "PipelineResult": {
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "title": "Machine Id"
+          },
+          "processed_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processed Until"
+          },
+          "windows_added": {
+            "type": "integer",
+            "title": "Windows Added"
+          },
+          "windows_skipped": {
+            "type": "integer",
+            "title": "Windows Skipped"
+          },
+          "catalog": {
+            "type": "string",
+            "title": "Catalog"
+          },
+          "no_reference": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "No Reference"
+          },
+          "alarms_raised": {
+            "type": "integer",
+            "title": "Alarms Raised"
+          },
+          "is_simulated": {
+            "type": "boolean",
+            "title": "Is Simulated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_id",
+          "processed_until",
+          "windows_added",
+          "windows_skipped",
+          "catalog",
+          "no_reference",
+          "alarms_raised",
+          "is_simulated"
+        ],
+        "title": "PipelineResult"
       },
       "PlantLevel": {
         "type": "string",

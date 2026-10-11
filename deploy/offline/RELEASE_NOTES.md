@@ -1,3 +1,14 @@
+## 0.1.2（2026-10-11）
+
+算法修复（依据算法评审，D-040..D-042）/ Algorithm fixes from the algorithm review:
+- 修复：正常老化分级不再压低 CRITICAL（只对 WARNING 生效）。Fix: aging grading no longer lowers CRITICAL.
+- 修复：扭矩安全规则此前从未运行。现在可在“设备结构”为部件填写扭矩限值（与扭矩信号同单位）后生效。Fix: the torque safety rule never ran; set a torque limit per component on the plant screen to enable it.
+- 新增：“基线对比”页可确认健康参考，并提示参考期内是否已有漂移或窗口太少。New: verify a healthy reference on the Baselines screen, with notes on drift inside the period or too few windows.
+- 新增：在线特征流水线。服务每 15 分钟（PDM_PIPELINE_INTERVAL_MIN，0 关闭）为已映射信号的设备学习工况、提取特征并同步告警；也可 POST /api/pipeline/run。New: online feature pipeline for machines with mapped signals (every 15 min; PDM_PIPELINE_INTERVAL_MIN, 0 = off).
+
+升级：解压覆盖原安装目录后再次双击 `install.cmd`（自动迁移数据库到 0013）。
+Upgrade: unzip over the install folder and run `install.cmd` again (migrates the database to 0013).
+
 ## 0.1.1（2026-10-10）
 
 部署后修复与新功能 / Post-deployment fixes and features:

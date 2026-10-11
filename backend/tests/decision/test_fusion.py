@@ -246,7 +246,7 @@ def test_slow_steady_aging_is_capped_at_watch_with_plan_recommendation():
 @pytest.mark.parametrize(
     ("hist", "why"),
     [
-        (series(1.0, 60, hits=[stat("CRITICAL", 60)]), "faster"),
+        (series(1.0, 60, hits=[stat("WARNING", 12)]), "faster"),
         (series(0.1, 90, jump_at=86, hits=[stat("WARNING", 15)]), "Abrupt"),
         (series(0.1, 20, hits=[stat("WARNING", 6)]), "Installed only"),
     ],
@@ -255,6 +255,13 @@ def test_fast_abrupt_or_young_drift_keeps_its_level(hist, why):
     r = fuse(inp(hist))
     assert r.decision.health_state == H(hist[-1].level.value)
     assert why in r.aging["ST-TORQUE"].reason.en
+
+
+def test_critical_is_never_lowered_by_aging_grading():  # D-040
+    hist = series(0.1, 90, hits=[stat("CRITICAL", 30.0)])
+    r = fuse(inp(hist))
+    assert r.decision.health_state == H.CRITICAL
+    assert "ST-TORQUE" not in r.aging
 
 
 def test_accelerating_drift_is_not_aging():

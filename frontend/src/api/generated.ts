@@ -745,6 +745,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/pipeline/run': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Run */
+    post: operations['run_api_pipeline_run_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/baselines/verified': {
     parameters: {
       query?: never
@@ -756,6 +773,23 @@ export interface paths {
     put?: never
     /** Verify Baseline */
     post: operations['verify_baseline_api_baselines_verified_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/feature-coverage': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Feature Coverage */
+    get: operations['feature_coverage_api_components__component_id__feature_coverage_get']
+    put?: never
+    post?: never
     delete?: never
     options?: never
     head?: never
@@ -1768,6 +1802,11 @@ export interface components {
        * @default null
        */
       superseded_by: string | null
+      /**
+       * Warnings
+       * @description Quality notes found when the period was verified (drift inside it, few windows)
+       */
+      warnings: components['schemas']['LocalizedText'][]
       meta: components['schemas']['ResultMeta']
     }
     /**
@@ -1971,6 +2010,11 @@ export interface components {
       name: components['schemas']['LocalizedText']
       /** Drive Chain Id */
       drive_chain_id?: string | null
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the torque signal (SF-TORQUE-LIMIT)
+       */
+      torque_limit?: number | null
     }
     /**
      * ComponentHealthReport
@@ -2003,6 +2047,12 @@ export interface components {
       drive_chain_id: string | null
       /** Signal Ids */
       signal_ids: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       * @default null
+       */
+      torque_limit: number | null
     }
     /** ComponentInstance */
     'ComponentInstance-Input': {
@@ -2019,6 +2069,11 @@ export interface components {
       drive_chain_id?: string | null
       /** Signal Ids */
       signal_ids?: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       */
+      torque_limit?: number | null
     }
     /** ComponentInstance */
     'ComponentInstance-Output': {
@@ -2035,6 +2090,11 @@ export interface components {
       drive_chain_id: string | null
       /** Signal Ids */
       signal_ids: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       */
+      torque_limit: number | null
     }
     /**
      * ComponentLifecycle
@@ -2579,6 +2639,30 @@ export interface components {
      * @enum {string}
      */
     FallbackBehavior: 'RETURN_UNSUPPORTED' | 'USE_PREVIOUS_VERSION' | 'USE_STATISTICAL_BASELINE'
+    /**
+     * FeatureCoverage
+     * @description Stored feature windows of one installation: what a healthy reference can be chosen from.
+     */
+    FeatureCoverage: {
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Feature Ref */
+      feature_ref: string
+      /** Windows */
+      windows: number
+      /**
+       * Start
+       * Format: date-time
+       */
+      start: string
+      /**
+       * End
+       * Format: date-time
+       */
+      end: string
+      /** Has Reference */
+      has_reference: boolean
+    }
     /** FeatureDef */
     FeatureDef: {
       /** Name */
@@ -3702,6 +3786,35 @@ export interface components {
      */
     PhysicalQuantity:
       'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'OTHER'
+    /** PipelineRequest */
+    PipelineRequest: {
+      /** Machine Id */
+      machine_id: string
+      /**
+       * Until
+       * @description Process data up to this time (default: now)
+       */
+      until?: string | null
+    }
+    /** PipelineResult */
+    PipelineResult: {
+      /** Machine Id */
+      machine_id: string
+      /** Processed Until */
+      processed_until: string | null
+      /** Windows Added */
+      windows_added: number
+      /** Windows Skipped */
+      windows_skipped: number
+      /** Catalog */
+      catalog: string
+      /** No Reference */
+      no_reference: string[]
+      /** Alarms Raised */
+      alarms_raised: number
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * PlantLevel
      * @enum {string}
@@ -7032,6 +7145,42 @@ export interface operations {
       }
     }
   }
+  run_api_pipeline_run_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PipelineRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PipelineResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   verify_baseline_api_baselines_verified_post: {
     parameters: {
       query?: never
@@ -7055,6 +7204,40 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['Baseline']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  feature_coverage_api_components__component_id__feature_coverage_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FeatureCoverage'][]
         }
       }
       /** @description Validation Error */

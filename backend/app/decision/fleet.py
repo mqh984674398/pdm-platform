@@ -144,6 +144,7 @@ class FleetHealthService:
             refs,
             self.config.rules,
             self.settings.disabled(),
+            limits=self.equipment.torque_limits(),
             rules_version=self.rules_version(),
         )
         return sorted(evals, key=lambda e: e.window.end), refs
