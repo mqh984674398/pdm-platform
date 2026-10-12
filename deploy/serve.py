@@ -89,6 +89,7 @@ def main(argv: list[str] | None = None) -> None:
         from app.decision.pipeline import run_all
 
         def loop() -> None:  # D-042: keeps features and alarms current for every mapped machine
+            time.sleep(60)  # let the API come up first
             while True:
                 try:
                     with Session(get_engine()) as session:

@@ -153,10 +153,19 @@ Step "已注册开机任务并只对本地子网开放端口 $Port" "Startup tas
 
 Start-ScheduledTask -TaskName $TaskName
 $ok = $false
-for ($i = 0; $i -lt 300; $i++) {
+$ServerLog = "$Data\server.log"
+for ($i = 0; $i -lt 60; $i++) {
   try { $h = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 3; $ok = $true; break } catch { Start-Sleep 2 }
+  if ($i % 5 -eq 4) {
+    $state = (Get-ScheduledTask -TaskName $TaskName).State
+    Step "等待服务启动… 已 $(($i + 1) * 2) 秒（任务状态：$state）" "Waiting for the service… $(($i + 1) * 2) s (task state: $state)"
+    if (Test-Path $ServerLog) { Get-Content $ServerLog -Tail 3 | ForEach-Object { "    $_" } }
+  }
 }
-if (-not $ok) { Fail "服务未启动，详见 $Data\server.log" "server did not start, see $Data\server.log" }
+if (-not $ok) {
+  if (Test-Path $ServerLog) { Get-Content $ServerLog -Tail 30 }
+  Fail "服务未启动，详见 $ServerLog" "server did not start, see $ServerLog"
+}
 $ip = (Get-NetIPAddress -AddressFamily IPv4 -PrefixOrigin Dhcp, Manual -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -notlike "169.254*" } | Select-Object -First 1).IPAddress
 Step "部署完成：http://${ip}:$Port/  （版本 $($h.version)）" "Done: http://${ip}:$Port/ (version $($h.version))"
 if (-not $NoBrowser) { Start-Process "http://127.0.0.1:$Port/" }
