@@ -43,22 +43,22 @@ def main(argv: list[str] | None = None) -> None:
 
     settings = get_settings()
     if settings.auth_mode != "local":
-        sys.exit(
-            "Refusing to serve on the network with PDM_AUTH_MODE other than 'local'"
-        )
+        sys.exit("Refusing to serve on the network with PDM_AUTH_MODE other than 'local'")
     command.upgrade(Config(str(BACKEND / "alembic.ini")), "head")
     path = settings.datasources_file
     sources = (
-        DataSourceRegistry.from_file(
-            Path(path), allow_production=settings.production_data_approved
-        )
+        DataSourceRegistry.from_file(Path(path), allow_production=settings.production_data_approved)
         if path
         else DataSourceRegistry()
     )
+    from app.datasource.managed import load_managed
+
+    with Session(get_engine()) as session:
+        inactive = load_managed(session, sources)
+    if inactive:
+        print(f"Managed data sources waiting for an account: {', '.join(inactive)}")
     if sources.skipped:
-        print(
-            f"Production data sources not enabled (needs G4 approval): {', '.join(sources.skipped)}"
-        )
+        print(f"Production data sources not enabled (needs G4 approval): {', '.join(sources.skipped)}")
     if args.simulated_fleet:
         from app.simulation.demo_pipeline import (
             add_demo_source,
@@ -69,13 +69,9 @@ def main(argv: list[str] | None = None) -> None:
         fleet = demo_machines(ROOT / "Data")
         add_demo_source(sources, fleet)
         with Session(get_engine()) as session:
-            if not session.scalar(
-                select(func.count()).select_from(FeatureVectorRecord)
-            ):
+            if not session.scalar(select(func.count()).select_from(FeatureVectorRecord)):
                 for r in run_pipeline(session, sources, fleet):
-                    print(
-                        f"SIMULATED {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms"
-                    )
+                    print(f"SIMULATED {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms")
     from app.datasource.query_service.defaults import ensure_standard_templates
 
     with Session(get_engine()) as session:
@@ -101,9 +97,7 @@ def main(argv: list[str] | None = None) -> None:
                 time.sleep(settings.pipeline_interval_min * 60)
 
         threading.Thread(target=loop, name="pipeline", daemon=True).start()
-    uvicorn.run(
-        create_app(sources=sources), host=args.host, port=args.port, log_level="info"
-    )
+    uvicorn.run(create_app(sources=sources), host=args.host, port=args.port, log_level="info")
 
 
 if __name__ == "__main__":

@@ -141,3 +141,10 @@ Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 
   Set a torque limit (unit of the torque signal) per ball-screw / linear-motor component on the plant screen to enable SF-TORQUE-LIMIT; without it the rule is not evaluated.
 - **确认健康参考 / Verifying a reference**：选择确认为健康的时段并写明理由；若时段内已有漂移或窗口少于 10 个会给出提示（不阻止）。
   Pick a period you know is healthy; drift inside it or fewer than 10 windows is flagged (not blocked).
+
+## 数据源管理与预测配置版本 / Data source management and configuration versions (D-044)
+
+- 管理员可通过接口 `/api/admin/datasources` 新增、修改、测试涛思数据源；账号密码只写入 `backend\.env`（仅 SYSTEM 与管理员可读），不会返回或存入数据库。界面在后续阶段提供。
+- Administrators can add, edit and test TDengine sources through `/api/admin/datasources`. The account goes only into `backend\.env` (SYSTEM and Administrators), never to the database or back out through the API. The screen follows in a later phase.
+- 预测配置版本（草稿→校验→发布→启用）已有接口 `/api/prediction-configs`；当前启用不改变判定结果，决策引擎读取配置在下一阶段。
+- Prediction configuration versions (draft → validate → publish → activate) have an API; activating one does not yet change verdicts. The decision engine will read it in the next phase.

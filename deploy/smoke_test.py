@@ -40,18 +40,14 @@ class Run:
 
     def check(self, name: str, ok: bool, detail: str = "") -> None:
         self.failed += not ok
-        self.note(
-            f"{'PASS' if ok else 'FAIL'} {name}" + (f" ({detail})" if detail else "")
-        )
+        self.note(f"{'PASS' if ok else 'FAIL'} {name}" + (f" ({detail})" if detail else ""))
 
     def save(self) -> None:
         self.log.parent.mkdir(parents=True, exist_ok=True)
         self.log.write_text("\n".join(self.lines) + "\n", encoding="utf-8")
 
 
-def http(
-    opener, method: str, url: str, body: dict | None = None, headers: dict | None = None
-):
+def http(opener, method: str, url: str, body: dict | None = None, headers: dict | None = None):
     req = urllib.request.Request(url, method=method, headers={**(headers or {})})
     if body is not None:
         req.data = json.dumps(body).encode()
@@ -79,9 +75,7 @@ def main() -> int:
         z.extractall(args.work)
     pkg = args.work / "pdm"
     backend = pkg / "backend"
-    run.note(
-        f"Unpacked {zips[-1].name} to {pkg} ({sum(1 for _ in pkg.rglob('*'))} entries)"
-    )
+    run.note(f"Unpacked {zips[-1].name} to {pkg} ({sum(1 for _ in pkg.rglob('*'))} entries)")
     for need in [
         "backend/app/main.py",
         "backend/requirements.lock",
@@ -93,9 +87,7 @@ def main() -> int:
         run.check(f"package contains {need}", (pkg / need).is_file())
 
     # Production source in the configuration must stay off until approval (SEC-06).
-    sources = json.loads(
-        (pkg / "deploy/datasources.simulated.json").read_text(encoding="utf-8")
-    )
+    sources = json.loads((pkg / "deploy/datasources.simulated.json").read_text(encoding="utf-8"))
     prod = json.loads(json.dumps(sources[0]))
     prod["config"].update(
         data_source_id="plant-iot",
@@ -107,9 +99,7 @@ def main() -> int:
     )
     prod.pop("simulated_datasets", None)
     prod["layout"] = {}
-    (pkg / "deploy/datasources.smoke.json").write_text(
-        json.dumps([*sources, prod]), encoding="utf-8"
-    )
+    (pkg / "deploy/datasources.smoke.json").write_text(json.dumps([*sources, prod]), encoding="utf-8")
 
     env = "\n".join(
         [
@@ -122,9 +112,7 @@ def main() -> int:
         ]
     )
     (backend / ".env").write_text(env + "\n", encoding="utf-8")
-    run.note(
-        "Wrote backend/.env: local sign-in, PostgreSQL, static client, production data not approved"
-    )
+    run.note("Wrote backend/.env: local sign-in, PostgreSQL, static client, production data not approved")
 
     py = sys.executable
     r = subprocess.run(
@@ -273,9 +261,7 @@ def main() -> int:
         }
         st, _, _ = http(browser, "POST", base + "/api/auth/users", new)
         run.check("state change without X-PDM-CSRF refused", st == 403, str(st))
-        st, _, _ = http(
-            browser, "POST", base + "/api/auth/users", new, {"X-PDM-CSRF": "1"}
-        )
+        st, _, _ = http(browser, "POST", base + "/api/auth/users", new, {"X-PDM-CSRF": "1"})
         run.check("admin creates maintenance account", st == 200, str(st))
         st, body, _ = http(browser, "GET", base + "/api/llm/health")
         llm = json.loads(body) if st == 200 else {}
@@ -285,9 +271,7 @@ def main() -> int:
             llm.get("detail", "")[:80],
         )
 
-        tech = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(CookieJar())
-        )
+        tech = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJar()))
         http(
             tech,
             "POST",
@@ -307,9 +291,7 @@ def main() -> int:
         )
         st, _, _ = http(tech, "GET", base + "/api/fleet")
         run.check("deactivated account loses access at once", st == 401, str(st))
-        st, _, _ = http(
-            browser, "POST", base + "/api/auth/logout", None, {"X-PDM-CSRF": "1"}
-        )
+        st, _, _ = http(browser, "POST", base + "/api/auth/logout", None, {"X-PDM-CSRF": "1"})
         jar.clear()
         st, _, _ = http(browser, "GET", base + "/api/fleet")
         run.check("sign-out ends the session", st == 401, str(st))

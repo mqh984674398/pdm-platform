@@ -7,6 +7,7 @@ from app.api import (
     alarms,
     auth,
     baselines,
+    datasources,
     equipment,
     errors,
     fleet,
@@ -14,6 +15,7 @@ from app.api import (
     llm,
     optimization,
     pipeline,
+    pipeline_config,
     plant,
     quality,
     query,
@@ -57,6 +59,8 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(signals.router, prefix="/api")
     app.include_router(studio.router, prefix="/api", dependencies=[require_module("datasource")])
     app.include_router(quality.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(datasources.router, prefix="/api")
+    app.include_router(pipeline_config.router, prefix="/api")
     app.include_router(equipment.router, prefix="/api")
     app.include_router(plant.router, prefix="/api")
     app.include_router(pipeline.router, prefix="/api", dependencies=[require_module("alarms")])
