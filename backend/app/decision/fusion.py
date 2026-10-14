@@ -45,6 +45,7 @@ from app.decision.schemas import (
 )
 from app.equipment.schemas import ComponentType
 from app.monitoring.alarms.service import evidence_id
+from app.monitoring.anomaly.t2 import T2Finding
 from app.monitoring.schemas import RuleKind, SafetyStatus, WindowEvaluation
 from app.prediction.schemas import (
     AnomalyScoreResult,
@@ -147,6 +148,10 @@ class FusionInput:
     predictions: Sequence[PredictionResult] = ()
     pre: Preconditions = field(default_factory=Preconditions)
     is_simulated: bool = True
+    anomalies: Sequence[
+        T2Finding
+    ] = ()  # unsupervised findings; used only when the configuration enables them
+    allowed: frozenset[EvidenceType] | None = None  # evidence types the active configuration lets decide
 
 
 @dataclass
@@ -266,7 +271,9 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
                         proposed_severity=H.WATCH,
                     )
                 )
-        stat = _max(stat, graded)
+        stat_ok = inp.allowed is None or EvidenceType.STATISTICAL in inp.allowed
+        if stat_ok:
+            stat = _max(stat, graded)
         txt = _t(
             f"统计规则 {h.rule_id}：{h.feature} 偏离健康参考 {h.value:.2f}"
             f"（{lvl.value} 阈值 {h.threshold:g}）",
@@ -275,6 +282,11 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
         )
         if graded != lvl:
             txt = _t(f"{txt.zh}；{aging[h.rule_id].reason.zh}", f"{txt.en}; {aging[h.rule_id].reason.en}")
+        if not stat_ok:
+            txt = _t(
+                f"{txt.zh}（当前配置不允许统计证据参与判定）",
+                f"{txt.en} (the active configuration does not let statistical evidence decide)",
+            )
         reasons.append(txt)
         evidence.append(
             Evidence(
@@ -284,11 +296,11 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
                 source=EvidenceSource.STATISTIC,
                 result_ref=eid,
                 summary=txt,
-                eligible=True,
+                eligible=stat_ok,
                 meta=meta(e.rules_version),
                 raw_value=h.value,
                 threshold=h.threshold,
-                proposed_severity=graded,
+                proposed_severity=graded if stat_ok else None,
             )
         )
 
@@ -297,7 +309,12 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
     for p in inp.predictions:
         d = interpret(p)
         pid = f"PRED:{p.operator_id}:{e.component_id}:{e.window.start.isoformat()}"
-        usable = d is not None and p.lifecycle_id == inp.lifecycle_id
+        etype = EvidenceType.SUPERVISED if p.kind == "class_probability" else EvidenceType.ANOMALY
+        usable = (
+            d is not None
+            and p.lifecycle_id == inp.lifecycle_id
+            and (inp.allowed is None or etype in inp.allowed)
+        )
         if usable:
             directions.append(d)
             txt = _t(
@@ -315,9 +332,7 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
             Evidence(
                 evidence_id=pid,
                 component_id=e.component_id,
-                evidence_type=EvidenceType.SUPERVISED
-                if p.kind == "class_probability"
-                else EvidenceType.ANOMALY,
+                evidence_type=etype,
                 source=EvidenceSource.MODEL,
                 result_ref=p.operator_id,
                 summary=txt,
@@ -327,6 +342,46 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
                 proposed_severity=(
                     {Direction.DEGRADED: H.WATCH, Direction.HEALTHY: H.NORMAL}.get(d) if usable else None
                 ),
+            )
+        )
+    for f in inp.anomalies:
+        tid = f"T2:{e.component_id}:{e.window.start.isoformat()}"
+        allowed = inp.allowed is None or EvidenceType.ANOMALY in inp.allowed
+        use = f.usable and allowed
+        if use and f.flagged:
+            directions.append(Direction.DEGRADED)
+        if not f.usable:
+            txt = _t(
+                f"Hotelling T² 未评估：健康参考窗口不足或特征缺失（{f.reason}）",
+                f"Hotelling T² not evaluated: too few reference windows or missing features ({f.reason})",
+            )
+        elif f.flagged:
+            txt = _t(
+                f"Hotelling T² {f.value:.1f} 连续两个窗口超过上限 {f.limit:.1f}（{len(f.features)} 个特征，"
+                f"参考 {f.n_reference} 个窗口）",
+                f"Hotelling T² {f.value:.1f} above its limit {f.limit:.1f} on two consecutive windows "
+                f"({len(f.features)} features, {f.n_reference} reference windows)",
+            )
+        else:
+            txt = _t(
+                f"Hotelling T² {f.value:.1f} 在上限 {f.limit:.1f} 以内",
+                f"Hotelling T² {f.value:.1f} within its limit {f.limit:.1f}",
+            )
+        evidence.append(
+            Evidence(
+                evidence_id=tid,
+                component_id=e.component_id,
+                evidence_type=EvidenceType.ANOMALY,
+                source=EvidenceSource.STATISTIC,
+                result_ref="mahalanobis-t2",
+                summary=txt,
+                eligible=use,
+                meta=meta("mahalanobis-t2@1.0.0"),
+                raw_value=f.value,
+                threshold=f.limit,
+                calibration="alpha=0.001; 2 consecutive windows",
+                proposed_severity=H.WATCH if use and f.flagged else (H.NORMAL if use else None),
+                quality_status=QualityStatus.OK if f.usable else QualityStatus.NOT_EVALUATED,
             )
         )
     deg = Direction.DEGRADED in directions

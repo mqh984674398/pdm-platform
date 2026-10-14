@@ -504,6 +504,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/deep-model-adapters': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Deep Adapters */
+    get: operations['deep_adapters_api_deep_model_adapters_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/recommended-config': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Recommended */
+    get: operations['recommended_api_components__component_id__recommended_config_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/components/{component_id}/prediction-configs': {
     parameters: {
       query?: never
@@ -1828,6 +1862,24 @@ export interface components {
        */
       needs_validated_model: boolean
       evidence_type: components['schemas']['EvidenceType']
+      /**
+       * Deep Family
+       * @description Deep-model adapter family behind the stage
+       */
+      deep_family: string | null
+      /**
+       * Needs Labels
+       * @description Supervised: needs recorded-truth fault labels
+       * @default false
+       */
+      needs_labels: boolean
+      /**
+       * Min Sampling Hz
+       * @description Input sampling rate the algorithm needs
+       */
+      min_sampling_hz: number | null
+      /** @description Where the algorithm may and may not be used */
+      boundary: components['schemas']['LocalizedText'] | null
     }
     /**
      * AlignmentReport
@@ -2292,6 +2344,16 @@ export interface components {
       common_cause: components['schemas']['CommonCause'] | null
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Config Version
+       * @description Active prediction configuration, if any
+       * @default null
+       */
+      config_version: string | null
+      /** @default null */
+      display: components['schemas']['Display'] | null
+      /** Related */
+      related: components['schemas']['RelatedStatus'][]
     }
     /** ComponentInstance */
     ComponentInstance: {
@@ -2466,6 +2528,7 @@ export interface components {
       safety_first: boolean
       /**
        * Model Max Severity
+       * @description Models and unsupervised detectors raise at most WATCH
        * @default WATCH
        */
       model_max_severity: string
@@ -2492,6 +2555,7 @@ export interface components {
       safety_first: boolean
       /**
        * Model Max Severity
+       * @description Models and unsupervised detectors raise at most WATCH
        * @default WATCH
        */
       model_max_severity: string
@@ -2728,6 +2792,16 @@ export interface components {
       conflicting_evidence: boolean
       meta: components['schemas']['ResultMeta']
     }
+    /** DeepAdapterInfo */
+    DeepAdapterInfo: {
+      /** Family */
+      family: string
+      contract: components['schemas']['InputContract']
+      /** Available */
+      available: boolean
+      /** Unavailable Reason */
+      unavailable_reason: string | null
+    }
     /**
      * DegradationHistory
      * @description Long-term history of one feature for a component (L4-05), across maintenance and lifecycles.
@@ -2894,6 +2968,39 @@ export interface components {
       preview_window: components['schemas']['TimeWindow'] | null
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** Display */
+    Display: {
+      /**
+       * Own Status
+       * @default true
+       */
+      own_status: boolean
+      /**
+       * Related Status
+       * @default true
+       */
+      related_status: boolean
+      /**
+       * Trend
+       * @default true
+       */
+      trend: boolean
+      /**
+       * Evidence
+       * @default true
+       */
+      evidence: boolean
+      /**
+       * Recommendations
+       * @default true
+       */
+      recommendations: boolean
+      /**
+       * Alarms
+       * @default true
+       */
+      alarms: boolean
     }
     /** Display */
     'Display-Input': {
@@ -3565,6 +3672,46 @@ export interface components {
      * @enum {string}
      */
     ImpactOutcome: 'IMPROVED' | 'PARTIAL' | 'NO_CHANGE' | 'DETERIORATED' | 'UNKNOWN'
+    /** InputContract */
+    InputContract: {
+      kind: components['schemas']['InputKind']
+      /**
+       * Features
+       * @description Window sequence: feature names, in order
+       */
+      features: string[]
+      /**
+       * Sequence Length
+       * @description Window sequence: windows per sample
+       * @default 1
+       */
+      sequence_length: number
+      /**
+       * Signal Role
+       * @description Waveform: signal role, e.g. vibration
+       */
+      signal_role: string | null
+      /**
+       * Min Sampling Hz
+       * @description Waveform: lowest sampling rate
+       */
+      min_sampling_hz: number | null
+      /**
+       * Min Training Samples
+       * @default 200
+       */
+      min_training_samples: number
+      /**
+       * Min Fault Samples
+       * @default 20
+       */
+      min_fault_samples: number
+    }
+    /**
+     * InputKind
+     * @enum {string}
+     */
+    InputKind: 'WINDOW_SEQUENCE' | 'WAVEFORM'
     /** Issue */
     Issue: {
       /** Level */
@@ -4129,6 +4276,21 @@ export interface components {
        */
       max_rows: number
     }
+    /**
+     * Match
+     * @description Which signals, rules and models suit a component type, and the limits that come with them.
+     */
+    Match: {
+      /** Component Type */
+      component_type: string
+      /** Required Quantities */
+      required_quantities: components['schemas']['PhysicalQuantity'][]
+      rules: components['schemas']['LocalizedText']
+      /** Models */
+      models: string[]
+      /** Constraints */
+      constraints: components['schemas']['LocalizedText'][]
+    }
     /** Me */
     Me: {
       /** User Id */
@@ -4368,7 +4530,7 @@ export interface components {
      * @enum {string}
      */
     PhysicalQuantity:
-      'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'OTHER'
+      'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'VIBRATION' | 'OTHER'
     /** PipelineRequest */
     PipelineRequest: {
       /** Machine Id */
@@ -4850,6 +5012,17 @@ export interface components {
      * @enum {string}
      */
     RegimeStatus: 'KNOWN' | 'UNSUPPORTED' | 'NOT_EVALUATED'
+    /**
+     * RelatedStatus
+     * @description Health of a component the configuration relates to this one (shown when the relationship says so).
+     */
+    RelatedStatus: {
+      /** Component Id */
+      component_id: string
+      /** Relation */
+      relation: string
+      health: components['schemas']['HealthState']
+    }
     /**
      * RelationType
      * @enum {string}
@@ -6003,6 +6176,28 @@ export interface components {
        * @default null
        */
       expected_state: components['schemas']['MaintenanceWorkflowState'] | null
+    }
+    /** Recommendation */
+    app__decision__pipeline_config__Recommendation: {
+      match: components['schemas']['Match']
+      content: components['schemas']['ConfigContent-Output']
+      /** Available Quantities */
+      available_quantities: components['schemas']['PhysicalQuantity'][]
+      /** Missing Quantities */
+      missing_quantities: components['schemas']['PhysicalQuantity'][]
+      compile: components['schemas']['CompileResult']
+    }
+    /** Recommendation */
+    app__decision__schemas__Recommendation: {
+      /** Recommendation Id */
+      recommendation_id: string
+      /** Decision Id */
+      decision_id: string
+      priority: components['schemas']['RecommendationPriority']
+      action: components['schemas']['LocalizedText']
+      rationale: components['schemas']['LocalizedText']
+      /** Evidence Ids */
+      evidence_ids: string[]
     }
     /**
      * FeatureStats
@@ -7291,6 +7486,72 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AlgorithmSpec'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  deep_adapters_api_deep_model_adapters_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeepAdapterInfo'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  recommended_api_components__component_id__recommended_config_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__decision__pipeline_config__Recommendation']
         }
       }
       /** @description Validation Error */

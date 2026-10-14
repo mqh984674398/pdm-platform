@@ -2847,6 +2847,149 @@
         }
       }
     },
+    "/api/deep-model-adapters": {
+      "get": {
+        "tags": [
+          "prediction-config"
+        ],
+        "summary": "Deep Adapters",
+        "operationId": "deep_adapters_api_deep_model_adapters_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeepAdapterInfo"
+                  },
+                  "title": "Response Deep Adapters Api Deep Model Adapters Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/components/{component_id}/recommended-config": {
+      "get": {
+        "tags": [
+          "prediction-config"
+        ],
+        "summary": "Recommended",
+        "operationId": "recommended_api_components__component_id__recommended_config_get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__decision__pipeline_config__Recommendation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/components/{component_id}/prediction-configs": {
       "get": {
         "tags": [
@@ -9276,6 +9419,47 @@
           },
           "evidence_type": {
             "$ref": "#/components/schemas/EvidenceType"
+          },
+          "deep_family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deep Family",
+            "description": "Deep-model adapter family behind the stage"
+          },
+          "needs_labels": {
+            "type": "boolean",
+            "title": "Needs Labels",
+            "description": "Supervised: needs recorded-truth fault labels",
+            "default": false
+          },
+          "min_sampling_hz": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Sampling Hz",
+            "description": "Input sampling rate the algorithm needs"
+          },
+          "boundary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where the algorithm may and may not be used"
           }
         },
         "additionalProperties": false,
@@ -9288,7 +9472,11 @@
           "component_types",
           "required_quantities",
           "needs_validated_model",
-          "evidence_type"
+          "evidence_type",
+          "deep_family",
+          "needs_labels",
+          "min_sampling_hz",
+          "boundary"
         ],
         "title": "AlgorithmSpec"
       },
@@ -10435,6 +10623,37 @@
           "is_simulated": {
             "title": "Is Simulated",
             "type": "boolean"
+          },
+          "config_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Active prediction configuration, if any",
+            "title": "Config Version"
+          },
+          "display": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Display"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "related": {
+            "items": {
+              "$ref": "#/components/schemas/RelatedStatus"
+            },
+            "title": "Related",
+            "type": "array"
           }
         },
         "required": [
@@ -10442,7 +10661,10 @@
           "evidence",
           "recommendations",
           "common_cause",
-          "is_simulated"
+          "is_simulated",
+          "config_version",
+          "display",
+          "related"
         ],
         "title": "ComponentHealthReport",
         "type": "object"
@@ -10879,8 +11101,9 @@
           },
           "model_max_severity": {
             "type": "string",
-            "pattern": "^(WATCH|WARNING)$",
+            "pattern": "^WATCH$",
             "title": "Model Max Severity",
+            "description": "Models and unsupervised detectors raise at most WATCH",
             "default": "WATCH"
           },
           "fusion": {
@@ -10917,8 +11140,9 @@
           },
           "model_max_severity": {
             "type": "string",
-            "pattern": "^(WATCH|WARNING)$",
+            "pattern": "^WATCH$",
             "title": "Model Max Severity",
+            "description": "Models and unsupervised detectors raise at most WATCH",
             "default": "WATCH"
           },
           "fusion": {
@@ -11469,6 +11693,41 @@
         "title": "Decision",
         "type": "object"
       },
+      "DeepAdapterInfo": {
+        "properties": {
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "contract": {
+            "$ref": "#/components/schemas/InputContract"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "family",
+          "contract",
+          "available",
+          "unavailable_reason"
+        ],
+        "title": "DeepAdapterInfo"
+      },
       "DegradationHistory": {
         "additionalProperties": false,
         "description": "Long-term history of one feature for a component (L4-05), across maintenance and lifecycles.\n\nMaintenance keeps a lifecycle and its history continuous; a replacement starts a new segment whose\ndeviations are measured only against that lifecycle's own verified reference.",
@@ -11955,6 +12214,51 @@
           "is_simulated"
         ],
         "title": "DeviceSuggestions",
+        "type": "object"
+      },
+      "Display": {
+        "additionalProperties": false,
+        "properties": {
+          "own_status": {
+            "default": true,
+            "title": "Own Status",
+            "type": "boolean"
+          },
+          "related_status": {
+            "default": true,
+            "title": "Related Status",
+            "type": "boolean"
+          },
+          "trend": {
+            "default": true,
+            "title": "Trend",
+            "type": "boolean"
+          },
+          "evidence": {
+            "default": true,
+            "title": "Evidence",
+            "type": "boolean"
+          },
+          "recommendations": {
+            "default": true,
+            "title": "Recommendations",
+            "type": "boolean"
+          },
+          "alarms": {
+            "default": true,
+            "title": "Alarms",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "own_status",
+          "related_status",
+          "trend",
+          "evidence",
+          "recommendations",
+          "alarms"
+        ],
+        "title": "Display",
         "type": "object"
       },
       "Display-Input": {
@@ -13567,6 +13871,85 @@
         "title": "ImpactOutcome",
         "type": "string"
       },
+      "InputContract": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/InputKind"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Features",
+            "description": "Window sequence: feature names, in order"
+          },
+          "sequence_length": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Sequence Length",
+            "description": "Window sequence: windows per sample",
+            "default": 1
+          },
+          "signal_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal Role",
+            "description": "Waveform: signal role, e.g. vibration"
+          },
+          "min_sampling_hz": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Sampling Hz",
+            "description": "Waveform: lowest sampling rate"
+          },
+          "min_training_samples": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Training Samples",
+            "default": 200
+          },
+          "min_fault_samples": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Fault Samples",
+            "default": 20
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "features",
+          "sequence_length",
+          "signal_role",
+          "min_sampling_hz",
+          "min_training_samples",
+          "min_fault_samples"
+        ],
+        "title": "InputContract"
+      },
+      "InputKind": {
+        "type": "string",
+        "enum": [
+          "WINDOW_SEQUENCE",
+          "WAVEFORM"
+        ],
+        "title": "InputKind"
+      },
       "Issue": {
         "properties": {
           "level": {
@@ -14969,6 +15352,49 @@
         "title": "ManagedSourceBody",
         "description": "Write model. ``user`` and ``password`` are write-only: leave both empty to keep the stored account."
       },
+      "Match": {
+        "properties": {
+          "component_type": {
+            "type": "string",
+            "title": "Component Type"
+          },
+          "required_quantities": {
+            "items": {
+              "$ref": "#/components/schemas/PhysicalQuantity"
+            },
+            "type": "array",
+            "title": "Required Quantities"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/LocalizedText"
+            },
+            "type": "array",
+            "title": "Constraints"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "component_type",
+          "required_quantities",
+          "rules",
+          "models",
+          "constraints"
+        ],
+        "title": "Match",
+        "description": "Which signals, rules and models suit a component type, and the limits that come with them."
+      },
       "Me": {
         "properties": {
           "user_id": {
@@ -15538,6 +15964,7 @@
           "POSITION",
           "CURRENT",
           "PRESSURE",
+          "VIBRATION",
           "OTHER"
         ],
         "title": "PhysicalQuantity",
@@ -16803,6 +17230,30 @@
         ],
         "title": "RegimeStatus",
         "type": "string"
+      },
+      "RelatedStatus": {
+        "additionalProperties": false,
+        "description": "Health of a component the configuration relates to this one (shown when the relationship says so).",
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "relation": {
+            "title": "Relation",
+            "type": "string"
+          },
+          "health": {
+            "$ref": "#/components/schemas/HealthState"
+          }
+        },
+        "required": [
+          "component_id",
+          "relation",
+          "health"
+        ],
+        "title": "RelatedStatus",
+        "type": "object"
       },
       "RelationType": {
         "type": "string",
@@ -19589,6 +20040,83 @@
         ],
         "title": "WorkflowTransitionRequest",
         "type": "object"
+      },
+      "app__decision__pipeline_config__Recommendation": {
+        "properties": {
+          "match": {
+            "$ref": "#/components/schemas/Match"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ConfigContent-Output"
+          },
+          "available_quantities": {
+            "items": {
+              "$ref": "#/components/schemas/PhysicalQuantity"
+            },
+            "type": "array",
+            "title": "Available Quantities"
+          },
+          "missing_quantities": {
+            "items": {
+              "$ref": "#/components/schemas/PhysicalQuantity"
+            },
+            "type": "array",
+            "title": "Missing Quantities"
+          },
+          "compile": {
+            "$ref": "#/components/schemas/CompileResult"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "match",
+          "content",
+          "available_quantities",
+          "missing_quantities",
+          "compile"
+        ],
+        "title": "Recommendation"
+      },
+      "app__decision__schemas__Recommendation": {
+        "properties": {
+          "recommendation_id": {
+            "type": "string",
+            "title": "Recommendation Id"
+          },
+          "decision_id": {
+            "type": "string",
+            "title": "Decision Id"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/RecommendationPriority"
+          },
+          "action": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "rationale": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Evidence Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "recommendation_id",
+          "decision_id",
+          "priority",
+          "action",
+          "rationale",
+          "evidence_ids"
+        ],
+        "title": "Recommendation"
       },
       "app__equipment__schemas__FeatureStats": {
         "additionalProperties": false,

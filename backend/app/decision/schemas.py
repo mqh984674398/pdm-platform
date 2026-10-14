@@ -195,6 +195,23 @@ class FleetOverview(ContractModel):
     is_simulated: bool
 
 
+class Display(ContractModel):
+    own_status: bool = True
+    related_status: bool = True
+    trend: bool = True
+    evidence: bool = True
+    recommendations: bool = True
+    alarms: bool = True
+
+
+class RelatedStatus(ContractModel):
+    """Health of a component the configuration relates to this one (shown when the relationship says so)."""
+
+    component_id: str
+    relation: str
+    health: HealthState
+
+
 class ComponentHealthReport(ContractModel):
     """Current health decision of a component with its evidence trail (L6-04)."""
 
@@ -203,6 +220,9 @@ class ComponentHealthReport(ContractModel):
     recommendations: list[Recommendation] = Field(default_factory=list)
     common_cause: CommonCause | None = None
     is_simulated: bool
+    config_version: str | None = Field(default=None, description="Active prediction configuration, if any")
+    display: Display | None = None
+    related: list[RelatedStatus] = Field(default_factory=list)
 
 
 # Alarm contracts live with the rules that raise them (L4); re-exported here for L6 consumers.

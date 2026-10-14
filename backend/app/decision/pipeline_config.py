@@ -29,9 +29,11 @@ from app.core.db import Base
 from app.core.registry import DeploymentRegistry
 from app.core.schemas import ContractModel, LocalizedText
 from app.core.security import Principal, Role
-from app.decision.schemas import EvidenceType
+from app.decision.plugins import PLUGINS
+from app.decision.schemas import Display, EvidenceType
 from app.equipment.lifecycle import EquipmentStore
 from app.equipment.schemas import ComponentType
+from app.prediction.models import deep
 from app.signals.registry import SignalConfigStore
 from app.signals.schemas import PhysicalQuantity as Q
 
@@ -90,9 +92,20 @@ class Criteria(ContractModel):
         ]
     )  # fmt: skip
     safety_first: bool = Field(default=True, description="Safety limits keep their minimum severity; fixed")
-    model_max_severity: str = Field(default="WATCH", pattern=r"^(WATCH|WARNING)$")
+    model_max_severity: str = Field(
+        default="WATCH",
+        pattern=r"^WATCH$",
+        description="Models and unsupervised detectors raise at most WATCH",
+    )
     fusion: str = Field(default="SAFETY_FLOOR_RULES_MODELS", pattern=r"^SAFETY_FLOOR_RULES_MODELS$")
     confidence: str = Field(default="NONE", pattern=r"^(NONE|EVIDENCE_AGREEMENT)$")
+
+    @field_validator("allowed_evidence_types")
+    @classmethod
+    def _safety_allowed(cls, v: list[EvidenceType]) -> list[EvidenceType]:
+        if EvidenceType.SAFETY not in v:
+            raise ValueError("safety evidence cannot be excluded from the decision")
+        return v
 
     @field_validator("safety_first")
     @classmethod
@@ -100,15 +113,6 @@ class Criteria(ContractModel):
         if not v:
             raise ValueError("the safety-first rule cannot be switched off")  # never weaken safety silently
         return v
-
-
-class Display(ContractModel):
-    own_status: bool = True
-    related_status: bool = True
-    trend: bool = True
-    evidence: bool = True
-    recommendations: bool = True
-    alarms: bool = True
 
 
 class ConfigContent(ContractModel):
@@ -139,6 +143,12 @@ class AlgorithmSpec(ContractModel):
     required_quantities: list[Q] = Field(default_factory=list)
     needs_validated_model: bool = False
     evidence_type: EvidenceType
+    deep_family: str | None = Field(default=None, description="Deep-model adapter family behind the stage")
+    needs_labels: bool = Field(default=False, description="Supervised: needs recorded-truth fault labels")
+    min_sampling_hz: float | None = Field(default=None, description="Input sampling rate the algorithm needs")
+    boundary: LocalizedText | None = Field(
+        default=None, description="Where the algorithm may and may not be used"
+    )
 
 
 _ALL_BUT = [ComponentType.BALL_SCREW, ComponentType.LINEAR_MOTOR, ComponentType.PNEUMATIC_CYLINDER,
@@ -146,28 +156,146 @@ _ALL_BUT = [ComponentType.BALL_SCREW, ComponentType.LINEAR_MOTOR, ComponentType.
 CATALOG: dict[str, AlgorithmSpec] = {
     a.algorithm_id: a
     for a in [
-        AlgorithmSpec(algorithm_id="engineering-rules", category="RULES", name=_t("工程规则", "Engineering rules"),
-                      implemented=True, evidence_type=EvidenceType.SAFETY),
-        AlgorithmSpec(algorithm_id="feature-engineering", category="FEATURES",
-                      name=_t("特征工程", "Feature engineering"), implemented=True,
-                      evidence_type=EvidenceType.STATISTICAL),
-        AlgorithmSpec(algorithm_id="mahalanobis-t2", category="UNSUPERVISED",
-                      name=_t("马氏距离 / Hotelling T²", "Mahalanobis / Hotelling T²"), implemented=False,
-                      evidence_type=EvidenceType.ANOMALY),
-        AlgorithmSpec(algorithm_id="decision-tree", category="ML", name=_t("决策树", "Decision tree"),
-                      implemented=True, component_types=_ALL_BUT, needs_validated_model=True,
-                      evidence_type=EvidenceType.SUPERVISED),
-        AlgorithmSpec(algorithm_id="xgboost", category="ML", name=_t("XGBoost", "XGBoost"), implemented=True,
-                      component_types=_ALL_BUT, needs_validated_model=True,
-                      evidence_type=EvidenceType.SUPERVISED),
-        AlgorithmSpec(algorithm_id="lstm", category="DL", name=_t("LSTM", "LSTM"), implemented=False,
-                      component_types=_ALL_BUT, needs_validated_model=True,
-                      evidence_type=EvidenceType.SUPERVISED),
-        AlgorithmSpec(algorithm_id="drcnn", category="DL", name=_t("D-RCNN", "D-RCNN"), implemented=False,
-                      component_types=_ALL_BUT, required_quantities=[Q.OTHER], needs_validated_model=True,
-                      evidence_type=EvidenceType.SUPERVISED),
+        AlgorithmSpec(
+            algorithm_id="engineering-rules", category="RULES", name=_t("工程规则", "Engineering rules"),
+            implemented=True, evidence_type=EvidenceType.SAFETY,
+            boundary=_t("安全限值、超时、持续性、CUSUM；核心判定，必须启用。",
+                        "Safety limits, timeouts, persistence, CUSUM; the core decision, always on."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="feature-engineering", category="FEATURES", name=_t("特征工程", "Feature engineering"),
+            implemented=True, evidence_type=EvidenceType.STATISTICAL,
+            boundary=_t("工况残差、偏差、趋势、EWMA；生成证据，不单独下结论。",
+                        "Regime residuals, deviations, trends, EWMA; produces evidence, no verdict alone."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="mahalanobis-t2", category="UNSUPERVISED",
+            name=_t("马氏距离 / Hotelling T²", "Mahalanobis / Hotelling T²"),
+            implemented=True, evidence_type=EvidenceType.ANOMALY,
+            boundary=_t("无需故障标签；只依据已确认的健康参考窗口，窗口数不足时不评估；最多把状态提示到“关注”。",
+                        "Needs no fault labels; uses only the verified healthy reference windows and is not "
+                        "evaluated when there are too few; can raise at most WATCH."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="decision-tree", category="ML", name=_t("决策树", "Decision tree"),
+            implemented=True, component_types=_ALL_BUT, needs_validated_model=True, needs_labels=True,
+            evidence_type=EvidenceType.SUPERVISED,
+            boundary=_t("可解释的补充；需记录真值的故障标签并通过部署门槛，不得以健康状态作标签。",
+                        "Interpretable supplement; needs recorded-truth fault labels and the deployment gate; "
+                        "health states are never labels."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="xgboost", category="ML", name=_t("XGBoost", "XGBoost"),
+            implemented=True, component_types=_ALL_BUT, needs_validated_model=True, needs_labels=True,
+            evidence_type=EvidenceType.SUPERVISED,
+            boundary=_t("适用于窗口级表格特征，需足量带标签的故障样本；不用于原始高频波形，也不能与 LSTM、D-RCNN 互换。",
+                        "For window-level tabular features with enough labelled fault samples; not for raw "
+                        "high-frequency waveforms and not interchangeable with LSTM or D-RCNN."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="lstm", category="DL", name=_t("LSTM", "LSTM"), deep_family="lstm",
+            implemented=True, component_types=_ALL_BUT, needs_validated_model=True, needs_labels=True,
+            evidence_type=EvidenceType.SUPERVISED,
+            boundary=_t("适用于等间隔的连续窗口序列，需足量带标签的序列；训练与微调接口已就绪，需注册后端适配器。",
+                        "For evenly spaced window sequences with enough labelled sequences; the training and "
+                        "fine-tuning interface is ready, a backend adapter must be registered."),
+        ),
+        AlgorithmSpec(
+            algorithm_id="drcnn", category="DL", name=_t("D-RCNN", "D-RCNN"), deep_family="drcnn",
+            implemented=True, component_types=_ALL_BUT, required_quantities=[Q.VIBRATION],
+            min_sampling_hz=1000.0, needs_validated_model=True, needs_labels=True,
+            evidence_type=EvidenceType.SUPERVISED,
+            boundary=_t("只用于高频振动信号的时频分析（采样率不低于 1 kHz）；训练与微调接口已就绪，需注册后端适配器。",
+                        "Only for time-frequency analysis of high-frequency vibration (sampling at 1 kHz or "
+                        "more); the training and fine-tuning interface is ready, a backend adapter must be registered."),
+        ),
     ]
 }  # fmt: skip
+
+
+class Match(ContractModel):
+    """Which signals, rules and models suit a component type, and the limits that come with them."""
+
+    component_type: str
+    required_quantities: list[Q]
+    rules: LocalizedText
+    models: list[str]
+    constraints: list[LocalizedText]
+
+
+_MATCH: dict[ComponentType, Match] = {
+    ComponentType.BALL_SCREW: Match(
+        component_type="BALL_SCREW",
+        required_quantities=[Q.SPEED, Q.TORQUE],
+        rules=_t(
+            "工况归一化、统计规则、趋势偏差分析", "Regime normalisation, statistical rules, trend deviation"
+        ),
+        models=["xgboost", "lstm"],
+        constraints=[
+            _t(
+                "有监督学习需要足量带标签的故障样本。",
+                "Supervised learning needs enough labelled fault samples.",
+            )
+        ],
+    ),
+    ComponentType.LINEAR_MOTOR: Match(
+        component_type="LINEAR_MOTOR",
+        required_quantities=[Q.SPEED, Q.CURRENT, Q.TORQUE],
+        rules=_t("负载归一化、双向偏差分析、CUSUM", "Load normalisation, two-sided deviation, CUSUM"),
+        models=["xgboost", "lstm"],
+        constraints=[
+            _t(
+                "必须区分电机自身异常与外部机械负载变化。",
+                "Motor abnormality must be told apart from external mechanical load changes.",
+            )
+        ],
+    ),
+    ComponentType.PNEUMATIC_CYLINDER: Match(
+        component_type="PNEUMATIC_CYLINDER",
+        required_quantities=[Q.DURATION],
+        rules=_t(
+            "动作周期统计、超时检测、双向偏差分析",
+            "Motion-cycle statistics, timeout detection, two-sided deviation",
+        ),
+        models=["xgboost", "lstm"],
+        constraints=[_t("伸出与缩回两个方向都必须分析。", "Both extension and retraction must be analysed.")],
+    ),
+    ComponentType.VACUUM_CUP: Match(
+        component_type="VACUUM_CUP",
+        required_quantities=[Q.PRESSURE, Q.DURATION],
+        rules=_t("真空阈值监测、建立时间、保持趋势", "Vacuum threshold, build-up time, holding trend"),
+        models=["xgboost"],
+        constraints=[
+            _t(
+                "必须明确真空传感器读数与实际吸取结果之间的关系。",
+                "The relationship between the vacuum reading and the actual grip outcome must be defined.",
+            )
+        ],
+    ),
+}
+_GENERIC = Match(
+    component_type="CUSTOM",
+    required_quantities=[],
+    rules=_t(
+        "通用工程规则、稳健统计方法、无监督异常检测",
+        "General engineering rules, robust statistics, unsupervised anomaly detection",
+    ),
+    models=[],
+    constraints=[
+        _t(
+            "没有带标签的故障数据时，默认不给出故障概率。",
+            "Without labelled fault data no fault probability is given by default.",
+        )
+    ],
+)
+
+
+class Recommendation(ContractModel):
+    match: Match
+    content: ConfigContent
+    available_quantities: list[Q]
+    missing_quantities: list[Q]
+    compile: CompileResult
 
 
 class Issue(ContractModel):
@@ -225,11 +353,33 @@ def compile_config(
     for s in content.pipeline:
         spec = CATALOG.get(s.algorithm)
         why: LocalizedText | None = None
+        if spec is None and s.algorithm in PLUGINS:
+            ps = PLUGINS[s.algorithm][0]
+            missing = [q.value for q in ps.input_quantities if q not in have]
+            if missing:
+                why = _t(
+                    f"缺少输入信号：{', '.join(missing)}", f"Missing input signals: {', '.join(missing)}"
+                )
+                issues.append(Issue(level="error", stage_id=s.stage_id, code="MISSING_INPUT", message=why))
+            else:
+                why = _t("插件已注册，但决策引擎尚未读取插件证据，暂不参与判定",
+                         "Plugin is registered, but the decision engine does not consume plugin evidence yet; it takes no part")  # fmt: skip
+                issues.append(
+                    Issue(level="warning", stage_id=s.stage_id, code="PLUGIN_NOT_CONSUMED", message=why)
+                )
+            stages.append(
+                CompiledStage(stage_id=s.stage_id, algorithm=s.algorithm, effective=False, reason=why)
+            )
+            continue
         if spec is None:
             issues.append(Issue(level="error", stage_id=s.stage_id, code="UNKNOWN_ALGORITHM",
                                 message=_t(f"未知算法 {s.algorithm}", f"Unknown algorithm {s.algorithm}")))  # fmt: skip
         elif not s.enabled:
             why = _t("阶段已停用", "Stage is disabled")
+        elif spec.deep_family and deep.adapter_status().get(spec.deep_family):
+            why = _t(f"{spec.name.zh} 的后端适配器不可用：{deep.adapter_status()[spec.deep_family]}",
+                     f"The {spec.name.en} backend adapter is unavailable: {deep.adapter_status()[spec.deep_family]}")  # fmt: skip
+            issues.append(Issue(level="warning", stage_id=s.stage_id, code="NO_BACKEND", message=why))
         elif not spec.implemented:
             why = _t(f"{spec.name.zh} 尚无实现，只能保留接口，不参与判定",
                      f"{spec.name.en} has no implementation yet; kept as an interface only, not used")  # fmt: skip
@@ -242,7 +392,19 @@ def compile_config(
             issues.append(Issue(level="error", stage_id=s.stage_id, code="TYPE_NOT_SUPPORTED", message=why))
         else:
             missing = [q.value for q in spec.required_quantities if q not in have]
-            if missing:
+            slow = spec.min_sampling_hz is not None and any(
+                defs[m.signal_id].quantity in spec.required_quantities
+                and (defs[m.signal_id].expected_sampling_s or 1e9) * spec.min_sampling_hz > 1
+                for m in cfg.mappings
+                if m.component_id == component_id and m.signal_id in defs
+            )
+            if slow and not missing:
+                why = _t(
+                    f"输入信号采样率低于 {spec.min_sampling_hz:g} Hz，不满足 {spec.name.zh} 的输入要求",
+                    f"Input sampling is below {spec.min_sampling_hz:g} Hz; {spec.name.en} input requirement not met",
+                )
+                issues.append(Issue(level="error", stage_id=s.stage_id, code="SAMPLING_TOO_LOW", message=why))
+            elif missing:
                 why = _t(
                     f"缺少输入信号：{', '.join(missing)}", f"Missing input signals: {', '.join(missing)}"
                 )
@@ -468,3 +630,36 @@ class PredictionConfigStore:
         self._row(cur.config_id).active = False
         audit(self.session, who, "predcfg.deactivate", "prediction_config", cur.config_id)
         self.session.flush()
+
+
+def recommend_config(session: Session, component_id: str) -> Recommendation:
+    """A starting pipeline matched to the component type and the signals mapped to it (D-046)."""
+    comp = next((c for c in EquipmentStore(session).components() if c.component_id == component_id), None)
+    if comp is None:
+        raise PredictionConfigNotFoundError(component_id)
+    cfg = SignalConfigStore(session).current().content
+    defs = {s.signal_id: s for s in cfg.signals}
+    have = sorted(
+        {
+            defs[m.signal_id].quantity
+            for m in cfg.mappings
+            if m.component_id == component_id and m.signal_id in defs
+        },
+        key=lambda q: q.value,
+    )
+    match = _MATCH.get(comp.type, _GENERIC)
+    algos = [
+        "engineering-rules",
+        "feature-engineering",
+        "mahalanobis-t2",
+        *[a for a in ("decision-tree", *match.models)],
+    ]
+    if Q.VIBRATION in have:
+        algos += ["drcnn"]
+    stages = [Stage(stage_id=a.replace("-", "_")[:40], algorithm=a) for a in dict.fromkeys(algos)]
+    content = ConfigContent(pipeline=stages)
+    res, _ = compile_config(session, component_id, content)
+    return Recommendation(
+        match=match, content=content, available_quantities=have,
+        missing_quantities=[q for q in match.required_quantities if q not in have], compile=res,
+    )  # fmt: skip

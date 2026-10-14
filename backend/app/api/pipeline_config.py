@@ -14,6 +14,7 @@ from app.core.security import Principal, Role, require
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.decision import config_validation as cv
 from app.decision import pipeline_config as pc
+from app.prediction.models import deep
 
 router = APIRouter(tags=["prediction-config"])
 DB = Annotated[Session, Depends(get_session)]
@@ -40,6 +41,29 @@ class PublishBody(ContractModel):
 @router.get("/algorithm-catalog", response_model=list[pc.AlgorithmSpec])
 def catalog(_: Viewer) -> list[pc.AlgorithmSpec]:
     return list(pc.CATALOG.values())
+
+
+class DeepAdapterInfo(ContractModel):
+    family: str
+    contract: deep.InputContract
+    available: bool
+    unavailable_reason: str | None
+
+
+@router.get("/deep-model-adapters", response_model=list[DeepAdapterInfo])
+def deep_adapters(_: Viewer) -> list[DeepAdapterInfo]:
+    status = deep.adapter_status()
+    return [
+        DeepAdapterInfo(
+            family=f, contract=a.contract, available=status[f] is None, unavailable_reason=status[f]
+        )
+        for f, a in sorted(deep.ADAPTERS.items())
+    ]
+
+
+@router.get("/components/{component_id}/recommended-config", response_model=pc.Recommendation)
+def recommended(component_id: str, _: Viewer, db: DB) -> pc.Recommendation:
+    return pc.recommend_config(db, component_id)
 
 
 @router.get("/components/{component_id}/prediction-configs", response_model=list[pc.PredictionConfig])
