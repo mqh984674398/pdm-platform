@@ -17470,7 +17470,7 @@
               "type": "string"
             },
             "type": "array",
-            "maxItems": 12,
+            "maxItems": 11,
             "title": "Modules"
           }
         },

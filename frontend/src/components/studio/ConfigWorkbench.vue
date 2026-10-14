@@ -10,7 +10,10 @@ import type {
   AlgorithmSpec,
   ComponentInstance,
   ConfigContent,
+  ComponentLifecycle,
   ConfigRecommendation,
+  FeatureCoverage,
+  PipelineResult,
   EvidenceType,
   ManagedSource,
   PredictionConfig,
@@ -22,6 +25,7 @@ import type {
 } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
+import ReferenceForm from '@/components/fleet/ReferenceForm.vue'
 import SignalMappingEditor from '@/components/studio/SignalMappingEditor.vue'
 import PreviewChart, { type ChartSeries } from '@/components/studio/PreviewChart.vue'
 import '@/components/studio/studio.css'
@@ -31,6 +35,7 @@ const props = defineProps<{
   component: ComponentInstance
   siblings: ComponentInstance[]
   deviceId?: string | null
+  machineId: string
 }>()
 const { t } = useI18n()
 const { lt } = useLocalized()
@@ -163,6 +168,67 @@ const previewSeries = computed<ChartSeries[]>(() => {
 })
 const flagged = computed(() => previewSeries.value[0]?.flagged?.length ?? 0)
 
+// --- readiness: installation date, feature windows from the data, verified healthy reference -----------
+const lifecycles = ref<ComponentLifecycle[]>([])
+const coverage = ref<FeatureCoverage[]>([])
+const installAt = ref('')
+const pipelineResult = ref<PipelineResult | null>(null)
+const mappedHere = computed(() =>
+  mapped.value.filter((r) => r.mapping.component_id === props.component.component_id),
+)
+const windows = computed(() => coverage.value.reduce((n, c) => n + c.windows, 0))
+const hasReference = computed(() => coverage.value.some((c) => c.has_reference))
+async function loadReadiness() {
+  const id = props.component.component_id
+  lifecycles.value = await monitoringApi.lifecycles(id).catch(() => [])
+  coverage.value = await monitoringApi.featureCoverage(id).catch(() => [])
+}
+async function install() {
+  if (!installAt.value) return
+  const ok = await run(
+    () =>
+      monitoringApi.installComponent(
+        props.component.component_id,
+        new Date(`${installAt.value}T00:00:00Z`).toISOString(),
+        'workbench',
+      ),
+    t('workbench.installed'),
+  )
+  if (ok) await loadReadiness()
+}
+async function runPipeline() {
+  const r = await run(() => monitoringApi.runPipeline(props.machineId))
+  if (r) {
+    pipelineResult.value = r
+    await loadReadiness()
+  }
+}
+async function detach(x: SignalDefinition, m: SignalMapping) {
+  const cfg = signalState.value?.content
+  if (!cfg) return
+  const here = (y: SignalMapping) =>
+    y.data_source_id === m.data_source_id && y.device_id === m.device_id
+  const oldMaps = cfg.mappings.filter(here)
+  const ids = new Set(oldMaps.map((y) => y.signal_id))
+  const owned = (it: { signal_ids: string[] }) =>
+    it.signal_ids.length > 0 && it.signal_ids.every((i) => ids.has(i))
+  const ok = await run(
+    () =>
+      monitoringApi.replaceDevice(m.data_source_id, m.device_id, {
+        comment: `workbench: detach ${x.signal_id}`,
+        base_version: signalState.value?.version?.version ?? 0,
+        signals: cfg.signals.filter((y) => ids.has(y.signal_id)),
+        mappings: oldMaps.map((y) =>
+          y.signal_id === x.signal_id ? { ...y, component_id: null } : y,
+        ),
+        groups: cfg.groups.filter(owned),
+        visualizations: cfg.visualizations.filter(owned),
+      }),
+    t('workbench.detached'),
+  )
+  if (ok) await onMappingSaved()
+}
+
 const editable = computed(() => current.value?.status !== 'PUBLISHED')
 const active = computed(() => versions.value.find((v) => v.active) ?? null)
 const others = computed(() =>
@@ -221,6 +287,7 @@ async function load() {
   rec.value = r
   sources.value = s
   signalState.value = await monitoringApi.signalConfig().catch(() => null)
+  await loadReadiness()
   const keep = v.find((x) => x.config_id === current.value?.config_id)
   open(keep ?? v.find((x) => x.active) ?? v[v.length - 1] ?? null)
 }
@@ -495,6 +562,16 @@ const statusLabel = (v: PredictionConfig) =>
                     {{ t('workbench.save') }}
                   </button>
                   <button
+                    v-if="r.mapping.component_id === component.component_id"
+                    type="button"
+                    class="link danger"
+                    :disabled="busy"
+                    data-testid="wb-detach"
+                    @click="detach(r.signal, r.mapping)"
+                  >
+                    {{ t('workbench.detach') }}
+                  </button>
+                  <button
                     type="button"
                     class="link"
                     data-testid="wb-preview"
@@ -531,6 +608,63 @@ const statusLabel = (v: PredictionConfig) =>
           :device-id="deviceId"
           :state="signalState"
           @saved="onMappingSaved"
+        />
+      </section>
+
+      <!-- readiness -->
+      <section data-testid="wb-readiness">
+        <h3>{{ t('workbench.ready') }}</h3>
+        <p class="st-note">{{ t('workbench.readyNote') }}</p>
+        <ul class="ready">
+          <li :class="lifecycles.length ? 'ok' : 'error'" data-testid="ready-install">
+            {{ lifecycles.length ? '✓' : '✗' }} {{ t('workbench.rInstall') }}
+            <template v-if="lifecycles.length">
+              · {{ lifecycles[0]!.installed_at.slice(0, 10) }}
+            </template>
+            <span v-else class="row inline">
+              <input v-model="installAt" type="date" class="st-input" data-testid="install-date" />
+              <button
+                type="button"
+                class="st-button"
+                :disabled="busy || !installAt"
+                data-testid="install-save"
+                @click="install"
+              >
+                {{ t('workbench.registerInstall') }}
+              </button>
+            </span>
+          </li>
+          <li :class="mappedHere.length ? 'ok' : 'error'" data-testid="ready-signals">
+            {{ mappedHere.length ? '✓' : '✗' }}
+            {{ t('workbench.rSignals', { n: mappedHere.length }) }}
+          </li>
+          <li :class="windows ? 'ok' : 'error'" data-testid="ready-features">
+            {{ windows ? '✓' : '✗' }} {{ t('workbench.rFeatures', { n: windows }) }}
+            <button
+              type="button"
+              class="st-button"
+              :disabled="busy || !lifecycles.length || !mappedHere.length"
+              data-testid="run-pipeline"
+              @click="runPipeline"
+            >
+              {{ t('workbench.runPipeline') }}
+            </button>
+            <span v-if="pipelineResult" class="st-note" data-testid="pipeline-result">
+              {{
+                t(`workbench.catalog.${pipelineResult.catalog}`, {
+                  n: pipelineResult.windows_added,
+                })
+              }}
+            </span>
+          </li>
+          <li :class="hasReference ? 'ok' : 'error'" data-testid="ready-reference">
+            {{ hasReference ? '✓' : '✗' }} {{ t('workbench.rReference') }}
+          </li>
+        </ul>
+        <ReferenceForm
+          v-if="windows && !hasReference"
+          :component-id="component.component_id"
+          @verified="loadReadiness"
         />
       </section>
 
@@ -787,6 +921,17 @@ section {
   align-items: center;
   flex-wrap: wrap;
   margin-top: var(--space-2);
+}
+.ready {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.inline {
+  display: inline-flex;
+  margin: 0 0 0 var(--space-3);
 }
 .num {
   width: 90px;

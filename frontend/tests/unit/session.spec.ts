@@ -33,7 +33,7 @@ describe('session (T028)', () => {
     )
     expect(session.modules).toEqual(['alarms'])
     expect(canOpen('alarms', session.role, session.modules)).toBe(true)
-    expect(canOpen('datasource', session.role, session.modules)).toBe(false)
+    expect(canOpen('signals', session.role, session.modules)).toBe(false)
     expect(canOpen('users', session.role, session.modules)).toBe(false)
     expect(canOpen('users', 'admin', MODULES)).toBe(true)
   })

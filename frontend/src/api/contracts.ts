@@ -94,3 +94,7 @@ export type ConfigRecommendation = S['app__decision__pipeline_config__Recommenda
 export type ManagedSource = S['ManagedSource']
 export type RelationType = S['RelationType']
 export type EvidenceType = S['EvidenceType']
+export type ManagedSourceBody = S['ManagedSourceBody']
+export type SourceTestCheck = S['TestCheck']
+export type PipelineResult = S['PipelineResult']
+export type FeatureCoverageRow = S['FeatureCoverage']

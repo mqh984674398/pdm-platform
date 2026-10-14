@@ -91,11 +91,17 @@ watch(
 )
 
 const kind = computed(() => sources.value.find((s) => s.data_source_id === source.value)?.kind)
+// signals already mapped to this component start ticked; other components' signals stay untouched
 const mappedIds = computed(
   () =>
     new Set(
       (props.state?.content.mappings ?? [])
-        .filter((m) => m.data_source_id === source.value && m.device_id === device.value)
+        .filter(
+          (m) =>
+            m.data_source_id === source.value &&
+            m.device_id === device.value &&
+            m.component_id === props.componentId,
+        )
         .map((m) => m.signal_id),
     ),
 )

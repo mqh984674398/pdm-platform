@@ -61,6 +61,9 @@ def test_admin_creates_tests_and_deletes_a_source(client, tmp_path):
         if s["data_source_id"] == "taos-plant"
     )
     assert listed["layout"]["verified"]  # set only by a successful test against the database
+    # the passing test also registers the standard read-only templates, so mapping can use the source
+    tpl = client.get("/api/query-templates", role="engineer").json()
+    assert any(t["data_source_id"] == "taos-plant" for t in tpl)
     assert client.delete("/api/admin/datasources/taos-plant").status_code == 204
     assert "PDM_SECRET_TAOS_PLANT" not in (tmp_path / ".env").read_text()
     assert "taos-plant" not in [

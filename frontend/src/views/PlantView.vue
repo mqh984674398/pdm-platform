@@ -3,7 +3,7 @@
  * Plant structure (D-037/D-038), administrators only: workshop (车间) → process (工序) → machine (机台).
  * Each machine carries its device id in the data source and its components, including which components
  * share a drive chain. Machine paths show on the overview, machine map and component history; the
- * Algorithm configuration screen offers this tree to pick a device.
+ * workbench screen offers the tree to pick a device.
  */
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -11,6 +11,7 @@ import type { ComponentInstance, PlantMachine, PlantTree } from '@/api/contracts
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SideDrawer from '@/components/base/SideDrawer.vue'
+import DataSourcePanel from '@/components/studio/DataSourcePanel.vue'
 import ConfigWorkbench from '@/components/studio/ConfigWorkbench.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
@@ -308,6 +309,7 @@ const chains = computed(() => {
     >
       {{ message.text }}
     </p>
+    <DataSourcePanel />
     <div v-if="tree" class="layout">
       <PanelBox :title="t('plant.tree')">
         <div class="row tree-head">
@@ -752,6 +754,7 @@ const chains = computed(() => {
         :component="configComponent"
         :siblings="machine.components"
         :device-id="machine.device_id"
+        :machine-id="machine.machine_id"
       />
       <PanelBox v-if="!selected" :title="t('plant.hintTitle')">
         <p class="st-note">{{ t('plant.hint') }}</p>

@@ -258,7 +258,7 @@ const fmtNum = (v: number | null | undefined) => (v === null || v === undefined 
       <h1>{{ t('nav.signals') }}</h1>
       <p class="lede">
         {{ t('signals.lede') }}
-        <RouterLink to="/datasource">{{ t('nav.datasource') }}</RouterLink>
+        <RouterLink to="/plant">{{ t('nav.plant') }}</RouterLink>
       </p>
     </header>
     <p v-if="loadError" class="error">{{ t('common.loadFailed') }}</p>

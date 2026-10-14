@@ -17,6 +17,7 @@ from app.core.db import get_session
 from app.core.schemas import ContractModel
 from app.core.security import Principal, Role, require
 from app.datasource import managed as m
+from app.datasource.query_service.defaults import ensure_standard_templates
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.datasource.schemas import DataSourceKind
 from app.datasource.sql import AdapterError
@@ -152,6 +153,9 @@ def test_source(data_source_id: str, who: Admin, db: DB, reg: Reg) -> list[TestC
         rec.layout = {**rec.layout, "verified": True}
         reg.remove(data_source_id)
         reg.add(*m.build(rec))
+        db.flush()
+        # a source added here after start-up has no query templates until one exists for it
+        ensure_standard_templates(db, reg)
     audit(db, who, "datasource.test", "datasource", data_source_id, reachable=reachable,
           read_only=read_only, layout=layout_ok)  # fmt: skip
     db.commit()

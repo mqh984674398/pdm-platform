@@ -61,13 +61,6 @@ export const NAV: NavItem[] = [
     icon: 'M8 2l6 11H2zM8 6v3M8 11v.5',
   },
   {
-    name: 'datasource',
-    path: '/datasource',
-    group: 'groupConfigure',
-    task: 'T008',
-    icon: 'M3 4c0-1 2-2 5-2s5 1 5 2v8c0 1-2 2-5 2s-5-1-5-2zM3 4c0 1 2 2 5 2s5-1 5-2M3 8c0 1 2 2 5 2s5-1 5-2',
-  },
-  {
     name: 'signals',
     path: '/signals',
     group: 'groupConfigure',

@@ -35,7 +35,6 @@ MODULES: tuple[str, ...] = (
     "baselines",
     "maintenance",
     "alarms",
-    "datasource",
     "signals",
     "optimization",
     "models",

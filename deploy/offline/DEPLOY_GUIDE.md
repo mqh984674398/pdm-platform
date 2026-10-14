@@ -83,8 +83,8 @@ cd C:\PDM\pdm-offline\pdm\backend
 
 - **涛思数据库（TDengine）无需管理员审批**，但必须使用只读账号（D-035）。其他生产数据库（PostgreSQL 等）仍默认关闭（`PDM_PRODUCTION_DATA_APPROVED=false`）。**没有正式维护告警**，开启需要您另外明确批准。
   **TDengine needs no administrator approval** but must use a read-only account (D-035). Other production databases stay off by default; there is no official alerting.
-- **仿真数据库仅管理员可用**；工程师、维护、查看角色在算法配置只能看到涛思数据库。
-  **The simulation database is for administrators only**; other roles see only TDengine sources in Algorithm configuration.
+- **仿真数据库仅管理员可用**；工程师、维护、查看角色在配置工作台只能看到涛思数据库。
+  **The simulation database is for administrators only**; other roles see only TDengine sources in the Configuration workbench.
 - 默认使用 HTTP。如有证书和 HTTPS 反向代理，在 `.env` 中设置 `PDM_COOKIE_SECURE=true`。
   Plain HTTP by default; behind HTTPS set `PDM_COOKIE_SECURE=true`.
 - 本地 LLM：如需使用，在本机或局域网安装 Ollama 并只监听 127.0.0.1，然后由管理员在“本地助手”页面配置。
@@ -109,8 +109,8 @@ The platform reads TDengine through taosAdapter's REST endpoint (port 6041); no 
    PDM_SECRET_TAOS_READONLY=pdm_reader:密码
    PDM_DATASOURCES_FILE=..\deploy\datasources.json
    ```
-4. 在任务计划程序中重启 “PDM Platform”。然后在算法配置第 1 步选择该数据源并点击“测试连接”，“只读”检查必须通过。
-   Restart "PDM Platform", then pick the source in Studio step 1 and run the connection test; the read-only check must pass.
+4. 在任务计划程序中重启 “PDM Platform”。然后以管理员登录，在“配置工作台”顶部的“数据源”中点击该数据源的“测试连接”，“账号只读”检查必须通过。
+   Restart "PDM Platform", sign in as administrator and run "Test connection" for the source under Data sources at the top of the Configuration workbench; the read-only check must pass.
 
 注意：平台只发送 SELECT / SHOW / DESCRIBE 语句；只读账号是最终保障。尚未连接真实涛思数据库验证（见第 8 节）。
 The platform sends only SELECT / SHOW / DESCRIBE; the read-only account is the final safeguard. Not yet verified against a real TDengine server (see section 8).
@@ -144,7 +144,11 @@ Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 
 
 ## 数据源管理与预测配置版本 / Data source management and configuration versions (D-044)
 
-- 管理员可通过接口 `/api/admin/datasources` 新增、修改、测试涛思数据源；账号密码只写入 `backend\.env`（仅 SYSTEM 与管理员可读），不会返回或存入数据库。界面在后续阶段提供。
-- Administrators can add, edit and test TDengine sources through `/api/admin/datasources`. The account goes only into `backend\.env` (SYSTEM and Administrators), never to the database or back out through the API. The screen follows in a later phase.
-- 预测配置版本（草稿→校验→发布→启用）已有接口 `/api/prediction-configs`；当前启用不改变判定结果，决策引擎读取配置在下一阶段。
-- Prediction configuration versions (draft → validate → publish → activate) have an API; activating one does not yet change verdicts. The decision engine will read it in the next phase.
+- 管理员在“配置工作台”顶部的“数据源”中新增、修改、测试、删除涛思数据源；账号密码只写入 `backend\.env`（仅 SYSTEM 与管理员可读），不会返回或存入数据库。测试通过后自动登记标准只读查询模板。
+- Administrators add, edit, test and delete TDengine sources under Data sources at the top of the Configuration workbench. The account goes only into `backend\.env` (SYSTEM and Administrators), never to the database or back out through the API. A passing test also registers the standard read-only query templates.
+- 旧的“算法配置”页已删除；它的功能由“配置工作台”承担（设备结构、数据源与信号映射、部件预测配置、健康参考与特征生成）。
+- The former "Algorithm configuration" page is removed; the Configuration workbench replaces it (plant structure, data sources and signal mappings, per-component prediction configuration, healthy reference and feature building).
+- 预测配置版本（草稿→校验→发布→启用）在工作台中操作；启用后决策引擎使用该版本。
+- Prediction configuration versions (draft → validate → publish → activate) are handled in the workbench; once active, the decision engine uses the version.
+- **一键测试**：安装包根目录的 `verify.cmd`（源码为 `tools\run_demo.cmd`）用内置 Python 在仿真数据上启动一个独立的演示服务（默认 8765 端口，不影响已安装的服务和 PostgreSQL），先自动走完“新部件→信号映射→特征→健康参考→预测配置→启用”共 10 步并逐步显示通过/失败，然后保持服务以便在浏览器手动测试（管理员 `admin`，密码见窗口输出）。加参数 `-Check` 只做检查。尚未在真实 Windows 上运行过。
+- **One-click test**: `verify.cmd` in the package root (source: `tools\run_demo.cmd`) starts a separate demo server on SIMULATED data with the bundled Python (port 8765 by default; the installed service and PostgreSQL are untouched), first walks a new component through 10 steps (signals → features → healthy reference → prediction configuration → activate) printing PASS/FAIL per step, then keeps the server up for manual browser testing (administrator `admin`, password shown in the window). Add `-Check` to run the check only. Not yet run on a real Windows machine.

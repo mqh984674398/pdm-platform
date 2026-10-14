@@ -55,10 +55,10 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
         return resp
 
     app.include_router(health.router, prefix="/api")
-    app.include_router(query.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(query.router, prefix="/api", dependencies=[require_module("signals")])
     app.include_router(signals.router, prefix="/api")
-    app.include_router(studio.router, prefix="/api", dependencies=[require_module("datasource")])
-    app.include_router(quality.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(studio.router, prefix="/api", dependencies=[require_module("signals")])
+    app.include_router(quality.router, prefix="/api", dependencies=[require_module("signals")])
     app.include_router(datasources.router, prefix="/api")
     app.include_router(pipeline_config.router, prefix="/api")
     app.include_router(equipment.router, prefix="/api")

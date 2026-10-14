@@ -10,6 +10,7 @@ import type {
   FeatureCoverage,
   ComponentHealthReport,
   ComponentInstance,
+  ComponentLifecycle,
   DegradationHistory,
   FleetOverview,
   Machine,
@@ -47,6 +48,9 @@ import type {
   ConfigContent,
   ConfigRecommendation,
   ManagedSource,
+  PipelineResult,
+  ManagedSourceBody,
+  SourceTestCheck,
   PredictionConfig,
 } from './contracts'
 import { authHeaders } from './session'
@@ -162,6 +166,30 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         'POST',
       ),
     adminDataSources: () => call<ManagedSource[]>('/api/admin/datasources'),
+    saveDataSource: (b: ManagedSourceBody) =>
+      call<ManagedSource>(`/api/admin/datasources/${encodeURIComponent(b.data_source_id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(b),
+      }),
+    testDataSource: (id: string) =>
+      call<SourceTestCheck[]>(`/api/admin/datasources/${encodeURIComponent(id)}/test`, {
+        method: 'POST',
+        body: '{}',
+      }),
+    deleteDataSource: (id: string) => remove(`/api/admin/datasources/${encodeURIComponent(id)}`),
+    // --- readiness of a component: installation, feature windows, healthy reference ---
+    lifecycles: (componentId: string) =>
+      call<ComponentLifecycle[]>(`/api/components/${encodeURIComponent(componentId)}/lifecycles`),
+    installComponent: (componentId: string, installedAt: string, comment: string) =>
+      call<ComponentLifecycle>(`/api/components/${encodeURIComponent(componentId)}/lifecycles`, {
+        method: 'POST',
+        body: JSON.stringify({ installed_at: installedAt, comment }),
+      }),
+    runPipeline: (machineId: string, until?: string) =>
+      call<PipelineResult>('/api/pipeline/run', {
+        method: 'POST',
+        body: JSON.stringify({ machine_id: machineId, until: until ?? null }),
+      }),
     // --- data sources and signal mappings (step 2 of the configuration workflow) ---
     dataSources: () => call<DataSourceConfig[]>('/api/datasources'),
     sourceDevices: (sourceId: string) =>
