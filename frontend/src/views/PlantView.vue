@@ -10,6 +10,7 @@ import { useI18n } from 'vue-i18n'
 import type { ComponentInstance, PlantMachine, PlantTree } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
+import ConfigWorkbench from '@/components/studio/ConfigWorkbench.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
 
@@ -32,6 +33,10 @@ const busy = ref(false)
 const message = ref<{ ok: boolean; text: string } | null>(null)
 type Sel = { kind: 'workshop' | 'process' | 'machine'; id: string } | null
 const selected = ref<Sel>(null)
+const configuring = ref<string | null>(null)
+const configComponent = computed(() =>
+  machine.value?.components.find((c) => c.component_id === configuring.value),
+)
 
 async function load() {
   try {
@@ -91,6 +96,7 @@ const comp = reactive({ id: '', type: 'BALL_SCREW', zh: '', en: '', chain: '' })
 
 function select(kind: 'workshop' | 'process' | 'machine', id: string) {
   selected.value = { kind, id }
+  configuring.value = null
   message.value = null
   Object.assign(child, { id: '', zh: '', en: '', device: '' })
   Object.assign(comp, { id: '', type: 'BALL_SCREW', zh: '', en: '', chain: '' })
@@ -476,6 +482,14 @@ const chains = computed(() => {
                   <td>
                     <button
                       type="button"
+                      class="link"
+                      data-testid="component-configure"
+                      @click="configuring = c.component_id"
+                    >
+                      {{ t('workbench.configure') }}
+                    </button>
+                    <button
+                      type="button"
                       class="link danger"
                       :disabled="busy"
                       @click="deleteComponent(c)"
@@ -504,6 +518,13 @@ const chains = computed(() => {
           </form>
         </div>
       </PanelBox>
+      <ConfigWorkbench
+        v-if="machine && configComponent"
+        :key="configComponent.component_id"
+        class="wide"
+        :component="configComponent"
+        :siblings="machine.components"
+      />
       <PanelBox v-if="!selected" :title="t('plant.hintTitle')">
         <p class="st-note">{{ t('plant.hint') }}</p>
       </PanelBox>
@@ -591,6 +612,9 @@ h3 {
 .add .st-select {
   flex: 1 1 120px;
   min-width: 0;
+}
+.wide {
+  grid-column: 1 / -1;
 }
 .chain {
   width: 140px;

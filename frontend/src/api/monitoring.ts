@@ -38,6 +38,12 @@ import type {
   MachinePlacement,
   PlantNodeChange,
   PlantTree,
+  AlgorithmSpec,
+  CompileResult,
+  ConfigContent,
+  ConfigRecommendation,
+  ManagedSource,
+  PredictionConfig,
 } from './contracts'
 import { authHeaders } from './session'
 
@@ -76,8 +82,8 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
     return (await resp.json()) as T
   }
 
-  async function remove(path: string): Promise<void> {
-    const resp = await fetchImpl(url(path), { method: 'DELETE', headers: headers() })
+  async function remove(path: string, method = 'DELETE'): Promise<void> {
+    const resp = await fetchImpl(url(path), { method, headers: headers() })
     if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
   }
 
@@ -99,6 +105,59 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
           body: JSON.stringify({ item, comment, base_version: baseVersion }),
         },
       ),
+    // --- prediction configuration versions (D-044..D-046) ---
+    algorithmCatalog: () => call<AlgorithmSpec[]>('/api/algorithm-catalog'),
+    recommendedConfig: (componentId: string) =>
+      call<ConfigRecommendation>(
+        `/api/components/${encodeURIComponent(componentId)}/recommended-config`,
+      ),
+    configVersions: (componentId: string) =>
+      call<PredictionConfig[]>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs`,
+      ),
+    createDraft: (componentId: string, content: ConfigContent | null, copyFrom?: string) =>
+      call<PredictionConfig>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ content, copy_from_component: copyFrom ?? null }),
+        },
+      ),
+    updateDraft: (configId: string, content: ConfigContent) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(content),
+      }),
+    deleteDraft: (configId: string) =>
+      remove(`/api/prediction-configs/${encodeURIComponent(configId)}`),
+    cloneConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/clone`, {
+        method: 'POST',
+      }),
+    compileConfig: (componentId: string, content: ConfigContent) =>
+      call<CompileResult>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs/compile`,
+        { method: 'POST', body: JSON.stringify(content) },
+      ),
+    validateConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/validate`, {
+        method: 'POST',
+      }),
+    publishConfig: (configId: string, comment: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/publish`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+    activateConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/activate`, {
+        method: 'POST',
+      }),
+    deactivateConfig: (componentId: string) =>
+      remove(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs/deactivate`,
+        'POST',
+      ),
+    adminDataSources: () => call<ManagedSource[]>('/api/admin/datasources'),
     users: () => call<UserInfo[]>('/api/auth/users'),
     createUser: (u: { user_id: string; display_name: string; role: string; password: string }) =>
       call<UserInfo>('/api/auth/users', { method: 'POST', body: JSON.stringify(u) }),
