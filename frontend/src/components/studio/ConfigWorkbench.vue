@@ -14,14 +14,23 @@ import type {
   EvidenceType,
   ManagedSource,
   PredictionConfig,
+  PreviewResponse,
   RelationType,
+  SignalConfigState,
+  SignalDefinition,
+  SignalMapping,
 } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
+import PreviewChart, { type ChartSeries } from '@/components/studio/PreviewChart.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
 
-const props = defineProps<{ component: ComponentInstance; siblings: ComponentInstance[] }>()
+const props = defineProps<{
+  component: ComponentInstance
+  siblings: ComponentInstance[]
+  deviceId?: string | null
+}>()
 const { t } = useI18n()
 const { lt } = useLocalized()
 
@@ -53,6 +62,96 @@ const message = ref<{ ok: boolean; text: string } | null>(null)
 const comment = ref('')
 const copyFrom = ref('')
 const addAlgo = ref('')
+
+// --- step 2: mapped signals, editable parameters and a preview of the real data -----------------------
+const signalState = ref<SignalConfigState | null>(null)
+const mapped = computed<{ signal: SignalDefinition; mapping: SignalMapping }[]>(() => {
+  const cfg = signalState.value?.content
+  if (!cfg) return []
+  return cfg.mappings
+    .filter(
+      (m) =>
+        m.component_id === props.component.component_id ||
+        (!!props.deviceId && m.device_id === props.deviceId),
+    )
+    .flatMap((m) => {
+      const sig = cfg.signals.find((x) => x.signal_id === m.signal_id)
+      return sig ? [{ signal: sig, mapping: m }] : []
+    })
+})
+const sigEdit = reactive<Record<string, { unit: string; hz: string; min: string; max: string }>>({})
+watch(
+  mapped,
+  (rows) => {
+    for (const { signal: x } of rows)
+      sigEdit[x.signal_id] = {
+        unit: x.unit,
+        hz: x.expected_sampling_s == null ? '' : String(x.expected_sampling_s),
+        min: x.valid_min == null ? '' : String(x.valid_min),
+        max: x.valid_max == null ? '' : String(x.valid_max),
+      }
+  },
+  { immediate: true },
+)
+const num = (v: string) => (v.trim() === '' ? null : Number(v))
+async function saveSignal(x: SignalDefinition) {
+  const e = sigEdit[x.signal_id]!
+  const item = {
+    ...x,
+    unit: e.unit.trim(),
+    expected_sampling_s: num(e.hz),
+    valid_min: num(e.min),
+    valid_max: num(e.max),
+  }
+  const ok = await run(
+    () => monitoringApi.saveSignal(item, 'workbench', signalState.value?.version?.version ?? 0),
+    t('workbench.signalSaved'),
+  )
+  if (ok) {
+    signalState.value = await monitoringApi.signalConfig()
+    load().catch(() => undefined)
+  }
+}
+const previewId = ref<string | null>(null)
+const previewData = ref<PreviewResponse | null>(null)
+const previewNote = ref('')
+async function showPreview(id: string) {
+  previewId.value = id
+  previewData.value = null
+  previewNote.value = ''
+  try {
+    const ext = await monitoringApi.extent(id)
+    if (!ext) {
+      previewNote.value = t('workbench.noData')
+      return
+    }
+    const end = Date.parse(ext.end) + 1000
+    const start = Math.max(Date.parse(ext.start), end - 3600_000)
+    previewData.value = await monitoringApi.signalPreview(
+      id,
+      new Date(start).toISOString(),
+      new Date(end).toISOString(),
+    )
+  } catch {
+    previewNote.value = t('workbench.noData')
+  }
+}
+const previewSeries = computed<ChartSeries[]>(() => {
+  const n = previewData.value?.normalized[0]
+  if (!n) return []
+  const pts = n.samples.filter((x) => x.value !== null)
+  return [
+    {
+      name: n.signal_id,
+      unit: n.unit,
+      points: pts.map((x) => [Date.parse(x.ts), x.value as number]),
+      flagged: pts
+        .filter((x) => x.quality.length)
+        .map((x) => [Date.parse(x.ts), x.value as number]),
+    },
+  ]
+})
+const flagged = computed(() => previewSeries.value[0]?.flagged?.length ?? 0)
 
 const editable = computed(() => current.value?.status !== 'PUBLISHED')
 const active = computed(() => versions.value.find((v) => v.active) ?? null)
@@ -111,6 +210,7 @@ async function load() {
   catalog.value = c
   rec.value = r
   sources.value = s
+  signalState.value = await monitoringApi.signalConfig().catch(() => null)
   const keep = v.find((x) => x.config_id === current.value?.config_id)
   open(keep ?? v.find((x) => x.active) ?? v[v.length - 1] ?? null)
 }
@@ -356,6 +456,98 @@ const statusLabel = (v: PredictionConfig) =>
               }}
             </li>
           </ul>
+          <div v-if="mapped.length" class="st-scroll">
+            <table class="st-table" data-testid="wb-signals">
+              <thead>
+                <tr>
+                  <th>{{ t('workbench.signal') }}</th>
+                  <th>{{ t('workbench.source') }}</th>
+                  <th>{{ t('workbench.unit') }}</th>
+                  <th>{{ t('workbench.samplingS') }}</th>
+                  <th>{{ t('workbench.validRange') }}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in mapped" :key="r.signal.signal_id" :data-signal="r.signal.signal_id">
+                  <td>
+                    {{ lt(r.signal.name) }}
+                    <span class="st-note st-mono"
+                      >{{ r.signal.signal_id }} · {{ r.signal.quantity }}</span
+                    >
+                  </td>
+                  <td class="st-mono">{{ r.mapping.data_source_id }}</td>
+                  <td>
+                    <input
+                      v-model="sigEdit[r.signal.signal_id]!.unit"
+                      class="st-input st-mono num"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      v-model="sigEdit[r.signal.signal_id]!.hz"
+                      class="st-input st-mono num"
+                      type="number"
+                      step="any"
+                      min="0"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      v-model="sigEdit[r.signal.signal_id]!.min"
+                      class="st-input st-mono num"
+                      type="number"
+                      step="any"
+                    />
+                    <input
+                      v-model="sigEdit[r.signal.signal_id]!.max"
+                      class="st-input st-mono num"
+                      type="number"
+                      step="any"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="link"
+                      :disabled="busy"
+                      @click="saveSignal(r.signal)"
+                    >
+                      {{ t('workbench.save') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="link"
+                      data-testid="wb-preview"
+                      @click="showPreview(r.signal.signal_id)"
+                    >
+                      {{ t('workbench.preview') }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p v-else class="st-note">{{ t('workbench.noSignals') }}</p>
+          <div v-if="previewId" data-testid="wb-preview-box">
+            <p class="st-note">
+              {{ t('workbench.previewNote', { id: previewId }) }}
+              <template v-if="previewSeries[0]">
+                ·
+                {{
+                  t('workbench.previewCount', { n: previewSeries[0].points.length, f: flagged })
+                }}</template
+              >
+              <template v-if="previewNote"> · {{ previewNote }}</template>
+            </p>
+            <PreviewChart
+              v-if="previewSeries[0]?.points.length"
+              :series="previewSeries"
+              :height="200"
+              :flagged-label="t('workbench.flagged')"
+            />
+          </div>
+          <RouterLink to="/datasource">{{ t('workbench.editMapping') }}</RouterLink>
         </section>
 
         <!-- 3 relationships -->
@@ -588,6 +780,9 @@ section {
   align-items: center;
   flex-wrap: wrap;
   margin-top: var(--space-2);
+}
+.num {
+  width: 90px;
 }
 .chk {
   display: inline-flex;

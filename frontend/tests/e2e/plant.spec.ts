@@ -10,6 +10,7 @@ test('administrator builds the plant structure and picks the machine in algorith
   const sfx = Date.now().toString(36)
   await page.goto('/plant')
   await expect(page.locator('h1')).toHaveText('设备结构')
+  await page.getByTestId('add-workshop-open').click()
   const ws = page.getByTestId('add-workshop')
   await ws.getByPlaceholder('编号', { exact: true }).fill(`WS-${sfx}`)
   await ws.getByPlaceholder('中文名称').fill(`车间${sfx}`)
@@ -35,6 +36,10 @@ test('administrator builds the plant structure and picks the machine in algorith
     await expect(page.locator(`[data-component="M-${sfx}-BS${n}"]`)).toBeVisible()
   }
   await expect(page.getByTestId('plant-components')).toContainText('共用（2 个部件）')
+  // tree nodes carry their own actions: a component node shows under its machine
+  await expect(page.locator(`[data-comp-node="M-${sfx}-BS1"]`)).toBeVisible()
+  await page.getByTestId('side-drawer').getByRole('button', { name: '关闭' }).click()
+  await expect(page.getByTestId('side-drawer')).toHaveCount(0)
 
   // Algorithm configuration: the same machine is picked through workshop → process → machine.
   await page.goto('/datasource')
