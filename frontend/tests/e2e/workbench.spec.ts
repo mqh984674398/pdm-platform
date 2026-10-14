@@ -67,10 +67,16 @@ test('step 2 shows the mapped signal, edits its parameters and previews the real
   // the component node in the tree opens its configuration directly
   await page.locator(`[data-comp-node="${mid}-BS1"]`).click()
   const wb = page.getByTestId('config-workbench')
+  // bind the component to a source and device, read the proposed signals and map one of them
+  await wb.getByTestId('map-suggest').click()
+  const suggested = wb.getByTestId('map-suggestions').locator('[data-suggest="BENCH.torque"]')
+  await suggested.getByRole('checkbox').check()
+  await wb.getByTestId('map-save').click()
+  await expect(wb.getByTestId('map-message')).toContainText('信号映射已保存')
   await wb.getByTestId('wb-start').click()
   const row = wb.locator('[data-signal="BENCH.torque"]')
   await expect(row).toBeVisible()
-  await row.getByRole('textbox').first().fill('N*m')
+  await row.getByRole('textbox').first().fill('kN*m')
   await row.getByRole('button', { name: '保存' }).click()
   await expect(page.getByTestId('wb-message')).toContainText('信号参数已保存')
   await wb.locator('[data-signal="BENCH.torque"]').getByTestId('wb-preview').click()

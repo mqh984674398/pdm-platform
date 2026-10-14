@@ -412,6 +412,15 @@ const en: typeof zh = {
     noVersions: 'No saved versions yet.',
   },
   workbench: {
+    bind: 'Bind data source and device',
+    readSignals: 'Read signals of this device',
+    noSuggestions: 'No signals proposed for this device',
+    use: 'Use',
+    quantity: 'Quantity',
+    saveMapping: 'Save mapping',
+    mappingSaved: 'Signal mapping saved (new signal configuration version)',
+    productionNote:
+      'The production TDengine database is read-only; reading needs no administrator approval.',
     signal: 'Signal',
     source: 'Data source',
     unit: 'Unit',

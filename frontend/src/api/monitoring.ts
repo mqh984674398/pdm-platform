@@ -39,6 +39,10 @@ import type {
   PlantNodeChange,
   PlantTree,
   AlgorithmSpec,
+  ApiStudioDevice,
+  DataSourceConfig,
+  DeviceConfigChange,
+  DeviceSuggestions,
   CompileResult,
   ConfigContent,
   ConfigRecommendation,
@@ -158,6 +162,19 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         'POST',
       ),
     adminDataSources: () => call<ManagedSource[]>('/api/admin/datasources'),
+    // --- data sources and signal mappings (step 2 of the configuration workflow) ---
+    dataSources: () => call<DataSourceConfig[]>('/api/datasources'),
+    sourceDevices: (sourceId: string) =>
+      call<ApiStudioDevice[]>(`/api/datasources/${encodeURIComponent(sourceId)}/devices`),
+    deviceSuggestions: (sourceId: string, deviceId: string) =>
+      call<DeviceSuggestions>(
+        `/api/datasources/${encodeURIComponent(sourceId)}/devices/${encodeURIComponent(deviceId)}/suggestions`,
+      ),
+    replaceDevice: (sourceId: string, deviceId: string, change: DeviceConfigChange) =>
+      call<SignalConfigVersion>(
+        `/api/signal-config/sources/${encodeURIComponent(sourceId)}/devices/${encodeURIComponent(deviceId)}`,
+        { method: 'PUT', body: JSON.stringify(change) },
+      ),
     users: () => call<UserInfo[]>('/api/auth/users'),
     createUser: (u: { user_id: string; display_name: string; role: string; password: string }) =>
       call<UserInfo>('/api/auth/users', { method: 'POST', body: JSON.stringify(u) }),

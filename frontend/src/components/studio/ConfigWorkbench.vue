@@ -22,6 +22,7 @@ import type {
 } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
+import SignalMappingEditor from '@/components/studio/SignalMappingEditor.vue'
 import PreviewChart, { type ChartSeries } from '@/components/studio/PreviewChart.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
@@ -80,16 +81,21 @@ const mapped = computed<{ signal: SignalDefinition; mapping: SignalMapping }[]>(
     })
 })
 const sigEdit = reactive<Record<string, { unit: string; hz: string; min: string; max: string }>>({})
+const origin = new Map<string, string>()
 watch(
   mapped,
   (rows) => {
-    for (const { signal: x } of rows)
+    for (const { signal: x } of rows) {
+      const key = JSON.stringify(x)
+      if (origin.get(x.signal_id) === key) continue // unchanged on the server: keep what is typed
+      origin.set(x.signal_id, key)
       sigEdit[x.signal_id] = {
         unit: x.unit,
         hz: x.expected_sampling_s == null ? '' : String(x.expected_sampling_s),
         min: x.valid_min == null ? '' : String(x.valid_min),
         max: x.valid_max == null ? '' : String(x.valid_max),
       }
+    }
   },
   { immediate: true },
 )
@@ -103,14 +109,18 @@ async function saveSignal(x: SignalDefinition) {
     valid_min: num(e.min),
     valid_max: num(e.max),
   }
-  const ok = await run(
-    () => monitoringApi.saveSignal(item, 'workbench', signalState.value?.version?.version ?? 0),
-    t('workbench.signalSaved'),
-  )
+  const ok = await run(async () => {
+    const latest = await monitoringApi.signalConfig() // the base version must be the current one
+    return monitoringApi.saveSignal(item, 'workbench', latest.version?.version ?? 0)
+  }, t('workbench.signalSaved'))
   if (ok) {
     signalState.value = await monitoringApi.signalConfig()
     load().catch(() => undefined)
   }
+}
+async function onMappingSaved() {
+  signalState.value = await monitoringApi.signalConfig()
+  load().catch(() => undefined)
 }
 const previewId = ref<string | null>(null)
 const previewData = ref<PreviewResponse | null>(null)
@@ -407,6 +417,123 @@ const statusLabel = (v: PredictionConfig) =>
         </div>
       </section>
 
+      <!-- 2 data -->
+      <section>
+        <h3>2 · {{ t('workbench.s2') }}</h3>
+        <p class="st-note">{{ t('workbench.s2note') }}</p>
+        <p v-if="rec">
+          {{ t('workbench.available') }}:
+          <span class="st-mono">{{ rec.available_quantities.join(', ') || '—' }}</span>
+          <template v-if="rec.missing_quantities.length">
+            ·
+            <span class="error"
+              >{{ t('workbench.missing') }}: {{ rec.missing_quantities.join(', ') }}</span
+            >
+          </template>
+        </p>
+        <ul class="st-note" data-testid="wb-sources">
+          <li v-for="s in sources" :key="s.data_source_id">
+            {{ s.name }} ({{ s.kind }}) ·
+            {{
+              s.is_simulated
+                ? t('workbench.simulated')
+                : s.active
+                  ? t('workbench.sourceActive')
+                  : t('workbench.sourceInactive')
+            }}
+          </li>
+        </ul>
+        <div v-if="mapped.length" class="st-scroll">
+          <table class="st-table" data-testid="wb-signals">
+            <thead>
+              <tr>
+                <th>{{ t('workbench.signal') }}</th>
+                <th>{{ t('workbench.source') }}</th>
+                <th>{{ t('workbench.unit') }}</th>
+                <th>{{ t('workbench.samplingS') }}</th>
+                <th>{{ t('workbench.validRange') }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in mapped" :key="r.signal.signal_id" :data-signal="r.signal.signal_id">
+                <td>
+                  {{ lt(r.signal.name) }}
+                  <span class="st-note st-mono"
+                    >{{ r.signal.signal_id }} · {{ r.signal.quantity }}</span
+                  >
+                </td>
+                <td class="st-mono">{{ r.mapping.data_source_id }}</td>
+                <td>
+                  <input v-model="sigEdit[r.signal.signal_id]!.unit" class="st-input st-mono num" />
+                </td>
+                <td>
+                  <input
+                    v-model="sigEdit[r.signal.signal_id]!.hz"
+                    class="st-input st-mono num"
+                    type="number"
+                    step="any"
+                    min="0"
+                  />
+                </td>
+                <td>
+                  <input
+                    v-model="sigEdit[r.signal.signal_id]!.min"
+                    class="st-input st-mono num"
+                    type="number"
+                    step="any"
+                  />
+                  <input
+                    v-model="sigEdit[r.signal.signal_id]!.max"
+                    class="st-input st-mono num"
+                    type="number"
+                    step="any"
+                  />
+                </td>
+                <td>
+                  <button type="button" class="link" :disabled="busy" @click="saveSignal(r.signal)">
+                    {{ t('workbench.save') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="link"
+                    data-testid="wb-preview"
+                    @click="showPreview(r.signal.signal_id)"
+                  >
+                    {{ t('workbench.preview') }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p v-else class="st-note">{{ t('workbench.noSignals') }}</p>
+        <div v-if="previewId" data-testid="wb-preview-box">
+          <p class="st-note">
+            {{ t('workbench.previewNote', { id: previewId }) }}
+            <template v-if="previewSeries[0]">
+              ·
+              {{
+                t('workbench.previewCount', { n: previewSeries[0].points.length, f: flagged })
+              }}</template
+            >
+            <template v-if="previewNote"> · {{ previewNote }}</template>
+          </p>
+          <PreviewChart
+            v-if="previewSeries[0]?.points.length"
+            :series="previewSeries"
+            :height="200"
+            :flagged-label="t('workbench.flagged')"
+          />
+        </div>
+        <SignalMappingEditor
+          :component-id="component.component_id"
+          :device-id="deviceId"
+          :state="signalState"
+          @saved="onMappingSaved"
+        />
+      </section>
+
       <template v-if="current">
         <p class="st-note">
           {{
@@ -428,126 +555,6 @@ const statusLabel = (v: PredictionConfig) =>
           <ul v-if="rec" class="st-note">
             <li v-for="(c, i) in rec.match.constraints" :key="i">{{ lt(c) }}</li>
           </ul>
-        </section>
-
-        <!-- 2 data -->
-        <section>
-          <h3>2 · {{ t('workbench.s2') }}</h3>
-          <p class="st-note">{{ t('workbench.s2note') }}</p>
-          <p v-if="rec">
-            {{ t('workbench.available') }}:
-            <span class="st-mono">{{ rec.available_quantities.join(', ') || '—' }}</span>
-            <template v-if="rec.missing_quantities.length">
-              ·
-              <span class="error"
-                >{{ t('workbench.missing') }}: {{ rec.missing_quantities.join(', ') }}</span
-              >
-            </template>
-          </p>
-          <ul class="st-note" data-testid="wb-sources">
-            <li v-for="s in sources" :key="s.data_source_id">
-              {{ s.name }} ({{ s.kind }}) ·
-              {{
-                s.is_simulated
-                  ? t('workbench.simulated')
-                  : s.active
-                    ? t('workbench.sourceActive')
-                    : t('workbench.sourceInactive')
-              }}
-            </li>
-          </ul>
-          <div v-if="mapped.length" class="st-scroll">
-            <table class="st-table" data-testid="wb-signals">
-              <thead>
-                <tr>
-                  <th>{{ t('workbench.signal') }}</th>
-                  <th>{{ t('workbench.source') }}</th>
-                  <th>{{ t('workbench.unit') }}</th>
-                  <th>{{ t('workbench.samplingS') }}</th>
-                  <th>{{ t('workbench.validRange') }}</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="r in mapped" :key="r.signal.signal_id" :data-signal="r.signal.signal_id">
-                  <td>
-                    {{ lt(r.signal.name) }}
-                    <span class="st-note st-mono"
-                      >{{ r.signal.signal_id }} · {{ r.signal.quantity }}</span
-                    >
-                  </td>
-                  <td class="st-mono">{{ r.mapping.data_source_id }}</td>
-                  <td>
-                    <input
-                      v-model="sigEdit[r.signal.signal_id]!.unit"
-                      class="st-input st-mono num"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      v-model="sigEdit[r.signal.signal_id]!.hz"
-                      class="st-input st-mono num"
-                      type="number"
-                      step="any"
-                      min="0"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      v-model="sigEdit[r.signal.signal_id]!.min"
-                      class="st-input st-mono num"
-                      type="number"
-                      step="any"
-                    />
-                    <input
-                      v-model="sigEdit[r.signal.signal_id]!.max"
-                      class="st-input st-mono num"
-                      type="number"
-                      step="any"
-                    />
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="link"
-                      :disabled="busy"
-                      @click="saveSignal(r.signal)"
-                    >
-                      {{ t('workbench.save') }}
-                    </button>
-                    <button
-                      type="button"
-                      class="link"
-                      data-testid="wb-preview"
-                      @click="showPreview(r.signal.signal_id)"
-                    >
-                      {{ t('workbench.preview') }}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p v-else class="st-note">{{ t('workbench.noSignals') }}</p>
-          <div v-if="previewId" data-testid="wb-preview-box">
-            <p class="st-note">
-              {{ t('workbench.previewNote', { id: previewId }) }}
-              <template v-if="previewSeries[0]">
-                ·
-                {{
-                  t('workbench.previewCount', { n: previewSeries[0].points.length, f: flagged })
-                }}</template
-              >
-              <template v-if="previewNote"> · {{ previewNote }}</template>
-            </p>
-            <PreviewChart
-              v-if="previewSeries[0]?.points.length"
-              :series="previewSeries"
-              :height="200"
-              :flagged-label="t('workbench.flagged')"
-            />
-          </div>
-          <RouterLink to="/datasource">{{ t('workbench.editMapping') }}</RouterLink>
         </section>
 
         <!-- 3 relationships -->
