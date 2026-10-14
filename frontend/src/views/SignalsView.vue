@@ -32,6 +32,7 @@ const QUANTITIES: PhysicalQuantity[] = [
   'POSITION',
   'CURRENT',
   'PRESSURE',
+  'VIBRATION',
   'OTHER',
 ]
 const PREVIEW_HOURS = 24

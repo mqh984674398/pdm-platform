@@ -380,6 +380,7 @@ const en: typeof zh = {
       POSITION: 'Position',
       CURRENT: 'Current',
       PRESSURE: 'Pressure',
+      VIBRATION: 'Vibration',
       OTHER: 'Other',
     },
     unit: 'Engineering unit',
@@ -649,6 +650,7 @@ const en: typeof zh = {
       POSITION: 'Position',
       CURRENT: 'Current',
       PRESSURE: 'Pressure',
+      VIBRATION: 'Vibration',
       OTHER: 'Other',
     },
     groups: {

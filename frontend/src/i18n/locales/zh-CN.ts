@@ -357,6 +357,7 @@ export default {
       POSITION: '位置',
       CURRENT: '电流',
       PRESSURE: '压力',
+      VIBRATION: '振动',
       OTHER: '其他',
     },
     unit: '工程单位',
@@ -616,6 +617,7 @@ export default {
       POSITION: '位置',
       CURRENT: '电流',
       PRESSURE: '压力',
+      VIBRATION: '振动',
       OTHER: '其他',
     },
     groups: {

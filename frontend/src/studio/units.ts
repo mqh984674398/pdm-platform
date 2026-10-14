@@ -8,6 +8,7 @@ export const UNITS: Record<PhysicalQuantity, string[]> = {
   POSITION: ['mm', 'm'],
   CURRENT: ['A', 'mA'],
   PRESSURE: ['bar', 'kPa', 'MPa'],
+  VIBRATION: ['mm/s', 'g'],
   OTHER: [''],
 }
 
