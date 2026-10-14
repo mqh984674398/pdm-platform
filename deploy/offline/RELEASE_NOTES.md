@@ -1,3 +1,17 @@
+## 0.1.3（2026-10-14）
+
+配置工作台与决策引擎重做 / Configuration workbench and decision engine redesign (D-043..D-048):
+- 新增：“配置工作台”单页：车间→工序→设备→部件树，每个节点可在侧边抽屉中新增/编辑/删除；部件节点内完成数据源选择、信号映射/解除、单位/采样/有效范围、最近一小时数据预览、安装日期、特征生成、健康参考、预测配置（推荐/复制草稿→关系→算法链→判据→展示→校验→发布→启用）。
+  New: single-page Configuration workbench with the plant tree (add/edit/delete in drawers) and the full per-component prediction workflow.
+- 新增：管理员在工作台管理涛思数据源（新增、测试、删除；账号只写入 backend\.env）。New: administrators manage TDengine sources in the workbench (never tested against a real TDengine).
+- 新增：三态安全判定；扭矩限值因数据质量无法评估时显示“安全监测降级”并给出 WATCH 告警；统一证据对象。New: three-state safety verdicts; a torque limit that cannot be evaluated shows "safety monitoring degraded" with a WATCH alert.
+- 新增：Hotelling T²、关系类型驱动的共因提示、算法推荐；LSTM / D-RCNN 的可训练接口（未内置深度学习框架，占位后端报告“未注册”）。New: Hotelling T², relation-driven common-cause hints, algorithm recommendation; LSTM / D-RCNN adapter interface (no deep-learning framework bundled).
+- 删除：旧的“算法配置”页（由工作台取代；查询模板 SQL 编辑、模式检查、质量报告步骤未迁移）。Removed: the old Algorithm configuration page.
+- 新增：`verify.cmd` 一键测试（仿真数据，10 步流程检查后保持演示服务）。尚未在真实 Windows 上运行过。New: `verify.cmd` one-click test on SIMULATED data; not yet run on real Windows.
+
+升级：解压覆盖原安装目录后再次双击 `install.cmd`（自动迁移数据库到 0015）。
+Upgrade: unzip over the install folder and run `install.cmd` again (migrates the database to 0015).
+
 ## 0.1.2（2026-10-11）
 
 算法修复（依据算法评审，D-040..D-042）/ Algorithm fixes from the algorithm review:
