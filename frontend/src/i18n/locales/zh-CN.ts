@@ -308,6 +308,20 @@ export default {
     title: '健康判断依据',
     meta: '规则 {rules} · 特征 {features} · 最新评估窗口 {time}',
     none: '暂无可列出的证据。',
+    safety: {
+      VIOLATED: '安全监测：已确认违限',
+      NOT_EVALUATED: '安全监测降级：测量缺失或无效，无法确认是否违限（不等于正常）',
+      CONFIRMED_OK: '安全监测：已评估，未违限',
+      NOT_CONFIGURED: '安全监测：未配置安全限值或规则',
+    },
+    type: {
+      SAFETY: '安全',
+      STATISTICAL: '统计',
+      ANOMALY: '异常检测',
+      SUPERVISED: '监督模型',
+      CONTEXT: '背景',
+    },
+    quality: { INVALID: '数据无效', NOT_EVALUATED: '未评估' },
     source: {
       RULE: '规则',
       STATISTIC: '统计',

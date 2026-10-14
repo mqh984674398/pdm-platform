@@ -30,6 +30,7 @@ from app.decision.schemas import (
     Decision,
     Evidence,
     EvidenceSource,
+    EvidenceType,
     FleetComponent,
     FleetMachine,
     FleetOverview,
@@ -337,13 +338,20 @@ class FleetHealthService:
         feature_ref = latest.feature_ref if latest else component_type_ref(comp)
         evidence: list[Evidence] = []
         if latest:
-            if a.fusion is not None:
-                evidence += a.fusion.evidence
             ref = refs.get(latest.lifecycle_id)
+            if a.fusion is not None:
+                evidence += [
+                    x.model_copy(update={"baseline_version": ref.baseline_id})
+                    if ref is not None and x.evidence_type == EvidenceType.STATISTICAL
+                    else x
+                    for x in a.fusion.evidence
+                ]
             if ref is not None:
                 evidence.append(
                     Evidence(
                         evidence_id=f"REF:{ref.baseline_id}",
+                        component_id=component_id,
+                        evidence_type=EvidenceType.CONTEXT,
                         source=EvidenceSource.STATISTIC,
                         result_ref=ref.baseline_id,
                         summary=_t(
@@ -362,6 +370,8 @@ class FleetHealthService:
             evidence.append(
                 Evidence(
                     evidence_id=f"ALARM:{al.alarm_id}",
+                    component_id=component_id,
+                    evidence_type=EvidenceType.CONTEXT,
                     source=EvidenceSource.RULE,
                     result_ref=al.alarm_id,
                     summary=_t(
@@ -386,6 +396,8 @@ class FleetHealthService:
             evidence.append(
                 Evidence(
                     evidence_id=f"IMPACT:{wf.workflow_id}",
+                    component_id=component_id,
+                    evidence_type=EvidenceType.CONTEXT,
                     source=EvidenceSource.MAINTENANCE,
                     result_ref=wf.workflow_id,
                     summary=_t(

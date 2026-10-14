@@ -42,9 +42,18 @@ watch(
           })
         }}
       </p>
+      <p class="safety" :data-status="report.decision.safety_status" data-testid="safety-status">
+        {{ t(`evidence.safety.${report.decision.safety_status}`) }}
+        <template v-if="report.decision.safety_unevaluated.length">
+          · {{ report.decision.safety_unevaluated.join(', ') }}
+        </template>
+      </p>
       <ol v-if="report.evidence.length" class="list">
         <li v-for="e in report.evidence" :key="e.evidence_id" :data-source="e.source">
-          <span class="src">{{ t(`evidence.source.${e.source}`) }}</span>
+          <span class="src">{{ t(`evidence.type.${e.evidence_type}`) }}</span>
+          <span v-if="e.quality_status !== 'OK'" class="src">{{
+            t(`evidence.quality.${e.quality_status}`)
+          }}</span>
           <span class="text">{{ lt(e.summary) }}</span>
           <span class="ref">{{ e.result_ref }}</span>
         </li>
@@ -67,6 +76,11 @@ watch(
 h3 {
   font-size: var(--text-sm);
   color: var(--ink-soft);
+}
+.safety[data-status='NOT_EVALUATED'],
+.safety[data-status='VIOLATED'] {
+  font-weight: 600;
+  color: var(--danger, #c0392b);
 }
 .meta,
 .empty {

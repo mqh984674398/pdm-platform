@@ -9903,6 +9903,19 @@
             "title": "Safety Constraints Applied",
             "type": "array"
           },
+          "safety_status": {
+            "$ref": "#/components/schemas/SafetyStatus",
+            "default": "NOT_EVALUATED",
+            "description": "Violation confirmed, check not evaluable, normal confirmed, or no check configured"
+          },
+          "safety_unevaluated": {
+            "description": "Safety rules whose measurement is missing or invalid",
+            "items": {
+              "type": "string"
+            },
+            "title": "Safety Unevaluated",
+            "type": "array"
+          },
           "conflicting_evidence": {
             "default": false,
             "title": "Conflicting Evidence",
@@ -9920,6 +9933,8 @@
           "reasons",
           "evidence_ids",
           "safety_constraints_applied",
+          "safety_status",
+          "safety_unevaluated",
           "conflicting_evidence",
           "meta"
         ],
@@ -10530,10 +10545,18 @@
       },
       "Evidence": {
         "additionalProperties": false,
+        "description": "Unified evidence object (D-043). Every rule, statistic and model reports in this shape; the\ndecision never adds raw scores of different algorithms. ``applicable``, ``reason``, ``model_version``,\n``evaluated_at`` and ``input_window_id`` are derived from the stored fields so they cannot disagree.",
         "properties": {
           "evidence_id": {
             "title": "Evidence Id",
             "type": "string"
+          },
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "evidence_type": {
+            "$ref": "#/components/schemas/EvidenceType"
           },
           "source": {
             "$ref": "#/components/schemas/EvidenceSource"
@@ -10552,15 +10575,121 @@
           },
           "meta": {
             "$ref": "#/components/schemas/ResultMeta"
+          },
+          "raw_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Original algorithm score or measurement",
+            "title": "Raw Value"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Decision threshold, when there is one",
+            "title": "Threshold"
+          },
+          "calibration": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Calibration version, when there is one",
+            "title": "Calibration"
+          },
+          "proposed_severity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthState"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Severity this evidence proposes; None when it proposes none"
+          },
+          "quality_status": {
+            "$ref": "#/components/schemas/QualityStatus",
+            "default": "OK"
+          },
+          "baseline_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Healthy reference the evidence used",
+            "title": "Baseline Version"
+          },
+          "applicable": {
+            "readOnly": true,
+            "title": "Applicable",
+            "type": "boolean"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/LocalizedText",
+            "readOnly": true
+          },
+          "model_version": {
+            "readOnly": true,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "input_window_id": {
+            "readOnly": true,
+            "title": "Input Window Id",
+            "type": "string"
           }
         },
         "required": [
           "evidence_id",
+          "component_id",
+          "evidence_type",
           "source",
           "result_ref",
           "summary",
           "eligible",
-          "meta"
+          "meta",
+          "raw_value",
+          "threshold",
+          "calibration",
+          "proposed_severity",
+          "quality_status",
+          "baseline_version",
+          "applicable",
+          "reason",
+          "model_version",
+          "evaluated_at",
+          "input_window_id"
         ],
         "title": "Evidence",
         "type": "object"
@@ -10574,6 +10703,17 @@
           "DATA_QUALITY"
         ],
         "title": "EvidenceSource",
+        "type": "string"
+      },
+      "EvidenceType": {
+        "enum": [
+          "SAFETY",
+          "STATISTICAL",
+          "ANOMALY",
+          "SUPERVISED",
+          "CONTEXT"
+        ],
+        "title": "EvidenceType",
         "type": "string"
       },
       "FailureProbabilityResult": {
@@ -13998,6 +14138,15 @@
         "title": "QualityResponse",
         "type": "object"
       },
+      "QualityStatus": {
+        "enum": [
+          "OK",
+          "INVALID",
+          "NOT_EVALUATED"
+        ],
+        "title": "QualityStatus",
+        "type": "string"
+      },
       "QueryParamType": {
         "enum": [
           "STRING",
@@ -15128,6 +15277,17 @@
         "additionalProperties": false,
         "type": "object",
         "title": "RunRequest"
+      },
+      "SafetyStatus": {
+        "description": "Outcome of a safety check (D-043). Not being able to confirm a violation is never a pass.",
+        "enum": [
+          "VIOLATED",
+          "NOT_EVALUATED",
+          "CONFIRMED_OK",
+          "NOT_CONFIGURED"
+        ],
+        "title": "SafetyStatus",
+        "type": "string"
       },
       "SamplingRequirement": {
         "additionalProperties": false,
@@ -17057,6 +17217,14 @@
             "title": "Not Evaluated",
             "type": "array"
           },
+          "safety_checks": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SafetyStatus"
+            },
+            "description": "Per safety rule: violated, not evaluable, confirmed ok, not configured",
+            "title": "Safety Checks",
+            "type": "object"
+          },
           "rules_version": {
             "title": "Rules Version",
             "type": "string"
@@ -17076,6 +17244,7 @@
           "hits",
           "statistics",
           "not_evaluated",
+          "safety_checks",
           "rules_version",
           "is_simulated"
         ],

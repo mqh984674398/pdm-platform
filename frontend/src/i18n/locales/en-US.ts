@@ -329,6 +329,21 @@ const en: typeof zh = {
     title: 'Why this health state',
     meta: 'Rules {rules} · features {features} · newest evaluated window {time}',
     none: 'No evidence to list yet.',
+    safety: {
+      VIOLATED: 'Safety: violation confirmed',
+      NOT_EVALUATED:
+        'Safety monitoring degraded: measurement missing or invalid, a violation cannot be confirmed (not the same as normal)',
+      CONFIRMED_OK: 'Safety: evaluated, within the limit',
+      NOT_CONFIGURED: 'Safety: no limit or rule configured',
+    },
+    type: {
+      SAFETY: 'Safety',
+      STATISTICAL: 'Statistical',
+      ANOMALY: 'Anomaly detection',
+      SUPERVISED: 'Supervised model',
+      CONTEXT: 'Context',
+    },
+    quality: { INVALID: 'Invalid data', NOT_EVALUATED: 'Not evaluated' },
     source: {
       RULE: 'Rule',
       STATISTIC: 'Statistic',

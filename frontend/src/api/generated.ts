@@ -2367,6 +2367,16 @@ export interface components {
       /** Safety Constraints Applied */
       safety_constraints_applied: string[]
       /**
+       * @description Violation confirmed, check not evaluable, normal confirmed, or no check configured
+       * @default NOT_EVALUATED
+       */
+      safety_status: components['schemas']['SafetyStatus']
+      /**
+       * Safety Unevaluated
+       * @description Safety rules whose measurement is missing or invalid
+       */
+      safety_unevaluated: string[]
+      /**
        * Conflicting Evidence
        * @default false
        */
@@ -2586,10 +2596,18 @@ export interface components {
       code: string
       description: components['schemas']['LocalizedText']
     }
-    /** Evidence */
+    /**
+     * Evidence
+     * @description Unified evidence object (D-043). Every rule, statistic and model reports in this shape; the
+     *     decision never adds raw scores of different algorithms. ``applicable``, ``reason``, ``model_version``,
+     *     ``evaluated_at`` and ``input_window_id`` are derived from the stored fields so they cannot disagree.
+     */
     Evidence: {
       /** Evidence Id */
       evidence_id: string
+      /** Component Id */
+      component_id: string
+      evidence_type: components['schemas']['EvidenceType']
       source: components['schemas']['EvidenceSource']
       /**
        * Result Ref
@@ -2600,12 +2618,60 @@ export interface components {
       /** Eligible */
       eligible: boolean
       meta: components['schemas']['ResultMeta']
+      /**
+       * Raw Value
+       * @description Original algorithm score or measurement
+       * @default null
+       */
+      raw_value: number | null
+      /**
+       * Threshold
+       * @description Decision threshold, when there is one
+       * @default null
+       */
+      threshold: number | null
+      /**
+       * Calibration
+       * @description Calibration version, when there is one
+       * @default null
+       */
+      calibration: string | null
+      /**
+       * @description Severity this evidence proposes; None when it proposes none
+       * @default null
+       */
+      proposed_severity: components['schemas']['HealthState'] | null
+      /** @default OK */
+      quality_status: components['schemas']['QualityStatus']
+      /**
+       * Baseline Version
+       * @description Healthy reference the evidence used
+       * @default null
+       */
+      baseline_version: string | null
+      /** Applicable */
+      readonly applicable: boolean
+      readonly reason: components['schemas']['LocalizedText']
+      /** Model Version */
+      readonly model_version: string
+      /**
+       * Evaluated At
+       * Format: date-time
+       */
+      readonly evaluated_at: string
+      /** Input Window Id */
+      readonly input_window_id: string
     }
     /**
      * EvidenceSource
      * @enum {string}
      */
     EvidenceSource: 'RULE' | 'STATISTIC' | 'MODEL' | 'MAINTENANCE' | 'DATA_QUALITY'
+    /**
+     * EvidenceType
+     * @enum {string}
+     */
+    EvidenceType: 'SAFETY' | 'STATISTICAL' | 'ANOMALY' | 'SUPERVISED' | 'CONTEXT'
     /**
      * FailureProbabilityResult
      * @description Only valid when genuine failure/lifecycle evidence exists (L5-05).
@@ -3973,6 +4039,11 @@ export interface components {
       is_simulated: boolean
     }
     /**
+     * QualityStatus
+     * @enum {string}
+     */
+    QualityStatus: 'OK' | 'INVALID' | 'NOT_EVALUATED'
+    /**
      * QueryParamType
      * @enum {string}
      */
@@ -4433,6 +4504,12 @@ export interface components {
        */
       seed: number
     }
+    /**
+     * SafetyStatus
+     * @description Outcome of a safety check (D-043). Not being able to confirm a violation is never a pass.
+     * @enum {string}
+     */
+    SafetyStatus: 'VIOLATED' | 'NOT_EVALUATED' | 'CONFIRMED_OK' | 'NOT_CONFIGURED'
     /** SamplingRequirement */
     SamplingRequirement: {
       /** Signal Id */
@@ -5199,6 +5276,13 @@ export interface components {
        * @description Rules that could not be evaluated on this window
        */
       not_evaluated: string[]
+      /**
+       * Safety Checks
+       * @description Per safety rule: violated, not evaluable, confirmed ok, not configured
+       */
+      safety_checks: {
+        [key: string]: components['schemas']['SafetyStatus']
+      }
       /** Rules Version */
       rules_version: string
       /** Is Simulated */

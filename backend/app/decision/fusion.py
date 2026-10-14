@@ -37,13 +37,15 @@ from app.decision.schemas import (
     Decision,
     Evidence,
     EvidenceSource,
+    EvidenceType,
     HealthState,
+    QualityStatus,
     Recommendation,
     RecommendationPriority,
 )
 from app.equipment.schemas import ComponentType
 from app.monitoring.alarms.service import evidence_id
-from app.monitoring.schemas import RuleKind, WindowEvaluation
+from app.monitoring.schemas import RuleKind, SafetyStatus, WindowEvaluation
 from app.prediction.schemas import (
     AnomalyScoreResult,
     ClassProbabilityResult,
@@ -231,11 +233,16 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
             evidence.append(
                 Evidence(
                     evidence_id=eid,
+                    component_id=e.component_id,
+                    evidence_type=EvidenceType.SAFETY,
                     source=EvidenceSource.RULE,
                     result_ref=eid,
                     summary=reasons[-1],
                     eligible=True,
                     meta=meta(e.rules_version),
+                    raw_value=h.value,
+                    threshold=h.threshold,
+                    proposed_severity=lvl,
                 )
             )
             continue
@@ -248,11 +255,15 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
                 evidence.append(
                     Evidence(
                         evidence_id=aid,
+                        component_id=e.component_id,
+                        evidence_type=EvidenceType.STATISTICAL,
                         source=EvidenceSource.STATISTIC,
                         result_ref=eid,
                         summary=a.reason,
                         eligible=True,
                         meta=meta(policy.version),
+                        calibration=policy.version,
+                        proposed_severity=H.WATCH,
                     )
                 )
         stat = _max(stat, graded)
@@ -268,11 +279,16 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
         evidence.append(
             Evidence(
                 evidence_id=eid,
+                component_id=e.component_id,
+                evidence_type=EvidenceType.STATISTICAL,
                 source=EvidenceSource.STATISTIC,
                 result_ref=eid,
                 summary=txt,
                 eligible=True,
                 meta=meta(e.rules_version),
+                raw_value=h.value,
+                threshold=h.threshold,
+                proposed_severity=graded,
             )
         )
 
@@ -298,11 +314,19 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
         evidence.append(
             Evidence(
                 evidence_id=pid,
+                component_id=e.component_id,
+                evidence_type=EvidenceType.SUPERVISED
+                if p.kind == "class_probability"
+                else EvidenceType.ANOMALY,
                 source=EvidenceSource.MODEL,
                 result_ref=p.operator_id,
                 summary=txt,
                 eligible=usable,
                 meta=p.meta,
+                quality_status=QualityStatus.OK if usable else QualityStatus.NOT_EVALUATED,
+                proposed_severity=(
+                    {Direction.DEGRADED: H.WATCH, Direction.HEALTHY: H.NORMAL}.get(d) if usable else None
+                ),
             )
         )
     deg = Direction.DEGRADED in directions
@@ -335,8 +359,43 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
             _t("模型分析均不满足使用条件，仅依据规则", "No model analysis met its preconditions; rules only")
         )
 
-    # 5. final
+    # 5. safety coverage (D-043): a check that cannot be evaluated is neither a violation nor a pass
+    gaps = sorted(r for r, c in e.safety_checks.items() if c == SafetyStatus.NOT_EVALUATED)
+    for rid in gaps:
+        gid = f"SAFETY-GAP:{rid}:{e.component_id}:{e.window.start.isoformat()}"
+        txt = _t(
+            f"安全规则 {rid} 无法评估：所需测量缺失或无效，不能确认违限，也不能视为正常；该项安全监测已降级",
+            f"Safety rule {rid} could not be evaluated: its measurement is missing or invalid. A violation "
+            "is not confirmed and normal is not confirmed; this safety check is degraded",
+        )
+        reasons.append(txt)
+        evidence.append(
+            Evidence(
+                evidence_id=gid,
+                component_id=e.component_id,
+                evidence_type=EvidenceType.SAFETY,
+                source=EvidenceSource.DATA_QUALITY,
+                result_ref=rid,
+                summary=txt,
+                eligible=False,
+                meta=meta(e.rules_version),
+                quality_status=QualityStatus.INVALID,
+            )
+        )
+    checks = set(e.safety_checks.values())
+    if safety:
+        safety_status = SafetyStatus.VIOLATED
+    elif gaps:
+        safety_status = SafetyStatus.NOT_EVALUATED
+    elif SafetyStatus.CONFIRMED_OK in checks:
+        safety_status = SafetyStatus.CONFIRMED_OK
+    else:
+        safety_status = SafetyStatus.NOT_CONFIGURED
+
+    # 6. final
     level = _max(floor, stat)
+    if level == H.NORMAL and gaps:
+        level = H.UNKNOWN  # not enough valid evidence to call the component normal
     if not reasons:
         reasons.append(ALL_NORMAL)
     decision = Decision(
@@ -347,6 +406,8 @@ def fuse(inp: FusionInput, policy: AgingPolicy = DEFAULT_POLICY) -> FusionResult
         reasons=reasons,
         evidence_ids=[x.evidence_id for x in evidence],
         safety_constraints_applied=safety,
+        safety_status=safety_status,
+        safety_unevaluated=gaps,
         conflicting_evidence=conflict,
         meta=meta(FUSION_VERSION),
     )
@@ -367,6 +428,9 @@ def _abstain(inp: FusionInput, reason: LocalizedText) -> FusionResult:
     )
     ev = Evidence(
         evidence_id=f"PRE:{inp.component_id}:{end.isoformat()}",
+        component_id=inp.component_id,
+        evidence_type=EvidenceType.CONTEXT,
+        quality_status=QualityStatus.NOT_EVALUATED,
         source=EvidenceSource.DATA_QUALITY,
         result_ref=inp.lifecycle_id or inp.component_id,
         summary=reason,
