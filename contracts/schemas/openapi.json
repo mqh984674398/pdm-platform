@@ -5795,6 +5795,220 @@
         }
       }
     },
+    "/api/machine-layout": {
+      "get": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Read Layout",
+        "operationId": "read_layout_api_machine_layout_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MachineLayout"
+                  },
+                  "title": "Response Read Layout Api Machine Layout Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine-layout/order": {
+      "put": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Put Order",
+        "operationId": "put_order_api_machine_layout_order_put",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine-layout/{machine_id}/background": {
+      "put": {
+        "tags": [
+          "plant"
+        ],
+        "summary": "Put Background",
+        "operationId": "put_background_api_machine_layout__machine_id__background_put",
+        "parameters": [
+          {
+            "name": "machine_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Machine Id"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackgroundChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/pipeline/run": {
       "post": {
         "tags": [
@@ -10448,6 +10662,27 @@
         ],
         "title": "AuditEntry",
         "type": "object"
+      },
+      "BackgroundChange": {
+        "properties": {
+          "image": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 700000,
+                "pattern": "^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image",
+            "description": "A PNG, JPEG or WebP picture as a data: URL, or null to clear it"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BackgroundChange"
       },
       "Baseline": {
         "additionalProperties": false,
@@ -15225,6 +15460,45 @@
         ],
         "title": "MachineCreate"
       },
+      "MachineLayout": {
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "title": "Machine Id"
+          },
+          "sort": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort"
+          },
+          "background": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Background",
+            "description": "A data: URL of the background picture"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_id",
+          "sort",
+          "background"
+        ],
+        "title": "MachineLayout"
+      },
       "MachineOperations": {
         "additionalProperties": false,
         "properties": {
@@ -16593,6 +16867,25 @@
           "is_simulated"
         ],
         "title": "OptimizationRun"
+      },
+      "OrderChange": {
+        "properties": {
+          "machine_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Machine Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "machine_ids"
+        ],
+        "title": "OrderChange"
       },
       "OutputKind": {
         "enum": [

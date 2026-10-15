@@ -41,6 +41,7 @@ import type {
   MachinePlacement,
   PlantNodeChange,
   PlantTree,
+  MachineLayout,
   AlgorithmModels,
   AlgorithmSpec,
   ApiStudioDevice,
@@ -94,6 +95,15 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       throw new MonitoringApiError(resp.status, body)
     }
     return (await resp.json()) as T
+  }
+
+  async function remoteVoid(path: string, body: unknown): Promise<void> {
+    const resp = await fetchImpl(url(path), {
+      method: 'PUT',
+      headers: { ...headers(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
   }
 
   async function remove(path: string, method = 'DELETE'): Promise<void> {
@@ -249,6 +259,11 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         body: JSON.stringify({ modules }),
       }),
     plantTree: () => call<PlantTree>('/api/plant-tree'),
+    machineLayout: () => call<MachineLayout[]>('/api/machine-layout'),
+    setMachineOrder: (machineIds: string[]) =>
+      remoteVoid('/api/machine-layout/order', { machine_ids: machineIds }),
+    setMachineBackground: (machineId: string, image: string | null) =>
+      remoteVoid(`/api/machine-layout/${encodeURIComponent(machineId)}/background`, { image }),
     putPlantNode: (n: PlantNodeChange) =>
       call<PlantTree>(`/api/plant-nodes/${encodeURIComponent(n.node_id)}`, {
         method: 'PUT',

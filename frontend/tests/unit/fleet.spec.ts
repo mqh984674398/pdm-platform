@@ -113,7 +113,7 @@ describe('overview', () => {
     await flushPromises()
     const tiles = w.findAll('[data-machine]').map((t) => t.attributes('data-machine'))
     expect([...tiles].sort()).toEqual(fleet.machines.map((m) => m.machine_id).sort())
-    expect(calls).toEqual(['/api/fleet'])
+    expect(calls).toContain('/api/fleet') // the workshop grouping and layout are read beside it
     expect(w.find('[data-testid="demo-notice"]').text()).toContain('规则计算')
   })
 })

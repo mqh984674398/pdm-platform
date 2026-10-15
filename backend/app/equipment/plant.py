@@ -311,6 +311,9 @@ class PlantStore:
         ):
             raise EquipmentConflictError("delete the machine's components first")
         self.session.delete(rec)
+        layout = Base.metadata.tables.get("machine_layout")  # its order and background go with it (D-054)
+        if layout is not None:
+            self.session.execute(delete(layout).where(layout.c.machine_id == machine_id))
         audit(self.session, who, "plant.machine_delete", "machine", machine_id)
 
     # --- components ----------------------------------------------------------------------------

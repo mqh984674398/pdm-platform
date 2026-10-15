@@ -92,18 +92,27 @@ const en: typeof zh = {
     close: 'Close',
     loadFailed: 'Data failed to load. Refresh the page to try again.',
     utc: 'UTC',
+    backTo: 'Back to {target}',
   },
   overview: {
     summary: 'Health summary',
     summaryLine: '{machines} machines · {components} components',
     attention: '{n} components need attention',
     noAttention: 'No components need attention',
+    unplaced: 'No workshop',
+    noMachines: 'No machines in this workshop yet.',
+    adminHint:
+      'Administrator: press and hold a machine for 0.5 s to drag it into a new order; use Background at its bottom right to set a picture.',
+    setBackground: 'Background',
+    clearBackground: 'Clear background',
+    saveFailed: 'Saving failed, please try again.',
+    workshops: 'Workshops',
   },
   machine: {
     choose: 'Choose machine',
     snapshot: 'Source: {source} · newest evaluated window {time} (UTC)',
     mapTitle: 'Component health map',
-    hint: 'Select a component to see the health evidence, trend, and maintenance records.',
+    hint: 'Select a component to open its history (health evidence, trend and maintenance records).',
     sharedChain: 'Shared drive chain',
   },
   component: {

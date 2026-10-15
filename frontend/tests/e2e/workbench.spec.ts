@@ -12,7 +12,7 @@ test('administrator takes a recommended configuration through validate, publish 
   await page.addInitScript(() => localStorage.setItem('pdm-dev-role', 'admin'))
   await page.goto('/plant')
   // the machine's drawer lists its components; "Configure" closes it and opens the workflow
-  await page.locator('[data-machine]').first().click()
+  await page.locator('[data-machine="A01"]').click() // a demo machine that has components
   await page.locator('[data-component]').first().getByTestId('component-configure').click()
   await expect(page.getByTestId('side-drawer')).toHaveCount(0)
   const wb = page.getByTestId('config-workbench')

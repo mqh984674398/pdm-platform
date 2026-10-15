@@ -1046,6 +1046,57 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/machine-layout': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Read Layout */
+    get: operations['read_layout_api_machine_layout_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machine-layout/order': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Order */
+    put: operations['put_order_api_machine_layout_order_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machine-layout/{machine_id}/background': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Background */
+    put: operations['put_background_api_machine_layout__machine_id__background_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/pipeline/run': {
     parameters: {
       query?: never
@@ -2159,6 +2210,14 @@ export interface components {
       details: {
         [key: string]: unknown
       }
+    }
+    /** BackgroundChange */
+    BackgroundChange: {
+      /**
+       * Image
+       * @description A PNG, JPEG or WebP picture as a data: URL, or null to clear it
+       */
+      image?: string | null
     }
     /**
      * Baseline
@@ -4124,6 +4183,18 @@ export interface components {
       /** Device Id */
       device_id?: string | null
     }
+    /** MachineLayout */
+    MachineLayout: {
+      /** Machine Id */
+      machine_id: string
+      /** Sort */
+      sort: number | null
+      /**
+       * Background
+       * @description A data: URL of the background picture
+       */
+      background: string | null
+    }
     /** MachineOperations */
     MachineOperations: {
       /** Machine Id */
@@ -4680,6 +4751,11 @@ export interface components {
       recommended: string | null
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** OrderChange */
+    OrderChange: {
+      /** Machine Ids */
+      machine_ids: string[]
     }
     /**
      * OutputKind
@@ -9064,6 +9140,108 @@ export interface operations {
       cookie?: never
     }
     requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  read_layout_api_machine_layout_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MachineLayout'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_order_api_machine_layout_order_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OrderChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_background_api_machine_layout__machine_id__background_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BackgroundChange']
+      }
+    }
     responses: {
       /** @description Successful Response */
       204: {

@@ -17,6 +17,7 @@ import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
+import { vHint } from '@/directives/hint'
 
 const { t } = useI18n()
 const { lt } = useLocalized()
@@ -297,22 +298,22 @@ const kindLabel = (s: ManagedSource) =>
           ><span>{{ t('datasources.host') }}</span
           ><input
             v-model.trim="form.host"
+            v-hint="t('datasources.hostNote')"
             class="st-input st-mono"
             data-testid="ds-host"
             @blur="splitHost"
-          /><span class="st-note">{{ t('datasources.hostNote') }}</span></label
-        >
+        /></label>
         <label class="st-field"
           ><span>{{ t('datasources.port') }}</span
           ><input
             v-model.number="form.port"
+            v-hint="t('datasources.portNote')"
             type="number"
             class="st-input st-mono"
             data-testid="ds-port"
           /><span v-if="portWarning" class="st-note error" data-testid="ds-port-warning">{{
             t('datasources.port6060')
-          }}</span
-          ><span v-else class="st-note">{{ t('datasources.portNote') }}</span></label
+          }}</span></label
         >
         <label class="st-field"
           ><span>{{ t('datasources.scheme') }}</span>
@@ -340,13 +341,13 @@ const kindLabel = (s: ManagedSource) =>
           ><span>{{ t('datasources.deviceTag') }}</span
           ><input
             v-model.trim="form.deviceTag"
+            v-hint="t('datasources.tagNote')"
             class="st-input st-mono"
             list="ds-columns"
             data-testid="ds-tag"
           /><span v-if="tagMissing" class="st-note error" data-testid="ds-tag-warning">{{
             t('datasources.tagMissing', { name: form.deviceTag })
-          }}</span
-          ><span v-else class="st-note">{{ t('datasources.tagNote') }}</span></label
+          }}</span></label
         >
         <label class="st-field"
           ><span>{{ t('datasources.timeColumn') }}</span
@@ -362,6 +363,7 @@ const kindLabel = (s: ManagedSource) =>
         >
         <div v-if="editing" class="st-field">
           <button
+            v-hint="t('datasources.structureNote')"
             type="button"
             class="st-button"
             :disabled="busy"
@@ -370,7 +372,6 @@ const kindLabel = (s: ManagedSource) =>
           >
             {{ t('datasources.readStructure') }}
           </button>
-          <span class="st-note">{{ t('datasources.structureNote') }}</span>
           <div v-if="recommended" class="st-note" data-testid="ds-recommended">
             {{
               recommended.key
@@ -393,16 +394,18 @@ const kindLabel = (s: ManagedSource) =>
         </div>
         <label class="st-field"
           ><span>{{ t('datasources.keyColumn') }}</span
-          ><input v-model.trim="form.keyColumn" class="st-input st-mono" /><span class="st-note">{{
-            t('datasources.keyNote')
-          }}</span></label
-        >
+          ><input
+            v-model.trim="form.keyColumn"
+            v-hint="t('datasources.keyNote')"
+            class="st-input st-mono"
+        /></label>
         <label class="st-field"
           ><span>{{ t('datasources.valueColumns') }}</span
-          ><input v-model="form.valueColumns" class="st-input st-mono" /><span class="st-note">{{
-            t('datasources.valueNote')
-          }}</span></label
-        >
+          ><input
+            v-model="form.valueColumns"
+            v-hint="t('datasources.valueNote')"
+            class="st-input st-mono"
+        /></label>
         <label class="st-field"
           ><span>{{ t('datasources.zone') }}</span
           ><input v-model.trim="form.zone" class="st-input st-mono"
@@ -415,11 +418,11 @@ const kindLabel = (s: ManagedSource) =>
           ><span>{{ t('datasources.password') }}</span
           ><input
             v-model="form.password"
+            v-hint="t('datasources.accountNote')"
             type="password"
             class="st-input"
             autocomplete="new-password"
-          /><span class="st-note">{{ t('datasources.accountNote') }}</span></label
-        >
+        /></label>
         <div class="row">
           <button
             type="submit"
@@ -437,6 +440,34 @@ const kindLabel = (s: ManagedSource) =>
 </template>
 
 <style scoped>
+/* every input column lines up: a fixed label column, the control in the second column */
+.st-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  max-width: 640px;
+}
+.st-form .st-field {
+  display: grid;
+  grid-template-columns: 9.5em minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+}
+.st-form .st-field > span:first-child {
+  text-align: right;
+}
+.st-form .st-field > :not(span:first-child) {
+  grid-column: 2;
+}
+.st-form .st-field > .st-input,
+.st-form .st-field > .st-select {
+  width: 100%;
+  box-sizing: border-box;
+}
+.st-form .st-field > .st-note {
+  margin: 0;
+}
 .row {
   display: flex;
   gap: var(--space-3);

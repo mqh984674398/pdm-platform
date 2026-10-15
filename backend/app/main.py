@@ -12,6 +12,7 @@ from app.api import (
     errors,
     fleet,
     health,
+    layout,
     llm,
     optimization,
     pipeline,
@@ -30,6 +31,7 @@ from app.core.config import get_settings
 from app.core.modules import require_module
 from app.datasource.query_service.service import QueryService
 from app.datasource.query_service.sources import DataSourceRegistry
+from app.equipment import layout as _layout_table  # noqa: F401  (registers the layout table)
 
 
 def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
@@ -65,6 +67,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     app.include_router(pipeline_config.router, prefix="/api")
     app.include_router(equipment.router, prefix="/api")
     app.include_router(plant.router, prefix="/api")
+    app.include_router(layout.router, prefix="/api")
     app.include_router(pipeline.router, prefix="/api", dependencies=[require_module("alarms")])
     app.include_router(baselines.router, prefix="/api")
     app.include_router(alarms.router, prefix="/api")
