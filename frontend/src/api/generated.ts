@@ -487,6 +487,27 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/admin/datasources/{data_source_id}/structure': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Source Structure
+     * @description Super tables of the database and the columns/tags of one of them, read with the saved account,
+     *     so the layout fields can be picked from what the database really has.
+     */
+    get: operations['source_structure_api_admin_datasources__data_source_id__structure_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/algorithm-catalog': {
     parameters: {
       query?: never
@@ -1254,6 +1275,23 @@ export interface paths {
     }
     /** Component Health */
     get: operations['component_health_api_components__component_id__health_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/optimization/readiness': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Readiness */
+    get: operations['readiness_api_optimization_readiness_get']
     put?: never
     post?: never
     delete?: never
@@ -4249,7 +4287,10 @@ export interface components {
       password?: string | null
       /** Stable */
       stable: string
-      /** Device Tag */
+      /**
+       * Device Tag
+       * @description Name of the tag or column holding the device id, not a device id
+       */
       device_tag: string
       /**
        * Time Column
@@ -4493,6 +4534,28 @@ export interface components {
       /** Eligibility */
       eligibility: components['schemas']['EligibilityCondition'][]
     }
+    /**
+     * OptimizationReadiness
+     * @description What a comparison run would replay, and why it cannot run when it cannot.
+     */
+    OptimizationReadiness: {
+      /** Can Run */
+      can_run: boolean
+      /** Suite */
+      suite: string | null
+      /** Cases */
+      cases: number
+      /** Components */
+      components: number
+      /**
+       * Stored Windows
+       * @description Stored feature windows of those components
+       */
+      stored_windows: number
+      /** Is Simulated */
+      is_simulated: boolean
+      reason: components['schemas']['LocalizedText'] | null
+    }
     /** OptimizationRun */
     OptimizationRun: {
       /** Run Id */
@@ -4540,6 +4603,12 @@ export interface components {
        * @description Process data up to this time (default: now)
        */
       until?: string | null
+      /**
+       * Provisional
+       * @description Start before the 4-day learning period is complete (needs at least 1 day of data): the regime catalog is learned from half of the data there is, and marked provisional
+       * @default false
+       */
+      provisional: boolean
     }
     /** PipelineResult */
     PipelineResult: {
@@ -4553,6 +4622,13 @@ export interface components {
       windows_skipped: number
       /** Catalog */
       catalog: string
+      /**
+       * Provisional
+       * @default false
+       */
+      provisional: boolean
+      /** Ready At */
+      ready_at: string | null
       /** No Reference */
       no_reference: string[]
       /** Alarms Raised */
@@ -5652,6 +5728,15 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** SourceStructure */
+    SourceStructure: {
+      /** Stables */
+      stables: string[]
+      /** Stable */
+      stable: string
+      /** Columns */
+      columns: components['schemas']['StructureColumn'][]
+    }
     /**
      * SqlTableLayout
      * @description Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).
@@ -5751,6 +5836,15 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** StructureColumn */
+    StructureColumn: {
+      /** Name */
+      name: string
+      /** Type */
+      type: string
+      /** Is Tag */
+      is_tag: boolean
+    }
     /** StudioDevice */
     StudioDevice: {
       /** Device Id */
@@ -5836,6 +5930,18 @@ export interface components {
       key: 'credential' | 'reachable' | 'readOnly' | 'layout' | 'timeout' | 'rowLimit'
       /** Ok */
       ok: boolean
+      /**
+       * Detail
+       * @description The server's reason when the check failed
+       */
+      detail: string | null
+      /**
+       * Hint
+       * @description What the administrator should look at first
+       */
+      hint:
+        | ('port_explorer' | 'not_rest' | 'unreachable' | 'auth' | 'database' | 'layout' | 'other')
+        | null
     }
     /**
      * TimeWindow
@@ -7454,6 +7560,42 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['TestCheck'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_structure_api_admin_datasources__data_source_id__structure_get: {
+    parameters: {
+      query?: {
+        stable?: string | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SourceStructure']
         }
       }
       /** @description Validation Error */
@@ -9287,6 +9429,38 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ComponentHealthReport']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  readiness_api_optimization_readiness_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OptimizationReadiness']
         }
       }
       /** @description Validation Error */

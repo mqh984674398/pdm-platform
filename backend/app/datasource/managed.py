@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
-from pydantic import Field
+from pydantic import Field, model_validator
 from sqlalchemy import JSON, DateTime, String
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
@@ -26,6 +26,9 @@ from app.datasource.sql import AdapterError
 from app.datasource.tdengine import TdengineAdapter, TdengineLayout
 
 ID = r"^[a-z0-9][a-z0-9-]{0,62}$"
+HOST_INPUT = re.compile(
+    r"^(?:(?P<scheme>https?)://)?(?P<host>[^/:\s]+)(?::(?P<port>\d{1,5}))?(?:/.*)?$", re.I
+)
 TRANSPORT: httpx.BaseTransport | None = None  # tests inject a fake TDengine server here
 
 
@@ -52,13 +55,29 @@ class ManagedSourceBody(ContractModel):
     user: str | None = Field(default=None, max_length=64, pattern=r"^[^:\r\n]+$")
     password: str | None = Field(default=None, max_length=128, pattern=r"^[^\r\n]+$")
     stable: str
-    device_tag: str
+    device_tag: str = Field(description="Name of the tag or column holding the device id, not a device id")
     time_column: str = "ts"
     key_column: str | None = None
     value_columns: list[str] = Field(default_factory=list)
     naive_time_zone: str = "UTC"
     statement_timeout_s: float = Field(default=30, gt=0, le=300)
     max_rows: int = Field(default=200_000, gt=0, le=2_000_000)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _split_host(cls, data: object) -> object:
+        """Accept what people paste into the host box: ``http://10.0.0.5:6041/rest`` becomes host
+        ``10.0.0.5`` with scheme and port taken from it, so a pasted address cannot silently break."""
+        if isinstance(data, dict) and isinstance(data.get("host"), str):
+            m = HOST_INPUT.match(data["host"].strip())
+            if m:
+                data = dict(data)
+                data["host"] = m["host"]
+                if m["scheme"]:
+                    data["scheme"] = m["scheme"].lower()
+                if m["port"]:
+                    data["port"] = int(m["port"])
+        return data
 
 
 class ManagedSource(ContractModel):

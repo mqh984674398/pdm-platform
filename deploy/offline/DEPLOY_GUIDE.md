@@ -95,6 +95,9 @@ cd C:\PDM\pdm-offline\pdm\backend
 平台通过 taosAdapter 的 REST 接口（默认端口 6041）读取涛思数据库，无需在服务器上安装 TDengine 客户端。
 The platform reads TDengine through taosAdapter's REST endpoint (port 6041); no TDengine client is needed on the server.
 
+**端口与字段 / Port and fields (D-049)**：端口填 taosAdapter 的 REST 端口，默认 **6041**；**6060 是 taosExplorer 网页管理界面**，用浏览器能打开网页并不代表平台能连接。主机只填 IP 或主机名（不带 `http://` 和端口）。“设备标签列”填列名（如 `device_id`），不是某台设备的编号；保存后点“读取表结构”可直接从数据库里选择。数据源在“数据源”页配置，配置工作台只选择。
+Use the taosAdapter REST port, default **6041**; **6060 is the taosExplorer web console**, so being able to open the web page does not mean the platform can connect. The host is an IP or host name only (no `http://`, no port). The device tag field takes a column name (such as `device_id`), not a device id; after saving, "Read structure" lets you pick from the database. Sources are set up on the Data sources screen; the Configuration workbench only picks one.
+
 1. 在 TDengine 中建立只读账号（示例）/ Create a read-only TDengine user, for example:
    `CREATE USER pdm_reader PASS '...'; GRANT READ ON plant_iot.* TO pdm_reader;`
 2. 复制 `pdm\deploy\datasources.tdengine.example.json` 为 `pdm\deploy\datasources.json`，修改 `host`、`port`、`database`，以及 `tdengine_layout` 中的超级表 `stable`、设备标签 `device_tag`、时间列 `time_column`。

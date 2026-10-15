@@ -35,6 +35,7 @@ SYSTEM = Principal(user_id="system:pipeline", role=Role.ENGINEER)
 CATALOG_DAYS = 4.0
 STEP_HOURS = 24.0
 MAX_STEPS = 31
+MIN_PROVISIONAL_DAYS = 1.0
 
 
 class PipelineResult(ContractModel):
@@ -43,6 +44,8 @@ class PipelineResult(ContractModel):
     windows_added: int
     windows_skipped: int
     catalog: str  # ready | pending | no_data | no_signals
+    provisional: bool = False  # the regime catalog was learned from less than CATALOG_DAYS of data
+    ready_at: datetime | None = None  # catalog "pending": when the full learning period is complete
     no_reference: list[str]
     alarms_raised: int
     is_simulated: bool
@@ -62,7 +65,11 @@ def run_machine(
     catalog_days: float = CATALOG_DAYS,
     step_hours: float = STEP_HOURS,
     max_steps: int = MAX_STEPS,
+    provisional: bool = False,
 ) -> PipelineResult:
+    """``provisional`` lets a component that is younger than the learning period start anyway: the regime
+    catalog is then learned from the first half of the data it has (at least one day of it), and the
+    result says so. The catalog should be re-learned once the full period has passed."""
     until = until or datetime.now(UTC)
     equipment, features = EquipmentStore(session), FeatureStore(session)
     comps = {c.component_id: c for c in equipment.components(machine_id)}
@@ -79,9 +86,15 @@ def run_machine(
     if not items or not installs:
         return _result(machine_id, "no_signals")
 
-    cat_end = min(installs) + timedelta(days=catalog_days)
+    first = min(installs)
+    short = False
+    if provisional and until < first + timedelta(days=catalog_days):
+        have = (until - first).total_seconds() / 86400
+        if have >= MIN_PROVISIONAL_DAYS:
+            catalog_days, short = have / 2, True
+    cat_end = first + timedelta(days=catalog_days)
     if until < cat_end:
-        return _result(machine_id, "pending")
+        return _result(machine_id, "pending", ready_at=cat_end)
     catalog_series = load_series(sources, items, TimeWindow(start=min(installs), end=cat_end))
     sim = any(s.is_simulated for s in catalog_series)
     catalog = learn_catalog(
@@ -145,6 +158,7 @@ def run_machine(
     return _result(
         machine_id,
         "ready",
+        provisional=short,
         processed_until=max(newest) if newest else None,
         windows_added=added,
         windows_skipped=skipped,

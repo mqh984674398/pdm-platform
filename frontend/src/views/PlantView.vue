@@ -11,7 +11,6 @@ import type { ComponentInstance, PlantMachine, PlantTree } from '@/api/contracts
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SideDrawer from '@/components/base/SideDrawer.vue'
-import DataSourcePanel from '@/components/studio/DataSourcePanel.vue'
 import ConfigWorkbench from '@/components/studio/ConfigWorkbench.vue'
 import '@/components/studio/studio.css'
 import { useLocalized } from '@/composables/useLocalized'
@@ -309,7 +308,6 @@ const chains = computed(() => {
     >
       {{ message.text }}
     </p>
-    <DataSourcePanel />
     <div v-if="tree" class="layout">
       <PanelBox :title="t('plant.tree')">
         <div class="row tree-head">

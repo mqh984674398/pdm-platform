@@ -196,13 +196,41 @@ async function install() {
   )
   if (ok) await loadReadiness()
 }
-async function runPipeline() {
-  const r = await run(() => monitoringApi.runPipeline(props.machineId))
+async function runPipeline(provisional = false) {
+  // the button always works: a missing prerequisite is named instead of leaving the button dead
+  if (!lifecycles.value.length || !mappedHere.value.length) {
+    message.value = {
+      ok: false,
+      text: t(lifecycles.value.length ? 'workbench.needSignals' : 'workbench.needInstall'),
+    }
+    return
+  }
+  const r = await run(() => monitoringApi.runPipeline(props.machineId, provisional))
   if (r) {
     pipelineResult.value = r
     await loadReadiness()
   }
 }
+const pipelineText = computed(() => {
+  const r = pipelineResult.value
+  if (!r) return ''
+  if (r.catalog === 'pending')
+    return t('workbench.catalog.pending', {
+      date: r.ready_at ? r.ready_at.slice(0, 10) : '—',
+    })
+  return t(r.provisional ? 'workbench.catalog.provisional' : `workbench.catalog.${r.catalog}`, {
+    n: r.windows_added,
+  })
+})
+const VALIDATION_STEPS = ['data', 'compile', 'replay', 'simulation'] as const
+const checkOf = (name: string) => current.value?.validation.find((c) => c.name === name)
+const detailsOf = (name: string) => (checkOf(name)?.details ?? {}) as Record<string, unknown>
+const emptyMappings = computed(() => {
+  const rows = (detailsOf('data').rows_recent ?? {}) as Record<string, number>
+  return Object.entries(rows)
+    .filter(([, n]) => n === 0)
+    .map(([k]) => k)
+})
 async function detach(x: SignalDefinition, m: SignalMapping) {
   const cfg = signalState.value?.content
   if (!cfg) return
@@ -337,9 +365,13 @@ async function validate() {
   const v = await run(() => monitoringApi.validateConfig(current.value!.config_id))
   if (v) {
     await load()
+    const failed = v.validation.filter((c) => !c.ok).map((c) => t(`workbench.check.${c.name}`))
     message.value = {
       ok: v.status === 'VALIDATED',
-      text: v.status === 'VALIDATED' ? t('workbench.validated') : t('workbench.validationFailed'),
+      text:
+        v.status === 'VALIDATED'
+          ? t('workbench.validated')
+          : t('workbench.validationFailedAt', { steps: failed.join('、') || '—' }),
     }
   }
 }
@@ -643,19 +675,31 @@ const statusLabel = (v: PredictionConfig) =>
             <button
               type="button"
               class="st-button"
-              :disabled="busy || !lifecycles.length || !mappedHere.length"
+              :disabled="busy"
               data-testid="run-pipeline"
-              @click="runPipeline"
+              @click="runPipeline(false)"
             >
               {{ t('workbench.runPipeline') }}
             </button>
+            <span v-if="!lifecycles.length" class="st-note error">{{
+              t('workbench.needInstall')
+            }}</span>
+            <span v-else-if="!mappedHere.length" class="st-note error">{{
+              t('workbench.needSignals')
+            }}</span>
             <span v-if="pipelineResult" class="st-note" data-testid="pipeline-result">
-              {{
-                t(`workbench.catalog.${pipelineResult.catalog}`, {
-                  n: pipelineResult.windows_added,
-                })
-              }}
+              {{ pipelineText }}
             </span>
+            <button
+              v-if="pipelineResult?.catalog === 'pending'"
+              type="button"
+              class="st-button"
+              :disabled="busy"
+              data-testid="run-pipeline-provisional"
+              @click="runPipeline(true)"
+            >
+              {{ t('workbench.runProvisional') }}
+            </button>
           </li>
           <li :class="hasReference ? 'ok' : 'error'" data-testid="ready-reference">
             {{ hasReference ? '✓' : '✗' }} {{ t('workbench.rReference') }}
@@ -849,11 +893,38 @@ const statusLabel = (v: PredictionConfig) =>
         <!-- 7 validate / publish -->
         <section>
           <h3>7 · {{ t('workbench.s7') }}</h3>
-          <ul v-if="current.validation.length" data-testid="wb-checks">
-            <li v-for="c in current.validation" :key="c.name" :class="c.ok ? 'ok' : 'error'">
-              {{ c.ok ? '✓' : '✗' }} {{ t(`workbench.check.${c.name}`) }} — {{ lt(c.summary) }}
+          <p class="st-note">{{ t('workbench.checksNote') }}</p>
+          <ol class="checks" data-testid="wb-checks">
+            <li
+              v-for="n in VALIDATION_STEPS"
+              :key="n"
+              :class="checkOf(n) ? (checkOf(n)!.ok ? 'ok' : 'error') : 'idle'"
+              :data-check="n"
+            >
+              <strong>{{ checkOf(n) ? (checkOf(n)!.ok ? '✓' : '✗') : '○' }}</strong>
+              {{ t(`workbench.check.${n}`) }}
+              <span class="st-note">{{ t(`workbench.checkWhat.${n}`) }}</span>
+              <div v-if="checkOf(n)">
+                {{ lt(checkOf(n)!.summary) }}
+                <p v-if="!checkOf(n)!.ok" class="fix" :data-fix="n">
+                  {{ t(`workbench.fix.${n}`) }}
+                </p>
+              </div>
+              <div v-else class="st-note">{{ t('workbench.notRun') }}</div>
+              <ul v-if="n === 'data' && checkOf(n) && emptyMappings.length" class="st-note st-mono">
+                <li v-for="k in emptyMappings" :key="k">{{ k }} · {{ t('workbench.noRows') }}</li>
+              </ul>
+              <div v-if="n === 'replay'" class="st-note" data-testid="replay-prereq">
+                {{ t('workbench.replayNeeds') }}
+                <span :class="windows ? 'ok' : 'error'">
+                  {{ windows ? '✓' : '✗' }} {{ t('workbench.rFeatures', { n: windows }) }}</span
+                >
+                <span :class="hasReference ? 'ok' : 'error'">
+                  {{ hasReference ? '✓' : '✗' }} {{ t('workbench.rReference') }}</span
+                >
+              </div>
             </li>
-          </ul>
+          </ol>
           <div v-if="editable" class="row">
             <button type="button" class="st-button" :disabled="busy" @click="save">
               {{ t('workbench.save') }}
@@ -921,6 +992,18 @@ section {
   align-items: center;
   flex-wrap: wrap;
   margin-top: var(--space-2);
+}
+.checks {
+  display: grid;
+  gap: var(--space-3);
+  padding-left: var(--space-5);
+}
+.checks .idle {
+  color: var(--ink-soft);
+}
+.fix {
+  color: var(--health-critical);
+  font-size: var(--text-sm);
 }
 .ready {
   list-style: none;

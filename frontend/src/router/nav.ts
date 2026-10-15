@@ -97,6 +97,14 @@ export const NAV: NavItem[] = [
     adminOnly: true,
   },
   {
+    name: 'datasources',
+    path: '/datasources',
+    group: 'groupAdmin',
+    task: 'D-049',
+    icon: 'M8 2c3 0 5 1 5 2.2S11 6.4 8 6.4 3 5.4 3 4.2 5 2 8 2zM3 4.2v3.6C3 9 5 10 8 10s5-1 5-2.2V4.2M3 7.8v3.6C3 12.6 5 13.6 8 13.6s5-1 5-2.2V7.8',
+    adminOnly: true,
+  },
+  {
     name: 'plant',
     path: '/plant',
     group: 'groupAdmin',

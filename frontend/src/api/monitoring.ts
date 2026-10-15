@@ -16,6 +16,7 @@ import type {
   Machine,
   MaintenanceEvent,
   MaintenanceWorkflow,
+  OptimizationReadiness,
   OptimizationRun,
   LlmConfig,
   LlmConfigState,
@@ -50,6 +51,7 @@ import type {
   ManagedSource,
   PipelineResult,
   ManagedSourceBody,
+  SourceStructure,
   SourceTestCheck,
   PredictionConfig,
 } from './contracts'
@@ -176,6 +178,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         method: 'POST',
         body: '{}',
       }),
+    dataSourceStructure: (id: string, stable?: string) =>
+      call<SourceStructure>(
+        `/api/admin/datasources/${encodeURIComponent(id)}/structure${
+          stable ? `?stable=${encodeURIComponent(stable)}` : ''
+        }`,
+      ),
     deleteDataSource: (id: string) => remove(`/api/admin/datasources/${encodeURIComponent(id)}`),
     // --- readiness of a component: installation, feature windows, healthy reference ---
     lifecycles: (componentId: string) =>
@@ -185,11 +193,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         method: 'POST',
         body: JSON.stringify({ installed_at: installedAt, comment }),
       }),
-    runPipeline: (machineId: string, until?: string) =>
+    runPipeline: (machineId: string, provisional = false) =>
       call<PipelineResult>('/api/pipeline/run', {
         method: 'POST',
-        body: JSON.stringify({ machine_id: machineId, until: until ?? null }),
+        body: JSON.stringify({ machine_id: machineId, provisional }),
       }),
+    optimizationReadiness: () => call<OptimizationReadiness>('/api/optimization/readiness'),
     // --- data sources and signal mappings (step 2 of the configuration workflow) ---
     dataSources: () => call<DataSourceConfig[]>('/api/datasources'),
     sourceDevices: (sourceId: string) =>

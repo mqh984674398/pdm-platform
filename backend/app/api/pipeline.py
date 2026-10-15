@@ -23,11 +23,18 @@ Engineer = Annotated[Principal, Depends(require(Role.ENGINEER))]
 class PipelineRequest(ContractModel):
     machine_id: str
     until: datetime | None = Field(default=None, description="Process data up to this time (default: now)")
+    provisional: bool = Field(
+        default=False,
+        description="Start before the 4-day learning period is complete (needs at least 1 day of data): "
+        "the regime catalog is learned from half of the data there is, and marked provisional",
+    )
 
 
 @router.post("/pipeline/run", response_model=PipelineResult)
 def run(body: PipelineRequest, request: Request, _: Engineer, db: DB) -> PipelineResult:
     EquipmentStore(db).machine(body.machine_id)
-    out = run_machine(db, request.app.state.sources, body.machine_id, body.until)
+    out = run_machine(
+        db, request.app.state.sources, body.machine_id, body.until, provisional=body.provisional
+    )
     db.commit()
     return out

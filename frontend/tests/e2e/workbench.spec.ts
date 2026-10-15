@@ -23,6 +23,10 @@ test('administrator takes a recommended configuration through validate, publish 
   await expect(page.getByTestId('wb-pipeline')).toContainText('将生效')
   await wb.getByTestId('wb-validate').click()
   await expect(page.getByTestId('wb-checks')).toBeVisible()
+  // all four checks are listed with what they test, and replay names its prerequisites
+  await expect(page.locator('[data-testid="wb-checks"] [data-check]')).toHaveCount(4)
+  await expect(page.locator('[data-check="replay"]')).toContainText('历史回放')
+  await expect(page.getByTestId('replay-prereq')).toContainText('回放需要')
   await expect(page.getByTestId('wb-message')).toContainText('验证通过')
   await wb.getByTestId('wb-comment').fill('e2e release')
   await wb.getByTestId('wb-publish').click()
@@ -84,6 +88,8 @@ test('step 2 shows the mapped signal, edits its parameters and previews the real
   // a component without recorded data cannot pass validation, and the screen says so
   await wb.getByTestId('wb-validate').click()
   await expect(page.getByTestId('wb-message')).toContainText('验证未通过')
+  // the failing step is named with what to do about it
+  await expect(page.locator('[data-fix]').first()).toBeVisible()
 })
 
 test('a new component goes from the plant tree to an active prediction configuration', async ({

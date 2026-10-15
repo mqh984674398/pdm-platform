@@ -9,6 +9,7 @@ import AnalysisView from '@/views/AnalysisView.vue'
 import AssistantView from '@/views/AssistantView.vue'
 import BaselinesView from '@/views/BaselinesView.vue'
 import ComponentView from '@/views/ComponentView.vue'
+import DataSourcesView from '@/views/DataSourcesView.vue'
 import DesignView from '@/views/DesignView.vue'
 import MachineView from '@/views/MachineView.vue'
 import MaintenanceView from '@/views/MaintenanceView.vue'
@@ -35,6 +36,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   models: { component: ModelsView },
   assistant: { component: AssistantView },
   users: { component: UsersView },
+  datasources: { component: DataSourcesView },
   plant: { component: PlantView },
 }
 

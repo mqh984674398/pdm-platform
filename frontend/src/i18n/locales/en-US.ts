@@ -23,6 +23,7 @@ const en: typeof zh = {
     assistant: 'Local assistant',
     groupAdmin: 'Administration',
     users: 'Users and roles',
+    datasources: 'Data sources',
     plant: 'Configuration workbench',
   },
   health: {
@@ -72,8 +73,9 @@ const en: typeof zh = {
       models: 'Model versions, validation results, and rollback.',
       assistant: 'Maintenance knowledge Q&A on local Ollama.',
       users: 'Register and delete accounts, change roles, and choose which screens each role sees.',
+      datasources: 'Add, test and delete TDengine sources; notes on the simulation database.',
       plant:
-        'One workbench for the plant structure, data sources and signal mappings, and the prediction configuration of each component.',
+        'One workbench for the plant structure, signal mappings and the prediction configuration of each component. Data sources are set up on the Data sources screen; here you only pick one.',
     },
   },
   design: {
@@ -215,6 +217,16 @@ const en: typeof zh = {
   },
   optimization: {
     lede: 'Replays the stored history with the current settings (champion) and with candidate settings, and scores every window against the Golden Cases. Safety rules are never changed, and nothing is applied from this page.',
+    readiness: {
+      title: 'What a run needs',
+      suite: 'Replay suite: {suite}',
+      counts: '{cases} Golden Cases over {components} components, {windows} stored feature windows',
+      how: 'Run comparison replays the stored feature windows of those components with the current settings (champion) and with generated candidate settings, scores each window against the Golden Case expectations, and only recommends; nothing is applied.',
+      scope:
+        'The built-in Golden Cases cover the simulated demo machines only; plant components need engineer-written Golden Cases before they can be compared.',
+      blocked: 'Cannot run yet: ',
+    },
+    candidates: 'Candidates',
     run: 'Run comparison',
     running: 'Replaying history…',
     none: 'No comparison has been run yet.',
@@ -425,9 +437,36 @@ const en: typeof zh = {
     catalog: {
       ready: 'Processed, {n} new windows',
       pending:
-        'Less than 4 days since installation: the operating-condition catalog is not formed yet, so no features can be built',
+        'Less than 4 days since installation: the full operating-condition catalog is not formed until {date}. With at least 1 day of data you can build features provisionally with the button next to this',
+      provisional:
+        'Built provisionally from the data there is (the catalog is provisional; build again after day 4), {n} new windows',
       no_data: 'The data source has no data in that period',
       no_signals: 'No usable signals or installation date',
+    },
+    needInstall: 'Register the installation date first',
+    needSignals: 'Map signals to this component above first',
+    runProvisional: 'Build provisionally from the data there is',
+    checksNote:
+      'Validation runs the four checks below in turn; when one fails it says why and where to fix it.',
+    notRun: 'Not validated yet',
+    noRows: 'no rows read recently',
+    replayNeeds: 'The replay needs:',
+    validationFailedAt: 'Validation failed: {steps}. See the reason under each item below',
+    checkWhat: {
+      data: 'every signal mapping has recent data in the source',
+      compile: 'the algorithm chain and its parameters compile',
+      replay:
+        'stored feature windows are replayed with the current criteria to see whether verdicts can be given',
+      simulation: 'synthetic scenarios check the decision logic; not plant data',
+    },
+    fix: {
+      data: 'Fix: check the signal mappings in step 2, and that this data source passes its test on the Data sources screen.',
+      compile:
+        'Fix: check the algorithm chain and parameters in step 4; the compile issues above name the stage.',
+      replay:
+        'Fix: build feature windows and verify the healthy reference under the prerequisites, then validate again.',
+      simulation:
+        'Fix: check the criteria in step 5; safety rules cannot be changed, so report the problem to an administrator.',
     },
     bind: 'Bind data source and device',
     readSignals: 'Read signals of this device',
@@ -539,6 +578,34 @@ const en: typeof zh = {
   },
   datasources: {
     title: 'Data sources',
+    lede: 'Where the platform reads telemetry from. Production TDengine sources are added, tested and deleted here; the Configuration workbench only picks one of them. The simulation database is defined by the datasources file, for administrators only, and is listed here for reference.',
+    next: 'Once a source passes its test, go to',
+    hostNote:
+      'Server address only (IP or host name), e.g. 10.26.30.97; no http:// and no port. A pasted full address is split automatically.',
+    portNote: "taosAdapter's REST port, default 6041.",
+    port6060:
+      'Port 6060 is usually the taosExplorer web console, not the REST interface; being able to open the web page does not mean the platform can connect. The REST port is normally 6041.',
+    tagNote:
+      'Enter a column name (e.g. device_id), not the id of one device. "Read structure" lets you pick from the database.',
+    tagMissing:
+      'The super table has no column or tag named "{name}"; enter a column name, not a device id. Use "Read structure" first.',
+    readStructure: 'Read structure',
+    structureNote:
+      'Reads the database super tables and columns with the saved account so fields can be picked from them.',
+    noColumns: 'No columns were read; check the super table name.',
+    hint: {
+      port_explorer:
+        'Port 6060 is the taosExplorer web console; change it to the taosAdapter REST port (normally 6041).',
+      not_rest:
+        'That address did not answer like taosAdapter REST; check the port (normally 6041) and the protocol.',
+      unreachable:
+        'Cannot connect: check the host, the port, the firewall, and that taosAdapter is running.',
+      auth: 'Account or privileges problem: check the read-only account and password, with read but no write access to this database.',
+      database: 'The database name is wrong or the account has no access to it.',
+      layout:
+        'The super table or columns do not match the configuration: use "Read structure" and correct them to the real names.',
+      other: 'Check the settings against the reason below.',
+    },
     note: 'Production uses the TDengine database with a read-only account; reading production needs no administrator approval. The account is written to the server only and never shown again. The simulation database is for administrators only.',
     failed: 'Action failed',
     saved: 'Data source saved; run "Test connection" to verify it',
@@ -589,7 +656,7 @@ const en: typeof zh = {
     drawerMachine: 'Machine {id}',
     drawerNew: 'Add workshop',
     comps: 'Components',
-    lede: 'Maintain the plant as workshop → process → machine, bind each machine to its device id in the database, and maintain its components and shared drive chains. Paths and component diagrams on the overview, machine map and component history update accordingly. Administrators only.',
+    lede: 'Maintain the plant as workshop → process → machine, bind each machine to its device id in the database, maintain components and shared drive chains, and on each component pick a data source, map signals and configure prediction. The data sources themselves are set up on the Data sources screen; here you only pick one. Paths and diagrams elsewhere update accordingly. Administrators only.',
     tree: 'Structure',
     unplaced: 'Machines without a process',
     workshop: 'Workshop',

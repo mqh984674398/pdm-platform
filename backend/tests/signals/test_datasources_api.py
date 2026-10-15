@@ -84,6 +84,46 @@ def test_source_without_account_is_inactive_and_test_says_so(client):
     body = {k: v for k, v in BODY.items() if k not in ("user", "password")}
     out = client.put("/api/admin/datasources/taos-plant", body).json()
     assert not out["active"] and not out["credential_set"]
-    assert client.post("/api/admin/datasources/taos-plant/test", {}, role="admin").json() == [
-        {"key": "credential", "ok": False}
-    ]
+    checks = client.post("/api/admin/datasources/taos-plant/test", {}, role="admin").json()
+    assert [(c["key"], c["ok"]) for c in checks] == [("credential", False)]
+
+
+def test_pasted_address_is_split_into_host_scheme_and_port(client):
+    body = {**BODY, "host": "https://10.0.0.5:6041/rest/sql", "port": 6041, "scheme": "http"}
+    out = client.put("/api/admin/datasources/taos-plant", body).json()
+    assert (out["host"], out["port"], out["scheme"]) == ("10.0.0.5", 6041, "https")
+    out = client.put("/api/admin/datasources/taos-plant", {**BODY, "host": "10.0.0.5:6060"}).json()
+    assert (out["host"], out["port"]) == ("10.0.0.5", 6060)
+
+
+def test_failed_test_says_why_and_wrong_port_is_called_out(client):
+    client.put("/api/admin/datasources/taos-plant", {**BODY, "port": 6060})
+
+    def page(request):  # taosExplorer answers with a web page, not taosAdapter's JSON
+        return httpx.Response(404, text="<html>not found</html>")
+
+    managed.TRANSPORT = httpx.MockTransport(page)
+    try:
+        # the stored source keeps the transport it was built with; rebuild it through a new save
+        client.put("/api/admin/datasources/taos-plant", {**BODY, "port": 6060})
+        checks = client.post("/api/admin/datasources/taos-plant/test", {}, role="admin").json()
+    finally:
+        managed.TRANSPORT = httpx.MockTransport(ReadOnlyTaos())
+    reach = next(c for c in checks if c["key"] == "reachable")
+    assert not reach["ok"] and reach["hint"] == "port_explorer" and "HTTP 404" in reach["detail"]
+
+
+def test_wrong_tag_column_lists_what_the_table_has_and_structure_can_be_read(client):
+    client.put("/api/admin/datasources/taos-plant", {**BODY, "stable": "meters", "device_tag": "APAC000Y"})
+    checks = client.post("/api/admin/datasources/taos-plant/test", {}, role="admin").json()
+    layout = next(c for c in checks if c["key"] == "layout")
+    assert not layout["ok"] and layout["hint"] == "layout"
+    assert "APAC000Y" in layout["detail"] and "device_id (tag)" in layout["detail"]
+    r = client.get("/api/admin/datasources/taos-plant/structure", role="admin")
+    assert r.status_code == 200, r.text
+    st = r.json()
+    assert st["stables"] == ["meters"] and st["stable"] == "meters"
+    assert {c["name"]: c["is_tag"] for c in st["columns"]} == {
+        "ts": False, "torque": False, "speed": False, "device_id": True,
+    }  # fmt: skip
+    assert client.get("/api/admin/datasources/taos-plant/structure", role="engineer").status_code == 403

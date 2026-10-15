@@ -7,7 +7,12 @@
  */
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { ManagedSource, ManagedSourceBody, SourceTestCheck } from '@/api/contracts'
+import type {
+  ManagedSource,
+  ManagedSourceBody,
+  SourceStructure,
+  SourceTestCheck,
+} from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import '@/components/studio/studio.css'
@@ -24,6 +29,8 @@ const open = ref(false)
 const editing = ref<string | null>(null)
 const message = ref<{ ok: boolean; text: string } | null>(null)
 const checks = ref<{ id: string; list: SourceTestCheck[] } | null>(null)
+const structure = ref<SourceStructure | null>(null)
+const HOST_INPUT = /^(?:(https?):\/\/)?([^/:\s]+)(?::(\d{1,5}))?(?:\/.*)?$/i
 const form = reactive({
   id: '',
   name: '',
@@ -64,6 +71,7 @@ async function run<T>(action: () => Promise<T>, done?: string): Promise<T | unde
 
 function edit(s: ManagedSource | null) {
   editing.value = s?.data_source_id ?? null
+  structure.value = null
   Object.assign(form, {
     id: s?.data_source_id ?? '',
     name: s?.name ?? '',
@@ -81,6 +89,30 @@ function edit(s: ManagedSource | null) {
     zone: s?.layout?.naive_time_zone ?? 'UTC',
   })
   open.value = true
+}
+
+/** A pasted address (http://host:port/...) is split into host, protocol and port. */
+function splitHost() {
+  const m = HOST_INPUT.exec(form.host.trim())
+  if (!m) return
+  form.host = m[2]!
+  if (m[1]) form.scheme = m[1].toLowerCase()
+  if (m[3]) form.port = Number(m[3])
+}
+const portWarning = computed(() => Number(form.port) === 6060)
+const tagColumns = computed(() => structure.value?.columns ?? [])
+const tagMissing = computed(
+  () =>
+    !!structure.value?.columns.length &&
+    !!form.deviceTag &&
+    !structure.value.columns.some((c) => c.name === form.deviceTag),
+)
+async function readStructure() {
+  if (!editing.value) return
+  const out = await run(() =>
+    monitoringApi.dataSourceStructure(editing.value!, form.stable.trim() || undefined),
+  )
+  if (out) structure.value = out
 }
 
 const valid = computed(
@@ -211,6 +243,12 @@ const kindLabel = (s: ManagedSource) =>
       <ul v-if="checks" class="st-note" data-testid="ds-checks">
         <li v-for="c in checks.list" :key="c.key" :class="c.ok ? 'ok' : 'error'">
           {{ c.ok ? '✓' : '✗' }} {{ t(`datasources.check.${c.key}`) }}
+          <template v-if="!c.ok && c.hint">
+            <br /><strong>{{ t(`datasources.hint.${c.hint}`) }}</strong>
+          </template>
+          <template v-if="!c.ok && c.detail">
+            <br /><span class="st-mono">{{ c.detail }}</span>
+          </template>
         </li>
       </ul>
       <button v-if="!open" type="button" class="st-button" data-testid="ds-add" @click="edit(null)">
@@ -235,12 +273,25 @@ const kindLabel = (s: ManagedSource) =>
         /></label>
         <label class="st-field"
           ><span>{{ t('datasources.host') }}</span
-          ><input v-model.trim="form.host" class="st-input st-mono"
-        /></label>
+          ><input
+            v-model.trim="form.host"
+            class="st-input st-mono"
+            data-testid="ds-host"
+            @blur="splitHost"
+          /><span class="st-note">{{ t('datasources.hostNote') }}</span></label
+        >
         <label class="st-field"
           ><span>{{ t('datasources.port') }}</span
-          ><input v-model.number="form.port" type="number" class="st-input st-mono"
-        /></label>
+          ><input
+            v-model.number="form.port"
+            type="number"
+            class="st-input st-mono"
+            data-testid="ds-port"
+          /><span v-if="portWarning" class="st-note error" data-testid="ds-port-warning">{{
+            t('datasources.port6060')
+          }}</span
+          ><span v-else class="st-note">{{ t('datasources.portNote') }}</span></label
+        >
         <label class="st-field"
           ><span>{{ t('datasources.scheme') }}</span>
           <select v-model="form.scheme" class="st-select">
@@ -253,16 +304,58 @@ const kindLabel = (s: ManagedSource) =>
         /></label>
         <label class="st-field"
           ><span>{{ t('datasources.stable') }}</span
-          ><input v-model.trim="form.stable" class="st-input st-mono"
-        /></label>
+          ><input
+            v-model.trim="form.stable"
+            class="st-input st-mono"
+            list="ds-stables"
+            data-testid="ds-stable"
+          />
+          <datalist id="ds-stables">
+            <option v-for="x in structure?.stables ?? []" :key="x" :value="x" />
+          </datalist>
+        </label>
         <label class="st-field"
           ><span>{{ t('datasources.deviceTag') }}</span
-          ><input v-model.trim="form.deviceTag" class="st-input st-mono"
-        /></label>
+          ><input
+            v-model.trim="form.deviceTag"
+            class="st-input st-mono"
+            list="ds-columns"
+            data-testid="ds-tag"
+          /><span v-if="tagMissing" class="st-note error" data-testid="ds-tag-warning">{{
+            t('datasources.tagMissing', { name: form.deviceTag })
+          }}</span
+          ><span v-else class="st-note">{{ t('datasources.tagNote') }}</span></label
+        >
         <label class="st-field"
           ><span>{{ t('datasources.timeColumn') }}</span
-          ><input v-model.trim="form.timeColumn" class="st-input st-mono"
-        /></label>
+          ><input
+            v-model.trim="form.timeColumn"
+            class="st-input st-mono"
+            list="ds-columns"
+          /><datalist id="ds-columns">
+            <option v-for="c in tagColumns" :key="c.name" :value="c.name">
+              {{ c.type }}{{ c.is_tag ? ' · tag' : '' }}
+            </option>
+          </datalist></label
+        >
+        <div v-if="editing" class="st-field">
+          <button
+            type="button"
+            class="st-button"
+            :disabled="busy"
+            data-testid="ds-structure"
+            @click="readStructure"
+          >
+            {{ t('datasources.readStructure') }}
+          </button>
+          <span class="st-note">{{ t('datasources.structureNote') }}</span>
+          <ul v-if="structure" class="st-note st-mono" data-testid="ds-columns">
+            <li v-for="c in structure.columns" :key="c.name">
+              {{ c.name }} · {{ c.type }}{{ c.is_tag ? ' · tag' : '' }}
+            </li>
+            <li v-if="!structure.columns.length">{{ t('datasources.noColumns') }}</li>
+          </ul>
+        </div>
         <label class="st-field"
           ><span>{{ t('datasources.keyColumn') }}</span
           ><input v-model.trim="form.keyColumn" class="st-input st-mono" /><span class="st-note">{{

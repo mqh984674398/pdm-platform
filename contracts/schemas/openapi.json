@@ -2778,6 +2778,97 @@
         }
       }
     },
+    "/api/admin/datasources/{data_source_id}/structure": {
+      "get": {
+        "tags": [
+          "datasources"
+        ],
+        "summary": "Source Structure",
+        "description": "Super tables of the database and the columns/tags of one of them, read with the saved account,\nso the layout fields can be picked from what the database really has.",
+        "operationId": "source_structure_api_admin_datasources__data_source_id__structure_get",
+        "parameters": [
+          {
+            "name": "data_source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Data Source Id"
+            }
+          },
+          {
+            "name": "stable",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stable"
+            }
+          },
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceStructure"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/algorithm-catalog": {
       "get": {
         "tags": [
@@ -6860,6 +6951,71 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ComponentHealthReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/optimization/readiness": {
+      "get": {
+        "tags": [
+          "optimization"
+        ],
+        "summary": "Readiness",
+        "operationId": "readiness_api_optimization_readiness_get",
+        "parameters": [
+          {
+            "name": "x-pdm-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-User"
+            }
+          },
+          {
+            "name": "x-pdm-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Pdm-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationReadiness"
                 }
               }
             }
@@ -15294,7 +15450,8 @@
           },
           "device_tag": {
             "type": "string",
-            "title": "Device Tag"
+            "title": "Device Tag",
+            "description": "Name of the tag or column holding the device id, not a device id"
           },
           "time_column": {
             "type": "string",
@@ -15881,6 +16038,65 @@
         "title": "OperatorSpec",
         "type": "object"
       },
+      "OptimizationReadiness": {
+        "properties": {
+          "can_run": {
+            "type": "boolean",
+            "title": "Can Run"
+          },
+          "suite": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suite"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "components": {
+            "type": "integer",
+            "title": "Components"
+          },
+          "stored_windows": {
+            "type": "integer",
+            "title": "Stored Windows",
+            "description": "Stored feature windows of those components"
+          },
+          "is_simulated": {
+            "type": "boolean",
+            "title": "Is Simulated"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "can_run",
+          "suite",
+          "cases",
+          "components",
+          "stored_windows",
+          "is_simulated",
+          "reason"
+        ],
+        "title": "OptimizationReadiness",
+        "description": "What a comparison run would replay, and why it cannot run when it cannot."
+      },
       "OptimizationRun": {
         "properties": {
           "run_id": {
@@ -15988,6 +16204,12 @@
             ],
             "title": "Until",
             "description": "Process data up to this time (default: now)"
+          },
+          "provisional": {
+            "type": "boolean",
+            "title": "Provisional",
+            "description": "Start before the 4-day learning period is complete (needs at least 1 day of data): the regime catalog is learned from half of the data there is, and marked provisional",
+            "default": false
           }
         },
         "additionalProperties": false,
@@ -16027,6 +16249,23 @@
             "type": "string",
             "title": "Catalog"
           },
+          "provisional": {
+            "type": "boolean",
+            "title": "Provisional",
+            "default": false
+          },
+          "ready_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ready At"
+          },
           "no_reference": {
             "items": {
               "type": "string"
@@ -16051,6 +16290,8 @@
           "windows_added",
           "windows_skipped",
           "catalog",
+          "provisional",
+          "ready_at",
           "no_reference",
           "alarms_raised",
           "is_simulated"
@@ -18838,6 +19079,36 @@
         "title": "SourceSchema",
         "type": "object"
       },
+      "SourceStructure": {
+        "properties": {
+          "stables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stables"
+          },
+          "stable": {
+            "type": "string",
+            "title": "Stable"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/StructureColumn"
+            },
+            "type": "array",
+            "title": "Columns"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "stables",
+          "stable",
+          "columns"
+        ],
+        "title": "SourceStructure"
+      },
       "SqlTableLayout": {
         "additionalProperties": false,
         "description": "Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).\n\n``value_columns`` are read in order and the first non-null one is the value, which covers\nsources that split values by type (e.g. ``value_double`` and ``value_long``).",
@@ -19048,6 +19319,30 @@
         "title": "StateSegment",
         "type": "object"
       },
+      "StructureColumn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "is_tag": {
+            "type": "boolean",
+            "title": "Is Tag"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "is_tag"
+        ],
+        "title": "StructureColumn"
+      },
       "StudioDevice": {
         "additionalProperties": false,
         "properties": {
@@ -19241,13 +19536,48 @@
           "ok": {
             "type": "boolean",
             "title": "Ok"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "description": "The server's reason when the check failed"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "port_explorer",
+                  "not_rest",
+                  "unreachable",
+                  "auth",
+                  "database",
+                  "layout",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hint",
+            "description": "What the administrator should look at first"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
           "key",
-          "ok"
+          "ok",
+          "detail",
+          "hint"
         ],
         "title": "TestCheck"
       },

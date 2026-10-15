@@ -64,6 +64,18 @@ def test_pending_until_the_catalog_period_has_data(tmp_path):
     assert windows(s, m) == []
 
 
+def test_provisional_start_learns_the_catalog_from_the_data_there_is(tmp_path):
+    s, sources, m = setup(tmp_path, "p")
+    day3 = m.t0 + timedelta(days=3)
+    wait = run_machine(s, sources, m.machine_id, until=day3)
+    assert wait.catalog == "pending" and wait.ready_at == m.t0 + timedelta(days=4) and not wait.provisional
+    short = run_machine(s, sources, m.machine_id, until=m.t0 + timedelta(hours=12), provisional=True)
+    assert short.catalog == "pending"  # less than a day of data is not enough even provisionally
+    r = run_machine(s, sources, m.machine_id, until=day3, provisional=True, max_steps=40)
+    assert r.catalog == "ready" and r.provisional and r.windows_added > 0
+    assert windows(s, m)  # a young component can now be checked and validated
+
+
 def test_steps_and_repeated_runs_give_the_same_windows(tmp_path):
     a, sources, m = setup(tmp_path, "a")
     b, _, _ = setup(tmp_path, "b")

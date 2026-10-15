@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Request, Response, status
+from pydantic import Field
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -34,9 +35,41 @@ class SourceConflictError(AdapterError):
     """The change would break something that uses the source, or touches a file-managed source."""
 
 
+Hint = Literal["port_explorer", "not_rest", "unreachable", "auth", "database", "layout", "other"]
+
+
 class TestCheck(ContractModel):
     key: Literal["credential", "reachable", "readOnly", "layout", "timeout", "rowLimit"]
     ok: bool
+    detail: str | None = Field(default=None, description="The server's reason when the check failed")
+    hint: Hint | None = Field(default=None, description="What the administrator should look at first")
+
+
+class StructureColumn(ContractModel):
+    name: str
+    type: str
+    is_tag: bool
+
+
+class SourceStructure(ContractModel):
+    stables: list[str]
+    stable: str
+    columns: list[StructureColumn]
+
+
+def _hint(error: str, port: int | None, stage: str) -> Hint:
+    low = error.lower()
+    if stage == "layout":
+        return "layout"
+    if "not reachable" in low:
+        return "port_explorer" if port == 6060 else "unreachable"
+    if "returned http" in low:  # a web page, not taosAdapter's JSON: usually the wrong port
+        return "port_explorer" if port == 6060 else "not_rest"
+    if "auth" in low or "user" in low or "password" in low or "privilege" in low:
+        return "auth"
+    if "database" in low:
+        return "database"
+    return "other"
 
 
 def _reg(request: Request) -> DataSourceRegistry:
@@ -141,14 +174,25 @@ def test_source(data_source_id: str, who: Admin, db: DB, reg: Reg) -> list[TestC
     except AdapterError:
         return [TestCheck(key="credential", ok=False)]
     reachable = read_only = layout_ok = False
+    problem: dict[str, tuple[str, Hint]] = {}  # check key -> (reason, hint)
+    port = config.port
     try:
         adapter.sql("SELECT SERVER_VERSION()")
         reachable = True
-        read_only = config.read_only and _read_only(adapter)
-        adapter.check_layout()
-        layout_ok = True
-    except (AdapterError, SQLAlchemyError, OSError):
-        pass
+    except (AdapterError, SQLAlchemyError, OSError) as exc:
+        problem["reachable"] = (str(exc), _hint(str(exc), port, "reachable"))
+    if reachable:
+        try:
+            read_only = config.read_only and _read_only(adapter)
+            if not read_only:
+                problem["readOnly"] = ("the account can write or could not be verified read-only", "auth")
+        except (AdapterError, SQLAlchemyError, OSError, KeyError, ValueError, IndexError) as exc:
+            problem["readOnly"] = (f"could not check the account's privileges: {exc}", "auth")
+        try:
+            adapter.check_layout()
+            layout_ok = True
+        except (AdapterError, SQLAlchemyError, OSError) as exc:
+            problem["layout"] = (str(exc), _hint(str(exc), port, "layout"))
     if layout_ok:  # the layout was checked against the real database
         rec.layout = {**rec.layout, "verified": True}
         reg.remove(data_source_id)
@@ -159,11 +203,33 @@ def test_source(data_source_id: str, who: Admin, db: DB, reg: Reg) -> list[TestC
     audit(db, who, "datasource.test", "datasource", data_source_id, reachable=reachable,
           read_only=read_only, layout=layout_ok)  # fmt: skip
     db.commit()
+
+    def check(key: str, ok: bool) -> TestCheck:
+        why = problem.get(key)
+        return TestCheck(key=key, ok=ok, detail=why[0] if why and not ok else None,
+                         hint=why[1] if why and not ok else None)  # fmt: skip
+
     return [
-        TestCheck(key="credential", ok=True),
-        TestCheck(key="reachable", ok=reachable),
-        TestCheck(key="readOnly", ok=read_only),
-        TestCheck(key="layout", ok=layout_ok),
-        TestCheck(key="timeout", ok=config.statement_timeout_s <= 300),
-        TestCheck(key="rowLimit", ok=config.max_rows <= 2_000_000),
+        check("credential", True),
+        check("reachable", reachable),
+        check("readOnly", read_only),
+        check("layout", layout_ok),
+        check("timeout", config.statement_timeout_s <= 300),
+        check("rowLimit", config.max_rows <= 2_000_000),
     ]
+
+
+@router.get("/admin/datasources/{data_source_id}/structure", response_model=SourceStructure)
+def source_structure(data_source_id: str, _: Admin, db: DB, stable: str | None = None) -> SourceStructure:
+    """Super tables of the database and the columns/tags of one of them, read with the saved account,
+    so the layout fields can be picked from what the database really has."""
+    rec = db.get(m.ManagedSourceRecord, data_source_id)
+    if rec is None:
+        raise SourceConflictError(f"'{data_source_id}' is not a source managed here")
+    _, adapter = m.build(rec)
+    stables, cols = adapter.structure(stable)
+    return SourceStructure(
+        stables=stables,
+        stable=stable or rec.layout["stable"],
+        columns=[StructureColumn(name=n, type=t, is_tag=tag) for n, t, tag in cols],
+    )

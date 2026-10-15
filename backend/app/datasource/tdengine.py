@@ -203,7 +203,8 @@ class TdengineAdapter(TimeSeriesAdapter):
             needed.append(lay.key_column)
         missing = [c for c in needed if c not in cols]
         if missing:
-            raise LayoutError(f"columns not found in '{lay.stable}': {', '.join(missing)}")
+            have = ", ".join(f"{n} (tag)" if tag else n for n, (_, tag) in cols.items())
+            raise LayoutError(f"columns not found in '{lay.stable}': {', '.join(missing)}; it has: {have}")
         if not lay.key_column:
             keys = lay.value_columns or [n for n, (t, tag) in cols.items() if not tag and t in NUMERIC_TYPES]
             if not keys:
@@ -211,6 +212,14 @@ class TdengineAdapter(TimeSeriesAdapter):
             self._keys = keys
         elif not lay.value_columns:
             raise LayoutError("narrow TDengine layouts need value_columns")
+
+    def structure(self, stable: str | None = None) -> tuple[list[str], list[tuple[str, str, bool]]]:
+        """Super tables of the database and the columns/tags of ``stable`` (default: the configured one)."""
+        names, _, rows = self.sql("SHOW STABLES")
+        i = next((k for k, n in enumerate(names) if n.lower() in ("stable_name", "name")), 0)
+        stables = sorted(str(r[i]) for r in rows)[:MAX_STABLES]
+        target = stable or self.layout.stable
+        return stables, (self.describe(target) if target in stables else [])
 
     def keys(self) -> list[str]:
         if self._keys is None and not self.layout.key_column:
