@@ -140,3 +140,27 @@ def test_components_and_shared_drive_chain(client):
         ).status_code
         == 403
     )
+
+
+def test_delete_component_with_installation_history(client):
+    """The first component usually has an installation record from the workbench readiness step."""
+    build(client)
+    a = h("admin")
+    body = {"component_id": "M100-BS1", "type": "BALL_SCREW", "name": L("X轴丝杠", "X ball screw")}
+    assert client.put("/api/plant-machines/M100/components/M100-BS1", json=body, headers=a).status_code == 200
+    inst = client.post(
+        "/api/components/M100-BS1/lifecycles",
+        json={"installed_at": "2026-10-01T00:00:00Z"},
+        headers=h("engineer"),
+    )
+    assert inst.status_code in (200, 201), inst.text
+    usage = client.get("/api/plant-components/M100-BS1/usage", headers=h("viewer")).json()
+    assert usage["deletable"] is True
+    assert [(r["kind"], r["count"]) for r in usage["rows"]] == [("component_lifecycles", 1)]
+    # without confirmation the delete is refused and names what is attached
+    refused = client.delete("/api/plant-components/M100-BS1", headers=a)
+    assert refused.status_code == 409 and "component_lifecycles" in refused.text
+    # confirmed: installation history goes with the component
+    assert client.delete("/api/plant-components/M100-BS1?cascade=true", headers=a).status_code == 204
+    assert client.get("/api/machines/M100/components", headers=h("viewer")).json() == []
+    assert client.get("/api/plant-components/M100-BS1/usage", headers=h("viewer")).status_code == 404

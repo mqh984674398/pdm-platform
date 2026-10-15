@@ -13,20 +13,74 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
+from scipy.stats import theilslopes
 from sqlalchemy import JSON, DateTime, String, select
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from app.core.audit import record as audit
 from app.core.db import Base
-from app.core.schemas import ResultMeta, TimeWindow
+from app.core.schemas import LocalizedText, ResultMeta, TimeWindow
 from app.core.security import Principal, Role
 from app.equipment.lifecycle import _aware
-from app.monitoring.baselines.stats import MIN_VALUES, feature_stats
+from app.monitoring.baselines.stats import MIN_VALUES, feature_stats, spread
 from app.monitoring.features.store import FeatureStore
-from app.monitoring.schemas import Baseline, BaselineKind, BaselineVerification, FeatureStats
+from app.monitoring.rules.definitions import DEFAULT_RULES
+from app.monitoring.rules.engine import component_type
+from app.monitoring.schemas import (
+    Baseline,
+    BaselineKind,
+    BaselineVerification,
+    FeatureStats,
+    FeatureVector,
+    RuleKind,
+)
 
 MIN_VECTORS = 5
 MODEL_VERSION = "verified-reference@1.0.0"
+DRIFT_SPREADS = 1.5  # drift inside the period, in reference spreads, that suggests it was not steady
+FEW_WINDOWS = 10  # fewer windows give a spread estimate too rough for fixed deviation thresholds
+
+
+def quality_warnings(vectors: list[FeatureVector], stats: dict[str, FeatureStats]) -> list[LocalizedText]:
+    """Notes on a candidate reference period (D-040). They never block a verification: the engineer
+    decides. A reference taken while the component was already degrading hides that degradation."""
+    ctype = component_type(vectors[0].feature_ref)
+    # the first feature of each statistical rule of this type (regime-normalized where there is one)
+    health = {
+        r.features[0]
+        for r in DEFAULT_RULES.rules
+        if r.kind == RuleKind.STATISTICAL and ctype in r.component_types
+    }
+    out = []
+    if len(vectors) < FEW_WINDOWS:
+        out.append(
+            LocalizedText(
+                zh=f"参考期仅 {len(vectors)} 个窗口，偏差尺度估计粗糙，建议至少 {FEW_WINDOWS} 个",
+                en=f"Only {len(vectors)} windows in the period; the spread is rough, "
+                f"{FEW_WINDOWS} or more are advised",
+            )
+        )
+    t0 = min(v.window.start for v in vectors)
+    for f in sorted(health & stats.keys()):
+        pts = [
+            ((v.window.start - t0).total_seconds() / 86400, v.values[f])
+            for v in vectors
+            if v.values.get(f) is not None
+        ]
+        span = max(t for t, _ in pts) - min(t for t, _ in pts) if len(pts) >= MIN_VALUES else 0.0
+        if span <= 0:
+            continue
+        slope = float(theilslopes([y for _, y in pts], [t for t, _ in pts])[0])
+        drift = slope * span / spread(stats[f])
+        if abs(drift) >= DRIFT_SPREADS:
+            out.append(
+                LocalizedText(
+                    zh=f"参考期内 {f} 已漂移 {drift:+.1f} 个标准差，该时段可能并非稳定健康，请复核后再确认",
+                    en=f"{f} drifts {drift:+.1f} spreads inside the period; it may not be steady healthy, "
+                    "review before verifying",
+                )
+            )
+    return out
 
 
 class BaselineError(ValueError):
@@ -55,6 +109,7 @@ class BaselineRecord(Base):
     comment: Mapped[str] = mapped_column(String(2000), nullable=False, default="")
     superseded_by: Mapped[str | None] = mapped_column(String(40), nullable=True)
     meta: Mapped[dict] = mapped_column(JSON, nullable=False)
+    warnings: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
 
     def to_model(self) -> Baseline:
         return Baseline(
@@ -74,6 +129,7 @@ class BaselineRecord(Base):
             verified_at=_aware(self.verified_at),
             comment=self.comment,
             superseded_by=self.superseded_by,
+            warnings=[LocalizedText.model_validate(w) for w in self.warnings or []],
             meta=ResultMeta.model_validate(self.meta),
         )
 
@@ -151,6 +207,7 @@ class BaselineService:
         }
         catalogs = sorted({v.catalog_id for v in vectors if v.catalog_id})
         sim = any(v.is_simulated for v in vectors)
+        warnings = quality_warnings(vectors, stats)
         bid = f"BL-{uuid.uuid4().hex[:16]}"
         meta = ResultMeta(
             model_version=MODEL_VERSION,
@@ -180,6 +237,7 @@ class BaselineService:
             verified_at=now,
             comment=req.comment.strip(),
             meta=meta.model_dump(mode="json"),
+            warnings=[w.model_dump() for w in warnings],
         )
         self.session.add(rec)
         audit(
@@ -196,6 +254,7 @@ class BaselineService:
             window_end=req.window.end.isoformat(),
             vectors=len(vectors),
             supersedes=previous.baseline_id if previous else None,
+            warnings=[w.en for w in warnings],
             comment=req.comment.strip(),
         )
         self.session.flush()

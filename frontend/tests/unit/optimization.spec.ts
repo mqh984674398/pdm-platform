@@ -32,6 +32,16 @@ const RUN = {
   is_simulated: true,
 }
 
+const READY = {
+  can_run: true,
+  suite: 'golden-cases (SIMULATED demo fleet)',
+  cases: 3,
+  components: 3,
+  stored_windows: 120,
+  is_simulated: true,
+  reason: null,
+}
+
 afterEach(() => vi.unstubAllGlobals())
 
 describe('optimization comparison', () => {
@@ -39,6 +49,7 @@ describe('optimization comparison', () => {
     const calls: string[] = []
     vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
       calls.push(`${init?.method ?? 'GET'} ${url}`)
+      if (url.includes('/readiness')) return new Response(JSON.stringify(READY), { status: 200 })
       if (init?.method === 'POST') return new Response(JSON.stringify(RUN), { status: 200 })
       return new Response(
         JSON.stringify({
@@ -56,7 +67,11 @@ describe('optimization comparison', () => {
 
     await w.find('[data-testid="opt-run"]').trigger('click')
     await flushPromises()
-    expect(calls).toEqual(['GET /api/optimization/runs/latest', 'POST /api/optimization/runs'])
+    expect(calls).toEqual([
+      'GET /api/optimization/readiness',
+      'GET /api/optimization/runs/latest',
+      'POST /api/optimization/runs',
+    ])
     const rows = w.findAll('[data-testid="opt-table"] tbody tr')
     expect(rows.map((r) => r.attributes('data-row'))).toEqual(['champion', 'A01', 'B02'])
     expect(rows[1]!.text()).toContain('Recommended')
@@ -65,5 +80,30 @@ describe('optimization comparison', () => {
     expect(w.find('[data-testid="opt-verdict"]').text()).toContain('A01')
     // the recommended candidate's cases are shown against the champion
     expect(w.find('[data-testid="opt-cases"]').text()).toContain('GC-S03-01')
+  })
+
+  it('says what a run needs and why it cannot run, instead of a dead button', async () => {
+    vi.stubGlobal('fetch', async (url: string) => {
+      if (url.includes('/readiness'))
+        return new Response(
+          JSON.stringify({
+            ...READY,
+            can_run: false,
+            suite: null,
+            cases: 0,
+            components: 0,
+            stored_windows: 0,
+            reason: { zh: '没有可回放的回归用例', en: 'No regression cases to replay.' },
+          }),
+          { status: 200 },
+        )
+      return new Response('{}', { status: 404 })
+    })
+    setLocale('en-US')
+    const w = mount(OptimizationView, { global: { plugins: [i18n] } })
+    await flushPromises()
+    expect(w.find('[data-testid="opt-blocked"]').text()).toContain('No regression cases')
+    expect(w.find('[data-testid="opt-run"]').attributes('disabled')).toBeDefined()
+    expect(w.find('[data-testid="opt-readiness"]').text()).toContain('Golden Case')
   })
 })

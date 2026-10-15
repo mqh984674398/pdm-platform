@@ -130,6 +130,13 @@ def test_champion_score_matches_the_golden_comparison(env):
     assert by["GC-S03-01"].under == 0 and m.within + m.over + m.under == m.windows
 
 
+def test_optimization_readiness_says_what_would_be_replayed(env):
+    client, _, _ = env
+    r = client.get("/api/optimization/readiness", role="viewer").json()
+    assert r["can_run"] and r["cases"] > 0 and r["components"] > 0 and r["stored_windows"] > 0
+    assert r["is_simulated"] and r["reason"] is None
+
+
 def test_optimization_api_runs_champion_vs_candidates(env):
     client, _, _ = env
     opt_service._LATEST.clear()

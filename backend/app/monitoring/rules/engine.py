@@ -22,6 +22,7 @@ from app.monitoring.schemas import (
     RuleHit,
     RuleKind,
     RuleSet,
+    SafetyStatus,
     WindowEvaluation,
 )
 
@@ -84,7 +85,7 @@ def evaluate(
         cus_state: dict[str, float] = {}
         ew_state: dict[str, float] = {}
         for v in vs:
-            hits, stats, missing = [], {}, []
+            hits, stats, missing, checks = [], {}, [], {}
 
             for r in active:
                 if r.kind == RuleKind.STATISTICAL:
@@ -125,6 +126,9 @@ def evaluate(
                         lim, x = limits.get(cid), v.values.get("torque_p95")
                         if lim is None or x is None:
                             missing.append(r.rule_id)
+                            checks[r.rule_id] = (
+                                SafetyStatus.NOT_CONFIGURED if lim is None else SafetyStatus.NOT_EVALUATED
+                            )
                             if (
                                 r.rule_id in last_hit
                             ):  # an unevaluable window keeps the level; it does not clear it
@@ -135,6 +139,7 @@ def evaluate(
                         present = [(v.values[f], f) for f in r.features if v.values.get(f) is not None]
                         if not present:
                             missing.append(r.rule_id)
+                            checks[r.rule_id] = SafetyStatus.NOT_EVALUATED
                             if (
                                 r.rule_id in last_hit
                             ):  # an unevaluable window keeps the level; it does not clear it
@@ -144,6 +149,10 @@ def evaluate(
                     lvl, basis = level_for(value, r), "raw"
                 held[r.rule_id].append(lvl)
                 final = _held(held[r.rule_id], rules.hold)
+                if r.kind == RuleKind.SAFETY:
+                    checks[r.rule_id] = (
+                        SafetyStatus.VIOLATED if final != L.NORMAL else SafetyStatus.CONFIRMED_OK
+                    )
                 last_hit.pop(r.rule_id, None)
                 if final != L.NORMAL:
                     last_hit[r.rule_id] = RuleHit(
@@ -170,6 +179,7 @@ def evaluate(
                     hits=hits,
                     statistics=stats,
                     not_evaluated=missing,
+                    safety_checks=checks,
                     rules_version=version,
                     is_simulated=v.is_simulated,
                 )

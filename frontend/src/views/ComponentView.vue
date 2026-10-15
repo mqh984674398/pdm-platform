@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute } from 'vue-router'
+import BackButton from '@/components/base/BackButton.vue'
 import PanelBox from '@/components/base/PanelBox.vue'
 import ComponentDetail from '@/components/fleet/ComponentDetail.vue'
 import DemoNotice from '@/components/fleet/DemoNotice.vue'
@@ -28,6 +29,7 @@ const found = computed(() => {
 <template>
   <div v-if="fleet && found" class="page">
     <header class="page-head">
+      <BackButton :to="`/machine/${found.machine.machine_id}`" :target="lt(found.machine.name)" />
       <h1>{{ t('nav.component') }}</h1>
       <DemoNotice :basis="fleet.health_basis" />
     </header>

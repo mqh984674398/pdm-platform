@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import numpy as np
 
@@ -30,6 +30,11 @@ S = OperatingState
 WINDOW_BREAK_MIN_S = 60.0
 MOTION_NOISE_FACTOR = 20.0  # 95th percentile speed must exceed this many noise levels
 MAX_ROWS = 200_000
+MAX_TOTAL_ROWS = 5_000_000  # per signal and load; beyond this a period is too dense to hold in memory
+MIN_SPLIT = timedelta(minutes=1)
+_TOO_DENSE = (
+    "'{signal}' has more than {n} rows in one period; the data is too dense to learn from at full resolution"
+)
 
 NOT_DERIVED = [S.STOPPED, S.FAULT]
 
@@ -65,6 +70,32 @@ class Series:
         return self.t[i:j], self.v[i:j]
 
 
+def _read(adapter, m: SignalMapping, window: TimeWindow, limit: int, max_range: timedelta | None) -> list:
+    """Rows of one signal. A window longer than the source allows, or one that fills the row limit, is read
+    in halves, so a long period is loaded in as many bounded queries as it needs."""
+    span = window.end - window.start
+    if max_range is not None and span > max_range:
+        return _halves(adapter, m, window, limit, max_range)
+    rows = adapter.query_range(m.device_id, m.key_name, window, limit)
+    if len(rows) < limit:
+        return rows
+    if span <= MIN_SPLIT:
+        raise ValueError(
+            f"more than {limit} rows for '{m.signal_id}' within {span.total_seconds():g} s; "
+            "raise the data source's row limit"
+        )
+    return _halves(adapter, m, window, limit, max_range)
+
+
+def _halves(adapter, m: SignalMapping, window: TimeWindow, limit: int, max_range: timedelta | None) -> list:
+    mid = window.start + (window.end - window.start) / 2
+    first = _read(adapter, m, TimeWindow(start=window.start, end=mid), limit, max_range)
+    if len(first) > MAX_TOTAL_ROWS:
+        raise ValueError(_TOO_DENSE.format(signal=m.signal_id, n=MAX_TOTAL_ROWS))
+    second = _read(adapter, m, TimeWindow(start=mid, end=window.end), limit, max_range)
+    return first + second
+
+
 def load_series(
     sources: DataSourceRegistry,
     items: Sequence[tuple[SignalMapping, SignalDefinition]],
@@ -74,9 +105,10 @@ def load_series(
     out = []
     for m, s in items:
         limit = min(MAX_ROWS, sources.config(m.data_source_id).max_rows)
-        rows = sources.adapter(m.data_source_id).query_range(m.device_id, m.key_name, window, limit)
-        if len(rows) >= limit:
-            raise ValueError(f"more than {limit} rows for '{m.signal_id}'; use a shorter window")
+        adapter = sources.adapter(m.data_source_id)
+        rows = _read(adapter, m, window, limit, getattr(adapter, "max_range", None))
+        if len(rows) > MAX_TOTAL_ROWS:
+            raise ValueError(_TOO_DENSE.format(signal=m.signal_id, n=MAX_TOTAL_ROWS))
         t = np.array([r.ts.timestamp() for r in rows], dtype=float)
         v = np.array(
             [np.nan if r.value is None else convert(r.value, m.conversion) for r in rows], dtype=float

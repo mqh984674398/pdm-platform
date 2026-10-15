@@ -6,13 +6,18 @@ import type {
   Alarm,
   ApiError,
   Baseline,
+  BaselineVerification,
+  FeatureCoverage,
   ComponentHealthReport,
   ComponentInstance,
+  ComponentUsage,
+  ComponentLifecycle,
   DegradationHistory,
   FleetOverview,
   Machine,
   MaintenanceEvent,
   MaintenanceWorkflow,
+  OptimizationReadiness,
   OptimizationRun,
   LlmConfig,
   LlmConfigState,
@@ -36,6 +41,24 @@ import type {
   MachinePlacement,
   PlantNodeChange,
   PlantTree,
+  MachineLayout,
+  AlgorithmModels,
+  AlgorithmSpec,
+  ApiStudioDevice,
+  DataSourceConfig,
+  DeviceConfigChange,
+  DeviceSuggestions,
+  CompileResult,
+  ConfigContent,
+  ConfigRecommendation,
+  ManagedSource,
+  PipelineResult,
+  RunMode,
+  RunModeState,
+  ManagedSourceBody,
+  SourceStructure,
+  SourceTestCheck,
+  PredictionConfig,
 } from './contracts'
 import { authHeaders } from './session'
 
@@ -74,12 +97,24 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
     return (await resp.json()) as T
   }
 
-  async function remove(path: string): Promise<void> {
-    const resp = await fetchImpl(url(path), { method: 'DELETE', headers: headers() })
+  async function remoteVoid(path: string, body: unknown): Promise<void> {
+    const resp = await fetchImpl(url(path), {
+      method: 'PUT',
+      headers: { ...headers(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
+  }
+
+  async function remove(path: string, method = 'DELETE'): Promise<void> {
+    const resp = await fetchImpl(url(path), { method, headers: headers() })
     if (!resp.ok) throw new MonitoringApiError(resp.status, await resp.json().catch(() => null))
   }
 
   return {
+    runMode: () => call<RunModeState>('/api/run-mode'),
+    setRunMode: (mode: RunMode) =>
+      call<RunModeState>('/api/run-mode', { method: 'PUT', body: JSON.stringify({ mode }) }),
     signalConfig: () => call<SignalConfigState>('/api/signal-config'),
     signalVersions: () => call<SignalConfigVersion[]>('/api/signal-config/versions'),
     /** Saved mapping of one signal over a window: normalized samples and the chart series (UI-05). */
@@ -96,6 +131,108 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
           method: 'PUT',
           body: JSON.stringify({ item, comment, base_version: baseVersion }),
         },
+      ),
+    // --- prediction configuration versions (D-044..D-046) ---
+    algorithmModels: () => call<AlgorithmModels>('/api/algorithm-models'),
+    algorithmCatalog: () => call<AlgorithmSpec[]>('/api/algorithm-catalog'),
+    recommendedConfig: (componentId: string) =>
+      call<ConfigRecommendation>(
+        `/api/components/${encodeURIComponent(componentId)}/recommended-config`,
+      ),
+    configVersions: (componentId: string) =>
+      call<PredictionConfig[]>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs`,
+      ),
+    createDraft: (componentId: string, content: ConfigContent | null, copyFrom?: string) =>
+      call<PredictionConfig>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ content, copy_from_component: copyFrom ?? null }),
+        },
+      ),
+    updateDraft: (configId: string, content: ConfigContent) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(content),
+      }),
+    deleteDraft: (configId: string) =>
+      remove(`/api/prediction-configs/${encodeURIComponent(configId)}`),
+    cloneConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/clone`, {
+        method: 'POST',
+      }),
+    compileConfig: (componentId: string, content: ConfigContent) =>
+      call<CompileResult>(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs/compile`,
+        { method: 'POST', body: JSON.stringify(content) },
+      ),
+    validateConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/validate`, {
+        method: 'POST',
+      }),
+    publishConfig: (configId: string, comment: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/publish`, {
+        method: 'POST',
+        body: JSON.stringify({ comment }),
+      }),
+    activateConfig: (configId: string) =>
+      call<PredictionConfig>(`/api/prediction-configs/${encodeURIComponent(configId)}/activate`, {
+        method: 'POST',
+      }),
+    deactivateConfig: (componentId: string) =>
+      remove(
+        `/api/components/${encodeURIComponent(componentId)}/prediction-configs/deactivate`,
+        'POST',
+      ),
+    adminDataSources: () => call<ManagedSource[]>('/api/admin/datasources'),
+    saveDataSource: (b: ManagedSourceBody) =>
+      call<ManagedSource>(`/api/admin/datasources/${encodeURIComponent(b.data_source_id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(b),
+      }),
+    testDataSource: (id: string) =>
+      call<SourceTestCheck[]>(`/api/admin/datasources/${encodeURIComponent(id)}/test`, {
+        method: 'POST',
+        body: '{}',
+      }),
+    dataSourceStructure: (id: string, stable?: string) =>
+      call<SourceStructure>(
+        `/api/admin/datasources/${encodeURIComponent(id)}/structure${
+          stable ? `?stable=${encodeURIComponent(stable)}` : ''
+        }`,
+      ),
+    deleteDataSource: (id: string) => remove(`/api/admin/datasources/${encodeURIComponent(id)}`),
+    // --- readiness of a component: installation, feature windows, healthy reference ---
+    lifecycles: (componentId: string) =>
+      call<ComponentLifecycle[]>(`/api/components/${encodeURIComponent(componentId)}/lifecycles`),
+    installComponent: (componentId: string, installedAt: string, comment: string) =>
+      call<ComponentLifecycle>(`/api/components/${encodeURIComponent(componentId)}/lifecycles`, {
+        method: 'POST',
+        body: JSON.stringify({ installed_at: installedAt, comment }),
+      }),
+    runPipeline: (
+      machineId: string,
+      provisional = false,
+      range: { since?: string; until?: string } = {},
+    ) =>
+      call<PipelineResult>('/api/pipeline/run', {
+        method: 'POST',
+        body: JSON.stringify({ machine_id: machineId, provisional, ...range }),
+      }),
+    optimizationReadiness: () => call<OptimizationReadiness>('/api/optimization/readiness'),
+    // --- data sources and signal mappings (step 2 of the configuration workflow) ---
+    dataSources: () => call<DataSourceConfig[]>('/api/datasources'),
+    sourceDevices: (sourceId: string) =>
+      call<ApiStudioDevice[]>(`/api/datasources/${encodeURIComponent(sourceId)}/devices`),
+    deviceSuggestions: (sourceId: string, deviceId: string) =>
+      call<DeviceSuggestions>(
+        `/api/datasources/${encodeURIComponent(sourceId)}/devices/${encodeURIComponent(deviceId)}/suggestions`,
+      ),
+    replaceDevice: (sourceId: string, deviceId: string, change: DeviceConfigChange) =>
+      call<SignalConfigVersion>(
+        `/api/signal-config/sources/${encodeURIComponent(sourceId)}/devices/${encodeURIComponent(deviceId)}`,
+        { method: 'PUT', body: JSON.stringify(change) },
       ),
     users: () => call<UserInfo[]>('/api/auth/users'),
     createUser: (u: { user_id: string; display_name: string; role: string; password: string }) =>
@@ -122,6 +259,11 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         body: JSON.stringify({ modules }),
       }),
     plantTree: () => call<PlantTree>('/api/plant-tree'),
+    machineLayout: () => call<MachineLayout[]>('/api/machine-layout'),
+    setMachineOrder: (machineIds: string[]) =>
+      remoteVoid('/api/machine-layout/order', { machine_ids: machineIds }),
+    setMachineBackground: (machineId: string, image: string | null) =>
+      remoteVoid(`/api/machine-layout/${encodeURIComponent(machineId)}/background`, { image }),
     putPlantNode: (n: PlantNodeChange) =>
       call<PlantTree>(`/api/plant-nodes/${encodeURIComponent(n.node_id)}`, {
         method: 'PUT',
@@ -142,8 +284,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         `/api/plant-machines/${encodeURIComponent(machineId)}/components/${encodeURIComponent(c.component_id)}`,
         { method: 'PUT', body: JSON.stringify(c) },
       ),
-    deleteComponent: (componentId: string) =>
-      remove(`/api/plant-components/${encodeURIComponent(componentId)}`),
+    componentUsage: (componentId: string) =>
+      call<ComponentUsage>(`/api/plant-components/${encodeURIComponent(componentId)}/usage`),
+    deleteComponent: (componentId: string, cascade = false) =>
+      remove(
+        `/api/plant-components/${encodeURIComponent(componentId)}${cascade ? '?cascade=true' : ''}`,
+      ),
     fleet: () => call<FleetOverview>('/api/fleet'),
     health: (componentId: string) =>
       call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),
@@ -182,6 +328,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
       const name = /filename="([^"]+)"/.exec(disposition)?.[1] ?? `${signalId}.csv`
       return { name, blob: await resp.blob() }
     },
+    featureCoverage: (componentId: string) =>
+      call<FeatureCoverage[]>(
+        `/api/components/${encodeURIComponent(componentId)}/feature-coverage`,
+      ),
+    verifyBaseline: (body: BaselineVerification) =>
+      call<Baseline>('/api/baselines/verified', { method: 'POST', body: JSON.stringify(body) }),
     baselines: (componentId: string) =>
       call<Baseline[]>(`/api/components/${encodeURIComponent(componentId)}/baselines`),
     degradation: (componentId: string, feature: string, featureRef: string) =>

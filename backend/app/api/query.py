@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response, status
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible, source_in_mode
 from app.core import audit
 from app.core.db import get_session
 from app.core.security import Principal, Role, require
@@ -44,8 +45,8 @@ Service = Annotated[QueryService, Depends(service)]
 
 
 @router.get("/datasources", response_model=list[DataSourceConfig])
-def list_sources(who: Viewer, reg: Sources) -> list[DataSourceConfig]:
-    return reg.configs_for(who)
+def list_sources(who: Viewer, reg: Sources, vis: Visible) -> list[DataSourceConfig]:
+    return [c for c in reg.configs_for(who) if source_in_mode(c, vis.mode)]
 
 
 @router.get("/datasources/{data_source_id}/metadata", response_model=SourceMetadata)

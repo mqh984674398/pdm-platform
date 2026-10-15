@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import secrets
 import sys
 from pathlib import Path
 
@@ -21,6 +22,15 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", type=Path, required=True, help="SQLite file to (re)create")
     ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument(
+        "--static", type=Path, help="built browser client (frontend/dist) to serve on the same port"
+    )
+    ap.add_argument(
+        "--local-auth",
+        metavar="PASSWORD",
+        help="sign in with accounts 'admin' and 'engineer' (this password) instead of dev headers",
+    )
     args = ap.parse_args()
 
     db = args.db.resolve()
@@ -28,7 +38,12 @@ def main() -> None:
     db.unlink(missing_ok=True)
     os.environ["PDM_DATABASE_URL"] = f"sqlite:///{db}"
     os.environ["PDM_DATASOURCES_FILE"] = str(DATA / "fixtures" / "studio_sources.json")
-    os.environ.setdefault("PDM_AUTH_MODE", "dev")
+    os.environ.setdefault("PDM_AUTH_MODE", "local" if args.local_auth else "dev")
+    if args.local_auth:  # a throw-away key and a cookie that works over plain http (demo only)
+        os.environ.setdefault("PDM_SECRET_KEY", secrets.token_hex(32))
+        os.environ.setdefault("PDM_COOKIE_SECURE", "false")
+    if args.static:
+        os.environ["PDM_STATIC_DIR"] = str(args.static.resolve())
     sys.path.insert(0, str(BACKEND))
     os.chdir(BACKEND)
 
@@ -112,7 +127,18 @@ def main() -> None:
 
     from app.main import create_app
 
-    uvicorn.run(create_app(sources=sources), host="127.0.0.1", port=args.port, log_level="warning")
+    if args.local_auth:
+        from app.core.auth import NewUser, UserStore
+
+        with Session(get_engine()) as session:
+            users = UserStore(session)
+            for uid, role in (("admin", Role.ADMIN), ("engineer", Role.ENGINEER)):
+                users.create(
+                    NewUser(user_id=uid, display_name=uid, role=role, password=args.local_auth),
+                    Principal(user_id="demo-seed", role=Role.ADMIN),
+                )
+            session.commit()
+    uvicorn.run(create_app(sources=sources), host=args.host, port=args.port, log_level="warning")
 
 
 if __name__ == "__main__":

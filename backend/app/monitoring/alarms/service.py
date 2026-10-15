@@ -29,7 +29,10 @@ from app.monitoring.schemas import (
     AlarmSeverity,
     AlarmStatus,
     MonitoringLevel,
+    RuleHit,
+    RuleKind,
     RuleSet,
+    SafetyStatus,
     WindowEvaluation,
 )
 
@@ -100,6 +103,9 @@ class AlarmWatermark(Base):
     evaluated_until: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+DEGRADED_PREFIX = "DQ:"  # alarm rule id of a safety check that could not be evaluated
+
+
 def evidence_id(rule_id: str, e: WindowEvaluation) -> str:
     return f"RH:{rule_id}:{e.component_id}:{e.window.start.isoformat()}"
 
@@ -129,6 +135,17 @@ class AlarmService:
                 if e.window.end <= _aware(mark.evaluated_until):
                     continue
             firing = {h.rule_id: h for h in e.hits}
+            for rid, st in e.safety_checks.items():  # D-043: a degraded safety check is reported, not hidden
+                if st == SafetyStatus.NOT_EVALUATED:
+                    firing[f"{DEGRADED_PREFIX}{rid}"] = RuleHit(
+                        rule_id=f"{DEGRADED_PREFIX}{rid}",
+                        kind=RuleKind.SAFETY,
+                        level=MonitoringLevel.WATCH,
+                        feature="measurement",
+                        value=0.0,
+                        threshold=0.0,
+                        basis="quality",
+                    )
             rule_ids = set(firing) | {
                 r.rule_id
                 for r in self.session.scalars(
@@ -144,6 +161,15 @@ class AlarmService:
                     sev = AlarmSeverity(hit.level.value)
                     if open_ is None:
                         rule = self.rules.get(rid)
+                        if rid.startswith(DEGRADED_PREFIX):
+                            base = rid[len(DEGRADED_PREFIX) :]
+                            msg = LocalizedText(
+                                zh=f"安全监测降级：{base} 所需测量缺失或无效，无法确认是否违限（不等于正常）",
+                                en=f"Safety monitoring degraded: {base} measurement missing or invalid; "
+                                "a violation cannot be confirmed (not the same as normal)",
+                            )
+                        else:
+                            msg = rule.description if rule else LocalizedText(zh=rid, en=rid)
                         rec = AlarmRecord(
                             alarm_id=f"AL-{uuid.uuid4().hex[:16]}",
                             component_id=e.component_id,
@@ -154,9 +180,7 @@ class AlarmService:
                             raised_at=e.window.end,
                             condition_active=True,
                             last_window_end=e.window.end,
-                            message=(
-                                rule.description if rule else LocalizedText(zh=rid, en=rid)
-                            ).model_dump(),
+                            message=msg.model_dump(),
                             evidence_ids=[evidence_id(rid, e)],
                             rules_version=e.rules_version,
                             is_simulated=e.is_simulated,

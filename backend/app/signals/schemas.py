@@ -16,6 +16,7 @@ class PhysicalQuantity(StrEnum):
     POSITION = "POSITION"
     CURRENT = "CURRENT"
     PRESSURE = "PRESSURE"
+    VIBRATION = "VIBRATION"
     OTHER = "OTHER"
 
 

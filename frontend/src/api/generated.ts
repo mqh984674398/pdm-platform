@@ -435,6 +435,290 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/admin/datasources': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Sources */
+    get: operations['list_sources_api_admin_datasources_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/datasources/{data_source_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Source */
+    put: operations['put_source_api_admin_datasources__data_source_id__put']
+    post?: never
+    /** Delete Source */
+    delete: operations['delete_source_api_admin_datasources__data_source_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/datasources/{data_source_id}/test': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Test Source */
+    post: operations['test_source_api_admin_datasources__data_source_id__test_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/admin/datasources/{data_source_id}/structure': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Source Structure
+     * @description Super tables of the database and the columns/tags of one of them, read with the saved account,
+     *     so the layout fields can be picked from what the database really has.
+     */
+    get: operations['source_structure_api_admin_datasources__data_source_id__structure_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/algorithm-catalog': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Catalog */
+    get: operations['catalog_api_algorithm_catalog_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/deep-model-adapters': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Deep Adapters */
+    get: operations['deep_adapters_api_deep_model_adapters_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/algorithm-models': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Algorithm Models
+     * @description The algorithm library and where each algorithm is used (read-only; selection happens in a component's
+     *     configuration).
+     */
+    get: operations['algorithm_models_api_algorithm_models_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/recommended-config': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Recommended */
+    get: operations['recommended_api_components__component_id__recommended_config_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/prediction-configs': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Versions */
+    get: operations['versions_api_components__component_id__prediction_configs_get']
+    put?: never
+    /** Create */
+    post: operations['create_api_components__component_id__prediction_configs_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/prediction-configs/{config_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get */
+    get: operations['get_api_prediction_configs__config_id__get']
+    /** Update */
+    put: operations['update_api_prediction_configs__config_id__put']
+    post?: never
+    /** Delete */
+    delete: operations['delete_api_prediction_configs__config_id__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/prediction-configs/{config_id}/clone': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Clone */
+    post: operations['clone_api_prediction_configs__config_id__clone_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/prediction-configs/compile': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Compile */
+    post: operations['compile__api_components__component_id__prediction_configs_compile_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/prediction-configs/{config_id}/validate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Validate */
+    post: operations['validate_api_prediction_configs__config_id__validate_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/prediction-configs/{config_id}/publish': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Publish */
+    post: operations['publish_api_prediction_configs__config_id__publish_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/prediction-configs/{config_id}/activate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Activate */
+    post: operations['activate_api_prediction_configs__config_id__activate_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/prediction-configs/deactivate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Deactivate */
+    post: operations['deactivate_api_components__component_id__prediction_configs_deactivate_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/machines': {
     parameters: {
       query?: never
@@ -728,6 +1012,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/plant-components/{component_id}/usage': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Component Usage */
+    get: operations['component_usage_api_plant_components__component_id__usage_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/plant-components/{component_id}': {
     parameters: {
       query?: never
@@ -745,6 +1046,74 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/machine-layout': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Read Layout */
+    get: operations['read_layout_api_machine_layout_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machine-layout/order': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Order */
+    put: operations['put_order_api_machine_layout_order_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/machine-layout/{machine_id}/background': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Put Background */
+    put: operations['put_background_api_machine_layout__machine_id__background_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/pipeline/run': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Run */
+    post: operations['run_api_pipeline_run_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/baselines/verified': {
     parameters: {
       query?: never
@@ -756,6 +1125,23 @@ export interface paths {
     put?: never
     /** Verify Baseline */
     post: operations['verify_baseline_api_baselines_verified_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/components/{component_id}/feature-coverage': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Feature Coverage */
+    get: operations['feature_coverage_api_components__component_id__feature_coverage_get']
+    put?: never
+    post?: never
     delete?: never
     options?: never
     head?: never
@@ -978,6 +1364,23 @@ export interface paths {
     }
     /** Component Health */
     get: operations['component_health_api_components__component_id__health_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/optimization/readiness': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Readiness */
+    get: operations['readiness_api_optimization_readiness_get']
     put?: never
     post?: never
     delete?: never
@@ -1436,6 +1839,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/run-mode': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Read Mode */
+    get: operations['read_mode_api_run_mode_get']
+    /** Write Mode */
+    put: operations['write_mode_api_run_mode_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -1567,6 +1988,78 @@ export interface components {
      * @enum {string}
      */
     AlarmStatus: 'RAISED' | 'ACKNOWLEDGED' | 'RESOLVED'
+    /** AlgorithmEntry */
+    AlgorithmEntry: {
+      spec: components['schemas']['AlgorithmSpec']
+      /** Adapter Available */
+      adapter_available: boolean | null
+      /** Adapter Reason */
+      adapter_reason: string | null
+      /** Active Uses */
+      active_uses: components['schemas']['AlgorithmUse'][]
+      /** Draft Uses */
+      draft_uses: number
+    }
+    /** AlgorithmModels */
+    AlgorithmModels: {
+      /** Algorithms */
+      algorithms: components['schemas']['AlgorithmEntry'][]
+      /** Deep Adapters */
+      deep_adapters: components['schemas']['DeepAdapterInfo'][]
+      /** Plugins */
+      plugins: components['schemas']['PluginSpec'][]
+    }
+    /** AlgorithmSpec */
+    AlgorithmSpec: {
+      /** Algorithm Id */
+      algorithm_id: string
+      /** Category */
+      category: string
+      name: components['schemas']['LocalizedText']
+      /** Implemented */
+      implemented: boolean
+      /** Component Types */
+      component_types: components['schemas']['ComponentType'][] | null
+      /** Required Quantities */
+      required_quantities: components['schemas']['PhysicalQuantity'][]
+      /**
+       * Needs Validated Model
+       * @default false
+       */
+      needs_validated_model: boolean
+      evidence_type: components['schemas']['EvidenceType']
+      /**
+       * Deep Family
+       * @description Deep-model adapter family behind the stage
+       */
+      deep_family: string | null
+      /**
+       * Needs Labels
+       * @description Supervised: needs recorded-truth fault labels
+       * @default false
+       */
+      needs_labels: boolean
+      /**
+       * Min Sampling Hz
+       * @description Input sampling rate the algorithm needs
+       */
+      min_sampling_hz: number | null
+      /** @description Where the algorithm may and may not be used */
+      boundary: components['schemas']['LocalizedText'] | null
+    }
+    /** AlgorithmUse */
+    AlgorithmUse: {
+      /** Component Id */
+      component_id: string
+      /** Config Id */
+      config_id: string
+      /** Version */
+      version: number
+      /** Stage Id */
+      stage_id: string
+      /** Enabled */
+      enabled: boolean
+    }
     /**
      * AlignmentReport
      * @description Speed/torque consistency (L4-02): timestamp pairing within a tolerance, motion agreement per
@@ -1718,6 +2211,14 @@ export interface components {
         [key: string]: unknown
       }
     }
+    /** BackgroundChange */
+    BackgroundChange: {
+      /**
+       * Image
+       * @description A PNG, JPEG or WebP picture as a data: URL, or null to clear it
+       */
+      image?: string | null
+    }
     /**
      * Baseline
      * @description One of the three baselines (L4-05) for a component lifecycle, optionally per regime.
@@ -1768,6 +2269,11 @@ export interface components {
        * @default null
        */
       superseded_by: string | null
+      /**
+       * Warnings
+       * @description Quality notes found when the period was verified (drift inside it, few windows)
+       */
+      warnings: components['schemas']['LocalizedText'][]
       meta: components['schemas']['ResultMeta']
     }
     /**
@@ -1860,6 +2366,18 @@ export interface components {
      * @enum {string}
      */
     ChartKind: 'LINE' | 'SCATTER' | 'HISTOGRAM' | 'CYCLE_DURATION'
+    /** CheckResult */
+    CheckResult: {
+      /** Name */
+      name: string
+      /** Ok */
+      ok: boolean
+      summary: components['schemas']['LocalizedText']
+      /** Details */
+      details: {
+        [key: string]: unknown
+      }
+    }
     /** Citation */
     Citation: {
       /** Chunk Id */
@@ -1927,6 +2445,28 @@ export interface components {
       component_ids: string[]
       note: components['schemas']['LocalizedText']
     }
+    /** CompileResult */
+    CompileResult: {
+      /** Ok */
+      ok: boolean
+      /** Stages */
+      stages: components['schemas']['CompiledStage'][]
+      /** Issues */
+      issues: components['schemas']['Issue'][]
+    }
+    /** CompiledStage */
+    CompiledStage: {
+      /** Stage Id */
+      stage_id: string
+      /** Algorithm */
+      algorithm: string
+      /**
+       * Effective
+       * @description Whether the stage will take part when the version is active
+       */
+      effective: boolean
+      reason: components['schemas']['LocalizedText'] | null
+    }
     /**
      * ComponentAging
      * @description Age of the active lifecycle at a time. Only replacement starts a new count (L3-06, L3-08).
@@ -1971,6 +2511,11 @@ export interface components {
       name: components['schemas']['LocalizedText']
       /** Drive Chain Id */
       drive_chain_id?: string | null
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the torque signal (SF-TORQUE-LIMIT)
+       */
+      torque_limit?: number | null
     }
     /**
      * ComponentHealthReport
@@ -1986,6 +2531,16 @@ export interface components {
       common_cause: components['schemas']['CommonCause'] | null
       /** Is Simulated */
       is_simulated: boolean
+      /**
+       * Config Version
+       * @description Active prediction configuration, if any
+       * @default null
+       */
+      config_version: string | null
+      /** @default null */
+      display: components['schemas']['Display'] | null
+      /** Related */
+      related: components['schemas']['RelatedStatus'][]
     }
     /** ComponentInstance */
     ComponentInstance: {
@@ -2003,6 +2558,12 @@ export interface components {
       drive_chain_id: string | null
       /** Signal Ids */
       signal_ids: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       * @default null
+       */
+      torque_limit: number | null
     }
     /** ComponentInstance */
     'ComponentInstance-Input': {
@@ -2019,6 +2580,11 @@ export interface components {
       drive_chain_id?: string | null
       /** Signal Ids */
       signal_ids?: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       */
+      torque_limit?: number | null
     }
     /** ComponentInstance */
     'ComponentInstance-Output': {
@@ -2035,6 +2601,11 @@ export interface components {
       drive_chain_id: string | null
       /** Signal Ids */
       signal_ids: string[]
+      /**
+       * Torque Limit
+       * @description Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT
+       */
+      torque_limit: number | null
     }
     /**
      * ComponentLifecycle
@@ -2084,6 +2655,41 @@ export interface components {
      */
     ComponentType:
       'BALL_SCREW' | 'LINEAR_MOTOR' | 'VACUUM_CUP' | 'PNEUMATIC_CYLINDER' | 'CAM' | 'GEAR'
+    /** ComponentUsage */
+    ComponentUsage: {
+      /** Component Id */
+      component_id: string
+      /** Rows */
+      rows: components['schemas']['UsageRow'][]
+      /** Deletable */
+      deletable: boolean
+    }
+    /** ConfigContent */
+    'ConfigContent-Input': {
+      /**
+       * Template From
+       * @description Component whose configuration this copies
+       */
+      template_from?: string | null
+      relationship?: components['schemas']['Relationship-Input']
+      /** Pipeline */
+      pipeline?: components['schemas']['Stage-Input'][]
+      criteria?: components['schemas']['Criteria-Input']
+      display?: components['schemas']['Display-Input']
+    }
+    /** ConfigContent */
+    'ConfigContent-Output': {
+      /**
+       * Template From
+       * @description Component whose configuration this copies
+       */
+      template_from: string | null
+      relationship: components['schemas']['Relationship-Output']
+      /** Pipeline */
+      pipeline: components['schemas']['Stage-Output'][]
+      criteria: components['schemas']['Criteria-Output']
+      display: components['schemas']['Display-Output']
+    }
     /** ConfigProposal */
     ConfigProposal: {
       /** Comment */
@@ -2091,6 +2697,11 @@ export interface components {
       /** Candidate Id */
       candidate_id: string
     }
+    /**
+     * ConfigStatus
+     * @enum {string}
+     */
+    ConfigStatus: 'DRAFT' | 'VALIDATED' | 'PUBLISHED'
     /** ConnectionCheck */
     ConnectionCheck: {
       /**
@@ -2100,6 +2711,60 @@ export interface components {
       key: 'reachable' | 'readOnly' | 'timeout' | 'rowLimit'
       /** Ok */
       ok: boolean
+    }
+    /** Criteria */
+    'Criteria-Input': {
+      /** Allowed Evidence Types */
+      allowed_evidence_types?: components['schemas']['EvidenceType'][]
+      /**
+       * Safety First
+       * @description Safety limits keep their minimum severity; fixed
+       * @default true
+       */
+      safety_first: boolean
+      /**
+       * Model Max Severity
+       * @description Models and unsupervised detectors raise at most WATCH
+       * @default WATCH
+       */
+      model_max_severity: string
+      /**
+       * Fusion
+       * @default SAFETY_FLOOR_RULES_MODELS
+       */
+      fusion: string
+      /**
+       * Confidence
+       * @default NONE
+       */
+      confidence: string
+    }
+    /** Criteria */
+    'Criteria-Output': {
+      /** Allowed Evidence Types */
+      allowed_evidence_types: components['schemas']['EvidenceType'][]
+      /**
+       * Safety First
+       * @description Safety limits keep their minimum severity; fixed
+       * @default true
+       */
+      safety_first: boolean
+      /**
+       * Model Max Severity
+       * @description Models and unsupervised detectors raise at most WATCH
+       * @default WATCH
+       */
+      model_max_severity: string
+      /**
+       * Fusion
+       * @default SAFETY_FLOOR_RULES_MODELS
+       */
+      fusion: string
+      /**
+       * Confidence
+       * @default NONE
+       */
+      confidence: string
     }
     /**
      * CycleKind
@@ -2307,11 +2972,31 @@ export interface components {
       /** Safety Constraints Applied */
       safety_constraints_applied: string[]
       /**
+       * @description Violation confirmed, check not evaluable, normal confirmed, or no check configured
+       * @default NOT_EVALUATED
+       */
+      safety_status: components['schemas']['SafetyStatus']
+      /**
+       * Safety Unevaluated
+       * @description Safety rules whose measurement is missing or invalid
+       */
+      safety_unevaluated: string[]
+      /**
        * Conflicting Evidence
        * @default false
        */
       conflicting_evidence: boolean
       meta: components['schemas']['ResultMeta']
+    }
+    /** DeepAdapterInfo */
+    DeepAdapterInfo: {
+      /** Family */
+      family: string
+      contract: components['schemas']['InputContract']
+      /** Available */
+      available: boolean
+      /** Unavailable Reason */
+      unavailable_reason: string | null
     }
     /**
      * DegradationHistory
@@ -2480,6 +3165,105 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** Display */
+    Display: {
+      /**
+       * Own Status
+       * @default true
+       */
+      own_status: boolean
+      /**
+       * Related Status
+       * @default true
+       */
+      related_status: boolean
+      /**
+       * Trend
+       * @default true
+       */
+      trend: boolean
+      /**
+       * Evidence
+       * @default true
+       */
+      evidence: boolean
+      /**
+       * Recommendations
+       * @default true
+       */
+      recommendations: boolean
+      /**
+       * Alarms
+       * @default true
+       */
+      alarms: boolean
+    }
+    /** Display */
+    'Display-Input': {
+      /**
+       * Own Status
+       * @default true
+       */
+      own_status: boolean
+      /**
+       * Related Status
+       * @default true
+       */
+      related_status: boolean
+      /**
+       * Trend
+       * @default true
+       */
+      trend: boolean
+      /**
+       * Evidence
+       * @default true
+       */
+      evidence: boolean
+      /**
+       * Recommendations
+       * @default true
+       */
+      recommendations: boolean
+      /**
+       * Alarms
+       * @default true
+       */
+      alarms: boolean
+    }
+    /** Display */
+    'Display-Output': {
+      /**
+       * Own Status
+       * @default true
+       */
+      own_status: boolean
+      /**
+       * Related Status
+       * @default true
+       */
+      related_status: boolean
+      /**
+       * Trend
+       * @default true
+       */
+      trend: boolean
+      /**
+       * Evidence
+       * @default true
+       */
+      evidence: boolean
+      /**
+       * Recommendations
+       * @default true
+       */
+      recommendations: boolean
+      /**
+       * Alarms
+       * @default true
+       */
+      alarms: boolean
+    }
     /** Document */
     Document: {
       /** Doc Id */
@@ -2517,6 +3301,12 @@ export interface components {
        */
       source: string
     }
+    /** DraftBody */
+    DraftBody: {
+      content?: components['schemas']['ConfigContent-Input'] | null
+      /** Copy From Component */
+      copy_from_component?: string | null
+    }
     /**
      * EligibilityCondition
      * @description A declarative precondition checked before the operator's output may be used (L6-01).
@@ -2526,10 +3316,18 @@ export interface components {
       code: string
       description: components['schemas']['LocalizedText']
     }
-    /** Evidence */
+    /**
+     * Evidence
+     * @description Unified evidence object (D-043). Every rule, statistic and model reports in this shape; the
+     *     decision never adds raw scores of different algorithms. ``applicable``, ``reason``, ``model_version``,
+     *     ``evaluated_at`` and ``input_window_id`` are derived from the stored fields so they cannot disagree.
+     */
     Evidence: {
       /** Evidence Id */
       evidence_id: string
+      /** Component Id */
+      component_id: string
+      evidence_type: components['schemas']['EvidenceType']
       source: components['schemas']['EvidenceSource']
       /**
        * Result Ref
@@ -2540,12 +3338,60 @@ export interface components {
       /** Eligible */
       eligible: boolean
       meta: components['schemas']['ResultMeta']
+      /**
+       * Raw Value
+       * @description Original algorithm score or measurement
+       * @default null
+       */
+      raw_value: number | null
+      /**
+       * Threshold
+       * @description Decision threshold, when there is one
+       * @default null
+       */
+      threshold: number | null
+      /**
+       * Calibration
+       * @description Calibration version, when there is one
+       * @default null
+       */
+      calibration: string | null
+      /**
+       * @description Severity this evidence proposes; None when it proposes none
+       * @default null
+       */
+      proposed_severity: components['schemas']['HealthState'] | null
+      /** @default OK */
+      quality_status: components['schemas']['QualityStatus']
+      /**
+       * Baseline Version
+       * @description Healthy reference the evidence used
+       * @default null
+       */
+      baseline_version: string | null
+      /** Applicable */
+      readonly applicable: boolean
+      readonly reason: components['schemas']['LocalizedText']
+      /** Model Version */
+      readonly model_version: string
+      /**
+       * Evaluated At
+       * Format: date-time
+       */
+      readonly evaluated_at: string
+      /** Input Window Id */
+      readonly input_window_id: string
     }
     /**
      * EvidenceSource
      * @enum {string}
      */
     EvidenceSource: 'RULE' | 'STATISTIC' | 'MODEL' | 'MAINTENANCE' | 'DATA_QUALITY'
+    /**
+     * EvidenceType
+     * @enum {string}
+     */
+    EvidenceType: 'SAFETY' | 'STATISTICAL' | 'ANOMALY' | 'SUPERVISED' | 'CONTEXT'
     /**
      * FailureProbabilityResult
      * @description Only valid when genuine failure/lifecycle evidence exists (L5-05).
@@ -2579,6 +3425,30 @@ export interface components {
      * @enum {string}
      */
     FallbackBehavior: 'RETURN_UNSUPPORTED' | 'USE_PREVIOUS_VERSION' | 'USE_STATISTICAL_BASELINE'
+    /**
+     * FeatureCoverage
+     * @description Stored feature windows of one installation: what a healthy reference can be chosen from.
+     */
+    FeatureCoverage: {
+      /** Lifecycle Id */
+      lifecycle_id: string
+      /** Feature Ref */
+      feature_ref: string
+      /** Windows */
+      windows: number
+      /**
+       * Start
+       * Format: date-time
+       */
+      start: string
+      /**
+       * End
+       * Format: date-time
+       */
+      end: string
+      /** Has Reference */
+      has_reference: boolean
+    }
     /** FeatureDef */
     FeatureDef: {
       /** Name */
@@ -2998,6 +3868,56 @@ export interface components {
      * @enum {string}
      */
     ImpactOutcome: 'IMPROVED' | 'PARTIAL' | 'NO_CHANGE' | 'DETERIORATED' | 'UNKNOWN'
+    /** InputContract */
+    InputContract: {
+      kind: components['schemas']['InputKind']
+      /**
+       * Features
+       * @description Window sequence: feature names, in order
+       */
+      features: string[]
+      /**
+       * Sequence Length
+       * @description Window sequence: windows per sample
+       * @default 1
+       */
+      sequence_length: number
+      /**
+       * Signal Role
+       * @description Waveform: signal role, e.g. vibration
+       */
+      signal_role: string | null
+      /**
+       * Min Sampling Hz
+       * @description Waveform: lowest sampling rate
+       */
+      min_sampling_hz: number | null
+      /**
+       * Min Training Samples
+       * @default 200
+       */
+      min_training_samples: number
+      /**
+       * Min Fault Samples
+       * @default 20
+       */
+      min_fault_samples: number
+    }
+    /**
+     * InputKind
+     * @enum {string}
+     */
+    InputKind: 'WINDOW_SEQUENCE' | 'WAVEFORM'
+    /** Issue */
+    Issue: {
+      /** Level */
+      level: string
+      /** Stage Id */
+      stage_id: string | null
+      /** Code */
+      code: string
+      message: components['schemas']['LocalizedText']
+    }
     /** KindSummary */
     KindSummary: {
       /** Kind */
@@ -3263,6 +4183,18 @@ export interface components {
       /** Device Id */
       device_id?: string | null
     }
+    /** MachineLayout */
+    MachineLayout: {
+      /** Machine Id */
+      machine_id: string
+      /** Sort */
+      sort: number | null
+      /**
+       * Background
+       * @description A data: URL of the background picture
+       */
+      background: string | null
+    }
     /** MachineOperations */
     MachineOperations: {
       /** Machine Id */
@@ -3462,6 +4394,114 @@ export interface components {
       | 'POST_MAINTENANCE_VALIDATION'
       | 'NORMAL_MONITORING'
       | 'REVIEW_REQUIRED'
+    /** ManagedSource */
+    ManagedSource: {
+      /** Data Source Id */
+      data_source_id: string
+      /** Name */
+      name: string
+      kind: components['schemas']['DataSourceKind']
+      /** Host */
+      host: string | null
+      /** Port */
+      port: number | null
+      /** Database */
+      database: string | null
+      /** Scheme */
+      scheme: string | null
+      layout: components['schemas']['TdengineLayout'] | null
+      /**
+       * Managed
+       * @description True when it can be edited here; file-defined sources cannot
+       */
+      managed: boolean
+      /**
+       * Credential Set
+       * @description Whether a server-side account is configured (never its value)
+       */
+      credential_set: boolean
+      /**
+       * Active
+       * @description Whether the source is loaded and usable now
+       */
+      active: boolean
+      /** Is Simulated */
+      is_simulated: boolean
+    }
+    /**
+     * ManagedSourceBody
+     * @description Write model. ``user`` and ``password`` are write-only: leave both empty to keep the stored account.
+     */
+    ManagedSourceBody: {
+      /** Data Source Id */
+      data_source_id: string
+      /** Name */
+      name: string
+      /** Host */
+      host: string
+      /**
+       * Port
+       * @default 6041
+       */
+      port: number
+      /** Database */
+      database: string
+      /**
+       * Scheme
+       * @default http
+       */
+      scheme: string
+      /** User */
+      user?: string | null
+      /** Password */
+      password?: string | null
+      /** Stable */
+      stable: string
+      /**
+       * Device Tag
+       * @description Name of the tag or column holding the device id, not a device id
+       */
+      device_tag: string
+      /**
+       * Time Column
+       * @default ts
+       */
+      time_column: string
+      /** Key Column */
+      key_column?: string | null
+      /** Value Columns */
+      value_columns?: string[]
+      /**
+       * Naive Time Zone
+       * @default UTC
+       */
+      naive_time_zone: string
+      /**
+       * Statement Timeout S
+       * @default 30
+       */
+      statement_timeout_s: number
+      /**
+       * Max Rows
+       * @default 200000
+       */
+      max_rows: number
+    }
+    /**
+     * Match
+     * @description Which signals, rules and models suit a component type, and the limits that come with them.
+     */
+    Match: {
+      /** Component Type */
+      component_type: string
+      /** Required Quantities */
+      required_quantities: components['schemas']['PhysicalQuantity'][]
+      rules: components['schemas']['LocalizedText']
+      /** Models */
+      models: string[]
+      /** Constraints */
+      constraints: components['schemas']['LocalizedText'][]
+    }
     /** Me */
     Me: {
       /** User Id */
@@ -3664,6 +4704,28 @@ export interface components {
       /** Eligibility */
       eligibility: components['schemas']['EligibilityCondition'][]
     }
+    /**
+     * OptimizationReadiness
+     * @description What a comparison run would replay, and why it cannot run when it cannot.
+     */
+    OptimizationReadiness: {
+      /** Can Run */
+      can_run: boolean
+      /** Suite */
+      suite: string | null
+      /** Cases */
+      cases: number
+      /** Components */
+      components: number
+      /**
+       * Stored Windows
+       * @description Stored feature windows of those components
+       */
+      stored_windows: number
+      /** Is Simulated */
+      is_simulated: boolean
+      reason: components['schemas']['LocalizedText'] | null
+    }
     /** OptimizationRun */
     OptimizationRun: {
       /** Run Id */
@@ -3690,6 +4752,11 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** OrderChange */
+    OrderChange: {
+      /** Machine Ids */
+      machine_ids: string[]
+    }
     /**
      * OutputKind
      * @enum {string}
@@ -3701,7 +4768,56 @@ export interface components {
      * @enum {string}
      */
     PhysicalQuantity:
-      'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'OTHER'
+      'SPEED' | 'TORQUE' | 'DURATION' | 'POSITION' | 'CURRENT' | 'PRESSURE' | 'VIBRATION' | 'OTHER'
+    /** PipelineRequest */
+    PipelineRequest: {
+      /** Machine Id */
+      machine_id: string
+      /**
+       * Since
+       * @description Skip data before this time (a start only moves forward; stored windows are kept)
+       */
+      since?: string | null
+      /**
+       * Until
+       * @description Process data up to this time (default: now)
+       */
+      until?: string | null
+      /**
+       * Provisional
+       * @description Start before the 4-day learning period is complete (needs at least 1 day of data): the regime catalog is learned from half of the data there is, and marked provisional
+       * @default false
+       */
+      provisional: boolean
+    }
+    /** PipelineResult */
+    PipelineResult: {
+      /** Machine Id */
+      machine_id: string
+      /** Processed Until */
+      processed_until: string | null
+      /** Windows Added */
+      windows_added: number
+      /** Windows Skipped */
+      windows_skipped: number
+      /** Catalog */
+      catalog: string
+      /** Error */
+      error: string | null
+      /**
+       * Provisional
+       * @default false
+       */
+      provisional: boolean
+      /** Ready At */
+      ready_at: string | null
+      /** No Reference */
+      no_reference: string[]
+      /** Alarms Raised */
+      alarms_raised: number
+      /** Is Simulated */
+      is_simulated: boolean
+    }
     /**
      * PlantLevel
      * @enum {string}
@@ -3766,6 +4882,56 @@ export interface components {
       /** Processes */
       processes: components['schemas']['PlantProcess'][]
     }
+    /** PluginSpec */
+    PluginSpec: {
+      /** Plugin Id */
+      plugin_id: string
+      /** Version */
+      version: string
+      name: components['schemas']['LocalizedText']
+      evidence_type: components['schemas']['EvidenceType']
+      /** Input Quantities */
+      input_quantities: components['schemas']['PhysicalQuantity'][]
+      /**
+       * Needs Labels
+       * @default false
+       */
+      needs_labels: boolean
+      description: components['schemas']['LocalizedText']
+    }
+    /** PredictionConfig */
+    PredictionConfig: {
+      /** Config Id */
+      config_id: string
+      /** Component Id */
+      component_id: string
+      /** Version */
+      version: number
+      status: components['schemas']['ConfigStatus']
+      /** Active */
+      active: boolean
+      content: components['schemas']['ConfigContent-Output']
+      /** Content Hash */
+      content_hash: string
+      /** Validation */
+      validation: components['schemas']['CheckResult'][]
+      /** Created By */
+      created_by: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Published By */
+      published_by: string | null
+      /** Published At */
+      published_at: string | null
+      /**
+       * Publish Comment
+       * @default
+       */
+      publish_comment: string
+    }
     PredictionResult:
       | components['schemas']['AnomalyScoreResult']
       | components['schemas']['ClassProbabilityResult']
@@ -3803,6 +4969,11 @@ export interface components {
       visualization: components['schemas']['VisualizationSeries'][]
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** PublishBody */
+    PublishBody: {
+      /** Comment */
+      comment: string
     }
     /**
      * QualityFlag
@@ -3859,6 +5030,11 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /**
+     * QualityStatus
+     * @enum {string}
+     */
+    QualityStatus: 'OK' | 'INVALID' | 'NOT_EVALUATED'
     /**
      * QueryParamType
      * @enum {string}
@@ -4111,6 +5287,62 @@ export interface components {
      * @enum {string}
      */
     RegimeStatus: 'KNOWN' | 'UNSUPPORTED' | 'NOT_EVALUATED'
+    /**
+     * RelatedStatus
+     * @description Health of a component the configuration relates to this one (shown when the relationship says so).
+     */
+    RelatedStatus: {
+      /** Component Id */
+      component_id: string
+      /** Relation */
+      relation: string
+      health: components['schemas']['HealthState']
+    }
+    /**
+     * RelationType
+     * @enum {string}
+     */
+    RelationType: 'INDEPENDENT' | 'SHARED_DRIVETRAIN' | 'MECHANICAL_DEPENDENCY' | 'SHARED_SIGNAL'
+    /** Relationship */
+    'Relationship-Input': {
+      /** @default INDEPENDENT */
+      type: components['schemas']['RelationType']
+      /**
+       * Members
+       * @description Related component ids
+       */
+      members?: string[]
+      /**
+       * Affects Status Display
+       * @default false
+       */
+      affects_status_display: boolean
+      /**
+       * Affects Common Cause
+       * @default false
+       */
+      affects_common_cause: boolean
+    }
+    /** Relationship */
+    'Relationship-Output': {
+      /** @default INDEPENDENT */
+      type: components['schemas']['RelationType']
+      /**
+       * Members
+       * @description Related component ids
+       */
+      members: string[]
+      /**
+       * Affects Status Display
+       * @default false
+       */
+      affects_status_display: boolean
+      /**
+       * Affects Common Cause
+       * @default false
+       */
+      affects_common_cause: boolean
+    }
     /** ReplayMetrics */
     ReplayMetrics: {
       /** Windows */
@@ -4307,6 +5539,15 @@ export interface components {
        */
       comment: string
     }
+    /**
+     * RunMode
+     * @enum {string}
+     */
+    RunMode: 'simulation' | 'production'
+    /** RunModeState */
+    RunModeState: {
+      mode: components['schemas']['RunMode']
+    }
     /** RunRequest */
     RunRequest: {
       /**
@@ -4320,6 +5561,12 @@ export interface components {
        */
       seed: number
     }
+    /**
+     * SafetyStatus
+     * @description Outcome of a safety check (D-043). Not being able to confirm a violation is never a pass.
+     * @enum {string}
+     */
+    SafetyStatus: 'VIOLATED' | 'NOT_EVALUATED' | 'CONFIRMED_OK' | 'NOT_CONFIGURED'
     /** SamplingRequirement */
     SamplingRequirement: {
       /** Signal Id */
@@ -4689,6 +5936,15 @@ export interface components {
       /** Is Simulated */
       is_simulated: boolean
     }
+    /** SourceStructure */
+    SourceStructure: {
+      /** Stables */
+      stables: string[]
+      /** Stable */
+      stable: string
+      /** Columns */
+      columns: components['schemas']['StructureColumn'][]
+    }
     /**
      * SqlTableLayout
      * @description Where telemetry lives in a SQL source. Configured per source, never assumed (L1-08).
@@ -4731,6 +5987,38 @@ export interface components {
        */
       verified: boolean
     }
+    /** Stage */
+    'Stage-Input': {
+      /** Stage Id */
+      stage_id: string
+      /** Algorithm */
+      algorithm: string
+      /**
+       * Enabled
+       * @default true
+       */
+      enabled: boolean
+      /** Params */
+      params?: {
+        [key: string]: number | string | boolean
+      }
+    }
+    /** Stage */
+    'Stage-Output': {
+      /** Stage Id */
+      stage_id: string
+      /** Algorithm */
+      algorithm: string
+      /**
+       * Enabled
+       * @default true
+       */
+      enabled: boolean
+      /** Params */
+      params: {
+        [key: string]: number | string | boolean
+      }
+    }
     /**
      * StateSegment
      * @description A stretch of time with one derived operating state and the evidence for it (L3-02).
@@ -4755,6 +6043,15 @@ export interface components {
       reason: components['schemas']['LocalizedText']
       /** Is Simulated */
       is_simulated: boolean
+    }
+    /** StructureColumn */
+    StructureColumn: {
+      /** Name */
+      name: string
+      /** Type */
+      type: string
+      /** Is Tag */
+      is_tag: boolean
     }
     /** StudioDevice */
     StudioDevice: {
@@ -4788,6 +6085,71 @@ export interface components {
       name: string
       /** Columns */
       columns: components['schemas']['ColumnInfo'][]
+    }
+    /**
+     * TdengineLayout
+     * @description Where telemetry lives in a TDengine database. Configured per source, never assumed (L1-08).
+     */
+    TdengineLayout: {
+      /**
+       * Stable
+       * @description Super table holding the telemetry
+       */
+      stable: string
+      /**
+       * Device Tag
+       * @description Tag (or column) identifying the device
+       */
+      device_tag: string
+      /**
+       * Time Column
+       * @default ts
+       */
+      time_column: string
+      /**
+       * Key Column
+       * @description Narrow layout only: column holding the signal key name
+       */
+      key_column: string | null
+      /**
+       * Value Columns
+       * @description Narrow layout: value columns, first non-null wins. Wide layout: the signal columns to expose (empty = every numeric column).
+       */
+      value_columns: string[]
+      /**
+       * Naive Time Zone
+       * @description Zone for timestamps the server returns without an offset
+       * @default UTC
+       */
+      naive_time_zone: string
+      /**
+       * Verified
+       * @description True only after the layout was checked against the real database
+       * @default false
+       */
+      verified: boolean
+    }
+    /** TestCheck */
+    TestCheck: {
+      /**
+       * Key
+       * @enum {string}
+       */
+      key: 'credential' | 'reachable' | 'readOnly' | 'layout' | 'timeout' | 'rowLimit'
+      /** Ok */
+      ok: boolean
+      /**
+       * Detail
+       * @description The server's reason when the check failed
+       */
+      detail: string | null
+      /**
+       * Hint
+       * @description What the administrator should look at first
+       */
+      hint:
+        | ('port_explorer' | 'not_rest' | 'unreachable' | 'auth' | 'database' | 'layout' | 'other')
+        | null
     }
     /**
      * TimeWindow
@@ -4931,6 +6293,18 @@ export interface components {
        * @default
        */
       source: string
+    }
+    /** UsageRow */
+    UsageRow: {
+      /** Kind */
+      kind: string
+      /** Count */
+      count: number
+      /**
+       * Blocks
+       * @default false
+       */
+      blocks: boolean
     }
     /** UserChange */
     UserChange: {
@@ -5086,6 +6460,13 @@ export interface components {
        * @description Rules that could not be evaluated on this window
        */
       not_evaluated: string[]
+      /**
+       * Safety Checks
+       * @description Per safety rule: violated, not evaluable, confirmed ok, not configured
+       */
+      safety_checks: {
+        [key: string]: components['schemas']['SafetyStatus']
+      }
       /** Rules Version */
       rules_version: string
       /** Is Simulated */
@@ -5121,6 +6502,28 @@ export interface components {
        * @default null
        */
       expected_state: components['schemas']['MaintenanceWorkflowState'] | null
+    }
+    /** Recommendation */
+    app__decision__pipeline_config__Recommendation: {
+      match: components['schemas']['Match']
+      content: components['schemas']['ConfigContent-Output']
+      /** Available Quantities */
+      available_quantities: components['schemas']['PhysicalQuantity'][]
+      /** Missing Quantities */
+      missing_quantities: components['schemas']['PhysicalQuantity'][]
+      compile: components['schemas']['CompileResult']
+    }
+    /** Recommendation */
+    app__decision__schemas__Recommendation: {
+      /** Recommendation Id */
+      recommendation_id: string
+      /** Decision Id */
+      decision_id: string
+      priority: components['schemas']['RecommendationPriority']
+      action: components['schemas']['LocalizedText']
+      rationale: components['schemas']['LocalizedText']
+      /** Evidence Ids */
+      evidence_ids: string[]
     }
     /**
      * FeatureStats
@@ -6254,6 +7657,694 @@ export interface operations {
       }
     }
   }
+  list_sources_api_admin_datasources_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ManagedSource'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_source_api_admin_datasources__data_source_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ManagedSourceBody']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ManagedSource']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_source_api_admin_datasources__data_source_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  test_source_api_admin_datasources__data_source_id__test_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TestCheck'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  source_structure_api_admin_datasources__data_source_id__structure_get: {
+    parameters: {
+      query?: {
+        stable?: string | null
+      }
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        data_source_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SourceStructure']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  catalog_api_algorithm_catalog_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AlgorithmSpec'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  deep_adapters_api_deep_model_adapters_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeepAdapterInfo'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  algorithm_models_api_algorithm_models_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AlgorithmModels']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  recommended_api_components__component_id__recommended_config_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__decision__pipeline_config__Recommendation']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  versions_api_components__component_id__prediction_configs_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  create_api_components__component_id__prediction_configs_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DraftBody']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_api_prediction_configs__config_id__get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  update_api_prediction_configs__config_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ConfigContent-Input']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_api_prediction_configs__config_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  clone_api_prediction_configs__config_id__clone_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  compile__api_components__component_id__prediction_configs_compile_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ConfigContent-Input']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CompileResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  validate_api_prediction_configs__config_id__validate_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  publish_api_prediction_configs__config_id__publish_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PublishBody']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  activate_api_prediction_configs__config_id__activate_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        config_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PredictionConfig']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  deactivate_api_components__component_id__prediction_configs_deactivate_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   list_machines_api_machines_get: {
     parameters: {
       query?: never
@@ -7000,9 +9091,45 @@ export interface operations {
       }
     }
   }
-  delete_component_api_plant_components__component_id__delete: {
+  component_usage_api_plant_components__component_id__usage_get: {
     parameters: {
       query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentUsage']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_component_api_plant_components__component_id__delete: {
+    parameters: {
+      query?: {
+        cascade?: boolean
+      }
       header?: {
         'x-pdm-user'?: string | null
         'x-pdm-role'?: string | null
@@ -7020,6 +9147,144 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  read_layout_api_machine_layout_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MachineLayout'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_order_api_machine_layout_order_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OrderChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  put_background_api_machine_layout__machine_id__background_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        machine_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BackgroundChange']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  run_api_pipeline_run_post: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PipelineRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PipelineResult']
+        }
       }
       /** @description Validation Error */
       422: {
@@ -7055,6 +9320,40 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['Baseline']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  feature_coverage_api_components__component_id__feature_coverage_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FeatureCoverage'][]
         }
       }
       /** @description Validation Error */
@@ -7520,6 +9819,38 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ComponentHealthReport']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  readiness_api_optimization_readiness_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OptimizationReadiness']
         }
       }
       /** @description Validation Error */
@@ -8576,6 +10907,74 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['RoleModules']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  read_mode_api_run_mode_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RunModeState']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  write_mode_api_run_mode_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RunModeState']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RunModeState']
         }
       }
       /** @description Validation Error */

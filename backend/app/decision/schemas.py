@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import AwareDatetime, Field
+from pydantic import AwareDatetime, Field, computed_field
 
 from app.core.schemas import ContractModel, LocalizedText, ResultMeta
 from app.equipment.schemas import ComponentLifecycle, ComponentType, MaintenanceEvent
+from app.monitoring.schemas import SafetyStatus
 from app.signals.schemas import SignalDefinition
 
 
@@ -29,13 +30,67 @@ class EvidenceSource(StrEnum):
     DATA_QUALITY = "DATA_QUALITY"
 
 
+class EvidenceType(StrEnum):
+    SAFETY = "SAFETY"
+    STATISTICAL = "STATISTICAL"
+    ANOMALY = "ANOMALY"  # unsupervised anomaly detection and degradation indicators
+    SUPERVISED = "SUPERVISED"
+    CONTEXT = "CONTEXT"  # reference, open alarm or maintenance impact shown for lineage; never a verdict
+
+
+class QualityStatus(StrEnum):
+    OK = "OK"
+    INVALID = "INVALID"  # the input data failed validation or is missing
+    NOT_EVALUATED = "NOT_EVALUATED"
+
+
 class Evidence(ContractModel):
+    """Unified evidence object (D-043). Every rule, statistic and model reports in this shape; the
+    decision never adds raw scores of different algorithms. ``applicable``, ``reason``, ``model_version``,
+    ``evaluated_at`` and ``input_window_id`` are derived from the stored fields so they cannot disagree."""
+
     evidence_id: str
+    component_id: str
+    evidence_type: EvidenceType
     source: EvidenceSource
     result_ref: str = Field(description="Id of the underlying result (prediction, rule hit, report)")
     summary: LocalizedText
     eligible: bool
     meta: ResultMeta
+    raw_value: float | None = Field(default=None, description="Original algorithm score or measurement")
+    threshold: float | None = Field(default=None, description="Decision threshold, when there is one")
+    calibration: str | None = Field(default=None, description="Calibration version, when there is one")
+    proposed_severity: HealthState | None = Field(
+        default=None, description="Severity this evidence proposes; None when it proposes none"
+    )
+    quality_status: QualityStatus = QualityStatus.OK
+    baseline_version: str | None = Field(default=None, description="Healthy reference the evidence used")
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def applicable(self) -> bool:
+        return self.eligible
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def reason(self) -> LocalizedText:
+        return self.summary
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def model_version(self) -> str:
+        return self.meta.model_version
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def evaluated_at(self) -> AwareDatetime:
+        return self.meta.computed_at
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def input_window_id(self) -> str:
+        w = self.meta.data_window
+        return f"{self.component_id}:{w.start.isoformat()}/{w.end.isoformat()}"
 
 
 class Decision(ContractModel):
@@ -46,6 +101,13 @@ class Decision(ContractModel):
     reasons: list[LocalizedText] = Field(min_length=1)
     evidence_ids: list[str]
     safety_constraints_applied: list[str] = Field(default_factory=list)
+    safety_status: SafetyStatus = Field(
+        default=SafetyStatus.NOT_EVALUATED,
+        description="Violation confirmed, check not evaluable, normal confirmed, or no check configured",
+    )
+    safety_unevaluated: list[str] = Field(
+        default_factory=list, description="Safety rules whose measurement is missing or invalid"
+    )
     conflicting_evidence: bool = False
     meta: ResultMeta
 
@@ -133,6 +195,23 @@ class FleetOverview(ContractModel):
     is_simulated: bool
 
 
+class Display(ContractModel):
+    own_status: bool = True
+    related_status: bool = True
+    trend: bool = True
+    evidence: bool = True
+    recommendations: bool = True
+    alarms: bool = True
+
+
+class RelatedStatus(ContractModel):
+    """Health of a component the configuration relates to this one (shown when the relationship says so)."""
+
+    component_id: str
+    relation: str
+    health: HealthState
+
+
 class ComponentHealthReport(ContractModel):
     """Current health decision of a component with its evidence trail (L6-04)."""
 
@@ -141,6 +220,9 @@ class ComponentHealthReport(ContractModel):
     recommendations: list[Recommendation] = Field(default_factory=list)
     common_cause: CommonCause | None = None
     is_simulated: bool
+    config_version: str | None = Field(default=None, description="Active prediction configuration, if any")
+    display: Display | None = None
+    related: list[RelatedStatus] = Field(default_factory=list)
 
 
 # Alarm contracts live with the rules that raise them (L4); re-exported here for L6 consumers.

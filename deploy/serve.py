@@ -33,32 +33,33 @@ def main(argv: list[str] | None = None) -> None:
     import uvicorn
     from alembic import command
     from alembic.config import Config
+    from sqlalchemy import func, select
+    from sqlalchemy.orm import Session
+
     from app.core.config import get_settings
     from app.core.db import get_engine
     from app.datasource.query_service.sources import DataSourceRegistry
     from app.main import create_app
     from app.monitoring.features.store import FeatureVectorRecord
-    from sqlalchemy import func, select
-    from sqlalchemy.orm import Session
 
     settings = get_settings()
     if settings.auth_mode != "local":
-        sys.exit(
-            "Refusing to serve on the network with PDM_AUTH_MODE other than 'local'"
-        )
+        sys.exit("Refusing to serve on the network with PDM_AUTH_MODE other than 'local'")
     command.upgrade(Config(str(BACKEND / "alembic.ini")), "head")
     path = settings.datasources_file
     sources = (
-        DataSourceRegistry.from_file(
-            Path(path), allow_production=settings.production_data_approved
-        )
+        DataSourceRegistry.from_file(Path(path), allow_production=settings.production_data_approved)
         if path
         else DataSourceRegistry()
     )
+    from app.datasource.managed import load_managed
+
+    with Session(get_engine()) as session:
+        inactive = load_managed(session, sources)
+    if inactive:
+        print(f"Managed data sources waiting for an account: {', '.join(inactive)}")
     if sources.skipped:
-        print(
-            f"Production data sources not enabled (needs G4 approval): {', '.join(sources.skipped)}"
-        )
+        print(f"Production data sources not enabled (needs G4 approval): {', '.join(sources.skipped)}")
     if args.simulated_fleet:
         from app.simulation.demo_pipeline import (
             add_demo_source,
@@ -69,22 +70,38 @@ def main(argv: list[str] | None = None) -> None:
         fleet = demo_machines(ROOT / "Data")
         add_demo_source(sources, fleet)
         with Session(get_engine()) as session:
-            if not session.scalar(
-                select(func.count()).select_from(FeatureVectorRecord)
-            ):
+            if not session.scalar(select(func.count()).select_from(FeatureVectorRecord)):
                 for r in run_pipeline(session, sources, fleet):
-                    print(
-                        f"SIMULATED {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms"
-                    )
+                    print(f"SIMULATED {r.machine_id}: {r.vectors} windows, {r.alarms_raised} alarms")
     from app.datasource.query_service.defaults import ensure_standard_templates
 
     with Session(get_engine()) as session:
         created = ensure_standard_templates(session, sources)
     if created:
         print(f"Registered built-in read-only query templates: {', '.join(created)}")
-    uvicorn.run(
-        create_app(sources=sources), host=args.host, port=args.port, log_level="info"
-    )
+    if settings.pipeline_interval_min > 0:
+        import threading
+        import time
+
+        from app.api.visibility import Visibility
+        from app.core.runmode import get_mode
+        from app.decision.pipeline import run_all
+
+        def loop() -> None:  # D-042: keeps features and alarms current for every mapped machine
+            time.sleep(60)  # let the API come up first
+            while True:
+                try:
+                    with Session(get_engine()) as session:
+                        vis = Visibility(session, sources, get_mode(session))  # D-053: only this mode
+                        for r in run_all(session, sources, only=vis.machine_ids().__contains__):
+                            if r.windows_added:
+                                print(f"pipeline {r.machine_id}: +{r.windows_added} windows")
+                except Exception as exc:  # noqa: BLE001
+                    print(f"pipeline run failed: {exc}")
+                time.sleep(settings.pipeline_interval_min * 60)
+
+        threading.Thread(target=loop, name="pipeline", daemon=True).start()
+    uvicorn.run(create_app(sources=sources), host=args.host, port=args.port, log_level="info")
 
 
 if __name__ == "__main__":

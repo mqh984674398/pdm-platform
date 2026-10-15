@@ -12,18 +12,12 @@ export type FleetComponent = S['FleetComponent']
 export type HealthTrend = S['HealthTrend']
 export type ComponentHealthReport = S['ComponentHealthReport']
 
-let cache: Promise<Fleet> | null = null
-
+/** The overview is computed by the backend on every request; nothing is kept here, so a deleted or changed
+ *  machine or component never lingers on screen. */
 export function getFleet(): Promise<Fleet> {
-  cache ??= monitoringApi.fleet().catch((e) => {
-    cache = null // a later visit retries
-    throw e
-  })
-  return cache
+  return monitoringApi.fleet()
 }
 
-/** Forget the cached overview, e.g. after an alarm was acknowledged or resolved. */
 export function refreshFleet(): Promise<Fleet> {
-  cache = null
   return getFleet()
 }

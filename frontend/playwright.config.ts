@@ -17,10 +17,16 @@ export default defineConfig({
   // Promoting a configuration changes health for every component, so the registry test runs alone,
   // after the main tests, on the shared demo server; the plant test runs last.
   projects: [
-    { name: 'main', testIgnore: /(models|plant)\.spec\.ts/ },
+    { name: 'main', testIgnore: /(models|plant|workbench|workbench-overview|runmode)\.spec\.ts/ },
     { name: 'registry', testMatch: /models\.spec\.ts/, dependencies: ['main'] },
     // Adds a machine to the demo plant, so it runs after the tests that count the demo fleet.
-    { name: 'plant', testMatch: /plant\.spec\.ts/, dependencies: ['registry'] },
+    {
+      name: 'plant',
+      testMatch: /(plant|workbench|workbench-overview)\.spec\.ts/,
+      dependencies: ['registry'],
+    },
+    // Switches the run mode of the shared demo server, so it runs last and alone.
+    { name: 'runmode', testMatch: /runmode\.spec\.ts/, dependencies: ['plant'] },
   ],
   webServer: [
     {

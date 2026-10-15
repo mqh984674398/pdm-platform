@@ -7,24 +7,31 @@ from app.api import (
     alarms,
     auth,
     baselines,
+    datasources,
     equipment,
     errors,
     fleet,
     health,
+    layout,
     llm,
     optimization,
+    pipeline,
+    pipeline_config,
     plant,
     quality,
     query,
     registry,
+    runmode,
     signals,
     studio,
     timeseries,
 )
+from app.core import runmode as _runmode_table  # noqa: F401  (registers the settings table)
 from app.core.config import get_settings
 from app.core.modules import require_module
 from app.datasource.query_service.service import QueryService
 from app.datasource.query_service.sources import DataSourceRegistry
+from app.equipment import layout as _layout_table  # noqa: F401  (registers the layout table)
 
 
 def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
@@ -52,12 +59,16 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
         return resp
 
     app.include_router(health.router, prefix="/api")
-    app.include_router(query.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(query.router, prefix="/api", dependencies=[require_module("signals")])
     app.include_router(signals.router, prefix="/api")
-    app.include_router(studio.router, prefix="/api", dependencies=[require_module("datasource")])
-    app.include_router(quality.router, prefix="/api", dependencies=[require_module("datasource")])
+    app.include_router(studio.router, prefix="/api", dependencies=[require_module("signals")])
+    app.include_router(quality.router, prefix="/api", dependencies=[require_module("signals")])
+    app.include_router(datasources.router, prefix="/api")
+    app.include_router(pipeline_config.router, prefix="/api")
     app.include_router(equipment.router, prefix="/api")
     app.include_router(plant.router, prefix="/api")
+    app.include_router(layout.router, prefix="/api")
+    app.include_router(pipeline.router, prefix="/api", dependencies=[require_module("alarms")])
     app.include_router(baselines.router, prefix="/api")
     app.include_router(alarms.router, prefix="/api")
     app.include_router(timeseries.router, prefix="/api")
@@ -69,6 +80,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     )
     app.include_router(llm.router, prefix="/api")
     app.include_router(auth.router, prefix="/api")
+    app.include_router(runmode.router, prefix="/api")
     if settings.static_dir:
         mount_frontend(app, Path(settings.static_dir))
     return app

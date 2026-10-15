@@ -10,11 +10,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.security import Principal, Role, require
 from app.equipment.lifecycle import EquipmentConflictError
 from app.equipment.plant import (
     ComponentChange,
+    ComponentUsage,
     MachineCreate,
     MachinePlacement,
     PlantNodeChange,
@@ -31,8 +33,8 @@ Admin = Annotated[Principal, Depends(require(Role.ADMIN))]
 
 
 @router.get("/plant-tree", response_model=PlantTree)
-def plant_tree(_: Viewer, db: DB) -> PlantTree:
-    return PlantStore(db).tree()
+def plant_tree(_: Viewer, db: DB, vis: Visible) -> PlantTree:
+    return vis.plant(PlantStore(db).tree())
 
 
 @router.put("/plant-nodes/{node_id}", response_model=PlantTree)
@@ -84,8 +86,13 @@ def put_component(
     return out
 
 
+@router.get("/plant-components/{component_id}/usage", response_model=ComponentUsage)
+def component_usage(component_id: str, _: Viewer, db: DB) -> ComponentUsage:
+    return PlantStore(db).component_usage(component_id)
+
+
 @router.delete("/plant-components/{component_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_component(component_id: str, who: Admin, db: DB) -> Response:
-    PlantStore(db).delete_component(component_id, who)
+def delete_component(component_id: str, who: Admin, db: DB, cascade: bool = False) -> Response:
+    PlantStore(db).delete_component(component_id, who, cascade=cascade)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

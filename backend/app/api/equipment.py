@@ -13,6 +13,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.modules import require_module
 from app.core.security import Principal, Role, require
@@ -45,8 +46,8 @@ def _same(path_id: str, body_id: str, field: str) -> None:
 
 
 @router.get("/machines", response_model=list[Machine])
-def list_machines(_: Viewer, db: DB) -> list[Machine]:
-    return EquipmentStore(db).machines()
+def list_machines(_: Viewer, vis: Visible) -> list[Machine]:
+    return vis.machines()
 
 
 @router.put("/machines/{machine_id}", response_model=Machine)

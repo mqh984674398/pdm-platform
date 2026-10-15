@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import StaleDataError
 
+from app.api.datasources import SourceConflictError
 from app.api.studio import UnknownDeviceError
 from app.core.auth import AccountError, AuthError
 from app.core.modules import ModuleError
@@ -22,6 +23,11 @@ from app.datasource.query_service.service import ParameterError
 from app.datasource.query_service.sources import SourceAccessError, UnknownSourceError
 from app.datasource.query_service.sql_guard import TemplateSqlError
 from app.datasource.sql import AdapterError, BusyError, LayoutError, QueryLimitError
+from app.decision.pipeline_config import (
+    PredictionConfigError,
+    PredictionConfigNotFoundError,
+    PredictionConfigPermissionError,
+)
 from app.equipment.lifecycle import EquipmentConflictError, EquipmentNotFoundError
 from app.equipment.maintenance import WorkflowPermissionError, WorkflowTransitionError
 from app.equipment.plant import PlantPermissionError
@@ -89,6 +95,10 @@ ERRORS: list[tuple[type[Exception], int, str, str, str]] = [
     (NoSuiteError, 409, "no_regression_suite", "没有可用于回放评估的回归用例（Golden Case）。", "No regression suite (Golden Cases) is available for replay."),
     (NoRunError, 404, "no_optimization_run", "还没有参数优化运行。", "No optimization run yet."),
     (SafetyChangeError, 422, "safety_rule_change", "候选配置修改了安全规则，已拒绝。", "The candidate changes a safety rule and was refused."),
+    (PredictionConfigNotFoundError, 404, "unknown_prediction_config", "未找到该部件或预测配置版本。", "Component or prediction configuration version not found."),
+    (PredictionConfigPermissionError, 403, "prediction_config_role", "预测配置只能由管理员修改。", "Only an administrator can change prediction configurations."),
+    (PredictionConfigError, 409, "prediction_config_refused", "该预测配置操作不被允许：已发布版本不可修改，发布前须通过四项校验。", "This prediction configuration action is not allowed: a published version is immutable, and four validation checks must pass before publishing."),
+    (SourceConflictError, 409, "datasource_conflict", "该数据源不能这样修改：它由配置文件定义，或仍被信号映射使用，或参数不完整。", "This data source cannot be changed that way: it is file-defined, still used by signal mappings, or incomplete."),
     (SourceAccessError, 403, "source_forbidden", "仿真数据库仅限管理员使用，请使用涛思数据库。", "The simulation database is for administrators only; use the TDengine database."),
     (UnknownSourceError, 404, "unknown_source", "未找到该数据源。", "Data source not found."),
     (TemplateNotFoundError, 404, "unknown_template", "未找到该查询模板。", "Query template not found."),

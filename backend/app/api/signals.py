@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from pydantic import AwareDatetime, BaseModel
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.modules import require_module
 from app.core.schemas import TimeWindow
@@ -45,8 +46,8 @@ Sources = Annotated[DataSourceRegistry, Depends(_sources)]
 
 
 @router.get("/signal-config", response_model=SignalConfigState)
-def current_config(_: Viewer, db: DB) -> SignalConfigState:
-    return SignalConfigStore(db).current()
+def current_config(_: Viewer, db: DB, vis: Visible) -> SignalConfigState:
+    return vis.signal_config(SignalConfigStore(db).current())
 
 
 @router.get("/signal-config/versions", response_model=list[SignalConfigVersion])
@@ -62,7 +63,7 @@ def config_version(version: int, _: Viewer, db: DB) -> SignalConfigVersionDetail
 @router.put(
     "/signal-config/sources/{data_source_id}/devices/{device_id}",
     response_model=SignalConfigVersion,
-    dependencies=[require_module("datasource", "signals")],
+    dependencies=[require_module("signals")],
 )
 def replace_device(
     data_source_id: str, device_id: str, body: DeviceConfigChange, who: Engineer, db: DB, reg: Sources
@@ -96,7 +97,7 @@ def _item_routes(collection: str, path: str, change_model: type[BaseModel], id_f
 
     put.__annotations__["body"] = change_model  # concrete body type per collection for OpenAPI
     put.__name__, delete.__name__ = f"put_{collection}", f"delete_{collection}"
-    gate = [require_module("datasource", "signals")]
+    gate = [require_module("signals")]
     router.put(f"/signal-config/{path}/{{item_id}}", response_model=SignalConfigVersion, dependencies=gate)(
         put
     )
@@ -111,9 +112,7 @@ _item_routes("groups", "groups", SignalGroupChange, "group_id")
 _item_routes("visualizations", "visualizations", VisualizationTemplateChange, "template_id")
 
 
-@router.post(
-    "/signals/preview", response_model=PreviewResponse, dependencies=[require_module("datasource", "signals")]
-)
+@router.post("/signals/preview", response_model=PreviewResponse, dependencies=[require_module("signals")])
 def preview_signals(body: PreviewRequest, _: Viewer, db: DB, reg: Sources) -> PreviewResponse:
     return preview(reg, SignalConfigStore(db).current().content, body)
 
@@ -121,7 +120,7 @@ def preview_signals(body: PreviewRequest, _: Viewer, db: DB, reg: Sources) -> Pr
 @router.get(
     "/signals/{signal_id}/preview",
     response_model=PreviewResponse,
-    dependencies=[require_module("datasource", "signals")],
+    dependencies=[require_module("signals")],
 )
 def preview_saved_signal(
     signal_id: str,

@@ -89,7 +89,7 @@ def test_module_setting_hides_and_refuses(monkeypatch, factory):  # noqa: F811
     assert tech.get("/api/feedback").status_code != 403
     with factory() as s:
         e = [x for x in entries(s, "role", "maintenance") if x.action == "role.modules"][-1]
-        assert "datasource" in e.details["removed"]
+        assert "signals" in e.details["removed"]
 
 
 def test_store_orders_modules_and_keeps_admin_unrestricted(factory):  # noqa: F811

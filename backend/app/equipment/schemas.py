@@ -47,6 +47,11 @@ class ComponentInstance(ContractModel):
         default=None, description="Components sharing a drive chain (scenario S19) share this id"
     )
     signal_ids: list[str] = Field(default_factory=list)
+    torque_limit: float | None = Field(
+        default=None,
+        gt=0,
+        description="Allowed torque in the unit of the component's torque signal; enables SF-TORQUE-LIMIT",
+    )
 
 
 class LifecycleStatus(StrEnum):
