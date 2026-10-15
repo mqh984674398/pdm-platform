@@ -13,6 +13,8 @@ import type {
   DeviceSuggestions,
   PhysicalQuantity,
   SignalConfigState,
+  SignalDefinition,
+  SignalMapping,
 } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import '@/components/studio/studio.css'
@@ -44,6 +46,7 @@ const source = ref('')
 const device = ref(props.deviceId ?? '')
 const suggestion = ref<DeviceSuggestions | null>(null)
 const pick = reactive<Record<string, { on: boolean; quantity: PhysicalQuantity; unit: string }>>({})
+const extras = ref<{ signal: SignalDefinition; mapping: SignalMapping }[]>([])
 const busy = ref(false)
 const message = ref<{ ok: boolean; text: string } | null>(null)
 
@@ -106,9 +109,52 @@ const mappedIds = computed(
     ),
 )
 
+/** A real source proposes nothing by itself: offer the signal keys the device actually has. */
+function deviceKeys(s: DeviceSuggestions) {
+  const src = sources.value.find((x) => x.data_source_id === source.value)
+  if (!src || src.is_simulated) return []
+  const known = new Set(s.mappings.map((m) => m.key_name))
+  const slug =
+    source.value
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'source'
+  const tpl = `${slug.slice(0, 62 - 'telemetry-by-key-range'.length)}-telemetry-by-key-range`
+  const safe = (x: string) => x.replace(/[^A-Za-z0-9_.-]+/g, '_')
+  const keys = devices.value.find((d) => d.device_id === device.value)?.keys ?? []
+  return keys
+    .filter((k) => !known.has(k.key_name))
+    .map((k) => {
+      const id = `${safe(device.value)}.${safe(k.key_name)}`
+      return {
+        signal: {
+          signal_id: id,
+          name: { zh: k.key_name, en: k.key_name },
+          quantity: 'OTHER' as PhysicalQuantity,
+          unit: '-',
+          expected_sampling_s: null,
+          valid_min: null,
+          valid_max: null,
+        },
+        mapping: {
+          signal_id: id,
+          data_source_id: source.value,
+          template_id: tpl,
+          device_id: device.value,
+          key_name: k.key_name,
+          time_field: 'ts',
+          value_field: 'value',
+          conversion: null,
+          component_id: null,
+        },
+      }
+    })
+}
+
 async function suggest() {
   message.value = null
   suggestion.value = null
+  extras.value = []
   busy.value = true
   try {
     const s = await monitoringApi.deviceSuggestions(source.value, device.value)
@@ -117,6 +163,9 @@ async function suggest() {
       const on = mappedIds.value.has(x.signal_id)
       pick[x.signal_id] = { on, quantity: x.quantity, unit: x.unit }
     }
+    extras.value = deviceKeys(s)
+    for (const e of extras.value)
+      pick[e.signal.signal_id] = { on: false, quantity: 'OTHER', unit: '-' }
   } catch (e) {
     fail(e)
   } finally {
@@ -124,9 +173,16 @@ async function suggest() {
   }
 }
 
-const chosen = computed(() =>
-  (suggestion.value?.signals ?? []).filter((x) => pick[x.signal_id]?.on),
-)
+// every signal row: the proposals plus the device's own keys that nothing proposed (real sources)
+const rows = computed(() => [
+  ...(suggestion.value?.signals ?? []),
+  ...extras.value.map((e) => e.signal),
+])
+const allMappings = computed(() => [
+  ...(suggestion.value?.mappings ?? []),
+  ...extras.value.map((e) => e.mapping),
+])
+const chosen = computed(() => rows.value.filter((x) => pick[x.signal_id]?.on))
 
 async function save() {
   const cfg = props.state?.content
@@ -150,7 +206,7 @@ async function save() {
   ]
   const mappings = [
     ...oldMaps.filter((m) => keep.includes(m.signal_id)),
-    ...sug.mappings
+    ...allMappings.value
       .filter((m) => picked.has(m.signal_id))
       .map((m) => ({ ...m, component_id: props.componentId })),
   ]
@@ -219,7 +275,10 @@ async function save() {
       {{ message.text }}
     </p>
     <template v-if="suggestion">
-      <p v-if="!suggestion.signals.length" class="st-note">{{ t('workbench.noSuggestions') }}</p>
+      <p v-if="extras.length" class="st-note" data-testid="map-keys-note">
+        {{ t('workbench.keysNote', { n: extras.length }) }}
+      </p>
+      <p v-if="!rows.length" class="st-note">{{ t('workbench.noSuggestions') }}</p>
       <div v-else class="st-scroll">
         <table class="st-table" data-testid="map-suggestions">
           <thead>
@@ -231,7 +290,7 @@ async function save() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="x in suggestion.signals" :key="x.signal_id" :data-suggest="x.signal_id">
+            <tr v-for="x in rows" :key="x.signal_id" :data-suggest="x.signal_id">
               <td><input v-model="pick[x.signal_id]!.on" type="checkbox" /></td>
               <td>
                 {{ lt(x.name) }}

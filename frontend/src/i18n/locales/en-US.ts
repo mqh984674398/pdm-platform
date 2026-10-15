@@ -443,6 +443,8 @@ const en: typeof zh = {
       no_data: 'The data source has no data in that period',
       no_signals: 'No usable signals or installation date',
     },
+    keysNote:
+      'This device has {n} signals in the database that nothing is mapped to yet; they are listed below. Tick the ones this component uses, choose the quantity and unit, then save.',
     needInstall: 'Register the installation date first',
     needSignals: 'Map signals to this component above first',
     runProvisional: 'Build provisionally from the data there is',
@@ -589,6 +591,9 @@ const en: typeof zh = {
       'Enter a column name (e.g. device_id), not the id of one device. "Read structure" lets you pick from the database.',
     tagMissing:
       'The super table has no column or tag named "{name}"; enter a column name, not a device id. Use "Read structure" first.',
+    narrow: 'This is a narrow table: signal name column {key}, value columns {values}.',
+    wide: 'This is a wide table: one column per signal, leave the signal name column empty.',
+    apply: 'Apply recommendation',
     readStructure: 'Read structure',
     structureNote:
       'Reads the database super tables and columns with the saved account so fields can be picked from them.',

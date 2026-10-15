@@ -416,6 +416,8 @@ export default {
       no_data: '数据源在该时间段内没有数据',
       no_signals: '没有可用信号或安装日期',
     },
+    keysNote:
+      '该设备在数据库里有 {n} 个尚未映射的信号，已列在下面：勾选此部件用到的，选择物理量和单位后保存。',
     needInstall: '请先登记安装日期',
     needSignals: '请先在上方为此部件映射信号',
     runProvisional: '用已有数据先临时生成',
@@ -553,6 +555,9 @@ export default {
     tagNote: '填“列名”（例如 device_id），不是某台设备的编号。点“读取表结构”可从数据库里选。',
     tagMissing:
       '超级表里没有名为“{name}”的列或标签；这里应填列名，而不是设备编号。请先点“读取表结构”。',
+    narrow: '这是窄表：信号名列 {key}，取值列 {values}。',
+    wide: '这是宽表：每个信号一列，信号名列留空。',
+    apply: '套用推荐',
     readStructure: '读取表结构',
     structureNote: '用已保存的账号读取数据库的超级表和列，字段可从中选择。',
     noColumns: '没有读到列，请确认超级表名称。',

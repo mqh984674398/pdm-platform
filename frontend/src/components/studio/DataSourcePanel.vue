@@ -107,6 +107,28 @@ const tagMissing = computed(
     !!form.deviceTag &&
     !structure.value.columns.some((c) => c.name === form.deviceTag),
 )
+/** Guess the layout from the real columns: key name column + value columns mean a narrow table. */
+const recommended = computed(() => {
+  const cols = structure.value?.columns ?? []
+  if (!cols.length) return null
+  const time = cols.find((c) => c.type === 'TIMESTAMP')?.name
+  const key = cols.find((c) => !c.is_tag && /^key(_?name)?$/i.test(c.name))?.name
+  const tag =
+    cols.find((c) => c.is_tag && /dev/i.test(c.name))?.name ?? cols.find((c) => c.is_tag)?.name
+  const NUM = ['DOUBLE', 'FLOAT', 'BIGINT', 'INT', 'SMALLINT']
+  const values = cols
+    .filter((c) => !c.is_tag && c.name !== key && /^value/i.test(c.name) && NUM.includes(c.type))
+    .map((c) => c.name)
+  return { time, key, tag, values }
+})
+function applyRecommended() {
+  const r = recommended.value
+  if (!r) return
+  if (r.time) form.timeColumn = r.time
+  if (r.tag) form.deviceTag = r.tag
+  form.keyColumn = r.key ?? ''
+  if (r.key) form.valueColumns = r.values.join(', ')
+}
 async function readStructure() {
   if (!editing.value) return
   const out = await run(() =>
@@ -349,6 +371,19 @@ const kindLabel = (s: ManagedSource) =>
             {{ t('datasources.readStructure') }}
           </button>
           <span class="st-note">{{ t('datasources.structureNote') }}</span>
+          <div v-if="recommended" class="st-note" data-testid="ds-recommended">
+            {{
+              recommended.key
+                ? t('datasources.narrow', {
+                    key: recommended.key,
+                    values: recommended.values.join(', ') || '—',
+                  })
+                : t('datasources.wide')
+            }}
+            <button type="button" class="link" data-testid="ds-apply" @click="applyRecommended">
+              {{ t('datasources.apply') }}
+            </button>
+          </div>
           <ul v-if="structure" class="st-note st-mono" data-testid="ds-columns">
             <li v-for="c in structure.columns" :key="c.name">
               {{ c.name }} · {{ c.type }}{{ c.is_tag ? ' · tag' : '' }}
