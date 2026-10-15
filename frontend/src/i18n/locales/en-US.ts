@@ -591,6 +591,8 @@ const en: typeof zh = {
       'Enter a column name (e.g. device_id), not the id of one device. "Read structure" lets you pick from the database.',
     tagMissing:
       'The super table has no column or tag named "{name}"; enter a column name, not a device id. Use "Read structure" first.',
+    valueNote:
+      'Wildcards work, e.g. value_*; for a narrow table (signal name column given) leave it empty to take the numeric columns starting with value. After saving and "Test connection" it is rewritten to the real column names.',
     narrow: 'This is a narrow table: signal name column {key}, value columns {values}.',
     wide: 'This is a wide table: one column per signal, leave the signal name column empty.',
     apply: 'Apply recommendation',

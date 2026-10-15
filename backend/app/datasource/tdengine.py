@@ -22,6 +22,7 @@ import re
 import threading
 from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
+from fnmatch import fnmatchcase
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -196,22 +197,63 @@ class TdengineAdapter(TimeSeriesAdapter):
         return out
 
     def check_layout(self) -> None:
+        """Check the configured layout against DESCRIBE and settle it: names are matched ignoring case,
+        ``value_*`` style patterns in the value columns are expanded to the numeric columns they match, and
+        a narrow layout without value columns takes the numeric ``value*`` columns. The settled layout
+        replaces the configured one, so every query uses the real column names."""
         lay = self.layout
         cols = {n: (t, tag) for n, t, tag in self.describe(lay.stable)}
-        needed = [lay.device_tag, lay.time_column, *lay.value_columns]
-        if lay.key_column:
-            needed.append(lay.key_column)
-        missing = [c for c in needed if c not in cols]
+        lower = {n.lower(): n for n in cols}
+
+        def real(name: str | None) -> str | None:
+            return lower.get(name.lower()) if name else None
+
+        device, time, key = real(lay.device_tag), real(lay.time_column), real(lay.key_column)
+        missing = [n for n, r in [(lay.device_tag, device), (lay.time_column, time)] if r is None]
+        if lay.key_column and key is None:
+            missing.append(lay.key_column)
+        values: list[str] = []
+        for v in lay.value_columns:
+            if "*" in v or "?" in v:
+                hits = [
+                    n
+                    for n, (t, tag) in cols.items()
+                    if not tag and t in NUMERIC_TYPES and fnmatchcase(n.lower(), v.lower())
+                    and n not in (key, time)
+                ]  # fmt: skip
+                values += [h for h in hits if h not in values]
+                if not hits:
+                    missing.append(v)
+            elif (r := real(v)) is None:
+                missing.append(v)
+            elif r not in values:
+                values.append(r)
         if missing:
             have = ", ".join(f"{n} (tag)" if tag else n for n, (_, tag) in cols.items())
             raise LayoutError(f"columns not found in '{lay.stable}': {', '.join(missing)}; it has: {have}")
-        if not lay.key_column:
-            keys = lay.value_columns or [n for n, (t, tag) in cols.items() if not tag and t in NUMERIC_TYPES]
+        if key:
+            if not values:  # narrow table: the value columns are the numeric value* ones
+                values = [
+                    n
+                    for n, (t, tag) in cols.items()
+                    if not tag and t in NUMERIC_TYPES and n.lower().startswith("value") and n != key
+                ]
+            if not values:
+                have = ", ".join(f"{n} (tag)" if tag else n for n, (_, tag) in cols.items())
+                raise LayoutError(
+                    f"'{lay.stable}' is a narrow table but no value columns were given and none named "
+                    f"value* is numeric; it has: {have}"
+                )
+        else:
+            keys = values or [
+                n for n, (t, tag) in cols.items() if not tag and t in NUMERIC_TYPES and n != time
+            ]
             if not keys:
                 raise LayoutError(f"'{lay.stable}' has no numeric columns to read")
             self._keys = keys
-        elif not lay.value_columns:
-            raise LayoutError("narrow TDengine layouts need value_columns")
+        self.layout = lay.model_copy(
+            update={"device_tag": device, "time_column": time, "key_column": key, "value_columns": values}
+        )
 
     def structure(self, stable: str | None = None) -> tuple[list[str], list[tuple[str, str, bool]]]:
         """Super tables of the database and the columns/tags of ``stable`` (default: the configured one)."""

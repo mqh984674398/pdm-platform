@@ -127,3 +127,27 @@ def test_wrong_tag_column_lists_what_the_table_has_and_structure_can_be_read(cli
         "ts": False, "torque": False, "speed": False, "device_id": True,
     }  # fmt: skip
     assert client.get("/api/admin/datasources/taos-plant/structure", role="engineer").status_code == 403
+
+
+def test_narrow_table_with_value_pattern_passes_and_stores_the_real_columns(client):
+    from ..query_service.test_tdengine import NarrowTaos
+
+    class Both(ReadOnlyTaos, NarrowTaos):
+        pass
+
+    managed.TRANSPORT = httpx.MockTransport(Both())
+    try:
+        body = {**BODY, "device_tag": "DeviceName", "key_column": "KeyName", "value_columns": ["value_*"]}
+        client.put("/api/admin/datasources/taos-plant", body)
+        checks = client.post("/api/admin/datasources/taos-plant/test", {}, role="admin").json()
+    finally:
+        managed.TRANSPORT = httpx.MockTransport(ReadOnlyTaos())
+    assert {c["key"]: c["ok"] for c in checks}["layout"], checks
+    src = next(
+        s
+        for s in client.get("/api/admin/datasources", role="admin").json()
+        if s["data_source_id"] == "taos-plant"
+    )
+    lay = src["layout"]
+    assert lay["verified"] and lay["device_tag"] == "devicename" and lay["key_column"] == "keyname"
+    assert lay["value_columns"] == ["value_double", "value_long"]

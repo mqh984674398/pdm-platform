@@ -208,3 +208,36 @@ def test_tdengine_template_runs_for_engineers(client):
     assert r.status_code == 200, r.text
     out = r.json()
     assert out["row_count"] == 5 and out["columns"][0] == "ts" and out["is_simulated"] is False
+
+
+class NarrowTaos(FakeTaos):
+    """An IoTSharp-style narrow table: key name column, one value column per type, device tag."""
+
+    def __call__(self, request):
+        low = request.content.decode().lower()
+        if low.startswith("describe"):
+            return self.ok(
+                [("field", "VARCHAR"), ("type", "VARCHAR"), ("length", "INT"), ("note", "VARCHAR")],
+                [["ts", "TIMESTAMP", 8, ""], ["keyname", "VARCHAR", 64, ""],
+                 ["value_double", "DOUBLE", 8, ""], ["value_long", "BIGINT", 8, ""],
+                 ["value_string", "VARCHAR", 64, ""], ["devicename", "VARCHAR", 64, "TAG"]],
+            )  # fmt: skip
+        return super().__call__(request)
+
+
+def narrow(**kw):
+    layout = TdengineLayout(stable="meters", device_tag="devicename", **kw)
+    return TdengineAdapter(td_config(), layout, "reader:secret", transport=httpx.MockTransport(NarrowTaos()))
+
+
+def test_narrow_layout_accepts_wildcards_case_and_missing_value_columns():
+    for kw, values in [
+        ({"key_column": "keyname", "value_columns": ["value_*"]}, ["value_double", "value_long"]),
+        ({"key_column": "keyname"}, ["value_double", "value_long"]),  # value columns left empty
+        ({"key_column": "KeyName", "value_columns": ["VALUE_DOUBLE"]}, ["value_double"]),
+    ]:
+        a = narrow(**kw)
+        a.check_layout()
+        assert a.layout.key_column == "keyname" and a.layout.value_columns == values
+    with pytest.raises(AdapterError, match="columns not found.*nothing_.*it has: ts"):
+        narrow(key_column="keyname", value_columns=["nothing_*"]).check_layout()

@@ -194,7 +194,8 @@ def test_source(data_source_id: str, who: Admin, db: DB, reg: Reg) -> list[TestC
         except (AdapterError, SQLAlchemyError, OSError) as exc:
             problem["layout"] = (str(exc), _hint(str(exc), port, "layout"))
     if layout_ok:  # the layout was checked against the real database
-        rec.layout = {**rec.layout, "verified": True}
+        # the settled layout (real column names, expanded value_* patterns) is what gets stored
+        rec.layout = {**adapter.layout.model_dump(mode="json"), "verified": True}
         reg.remove(data_source_id)
         reg.add(*m.build(rec))
         db.flush()

@@ -399,8 +399,10 @@ const kindLabel = (s: ManagedSource) =>
         >
         <label class="st-field"
           ><span>{{ t('datasources.valueColumns') }}</span
-          ><input v-model="form.valueColumns" class="st-input st-mono"
-        /></label>
+          ><input v-model="form.valueColumns" class="st-input st-mono" /><span class="st-note">{{
+            t('datasources.valueNote')
+          }}</span></label
+        >
         <label class="st-field"
           ><span>{{ t('datasources.zone') }}</span
           ><input v-model.trim="form.zone" class="st-input st-mono"
