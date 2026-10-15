@@ -187,7 +187,11 @@ def h(role):
 
 def test_simulation_database_is_for_administrators_only(client):
     ids = lambda role: [s["data_source_id"] for s in client.get("/api/datasources", headers=h(role)).json()]  # noqa: E731
-    assert ids("admin") == ["sim-iot", "taos-plant"]
+    # the lists follow the run mode (D-053): simulation mode lists only the simulation database,
+    # production mode only the production sources; the access rule below holds in either mode
+    assert ids("admin") == ["sim-iot"]
+    client.put("/api/run-mode", json={"mode": "production"}, headers=h("admin"))
+    assert ids("admin") == ["taos-plant"]
     assert ids("engineer") == ["taos-plant"] and ids("viewer") == ["taos-plant"]
     r = client.get("/api/datasources/sim-iot/devices", headers=h("engineer"))
     assert r.status_code == 403 and r.json()["code"] == "source_forbidden"

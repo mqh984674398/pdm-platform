@@ -13,8 +13,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.api.studio import _read_only
+from app.api.visibility import Visible
 from app.core.audit import record as audit
 from app.core.db import get_session
+from app.core.runmode import RunMode
 from app.core.schemas import ContractModel
 from app.core.security import Principal, Role, require
 from app.datasource import managed as m
@@ -101,7 +103,7 @@ def _view(reg: DataSourceRegistry, rec: m.ManagedSourceRecord | None, data_sourc
 
 
 @router.get("/admin/datasources", response_model=list[m.ManagedSource])
-def list_sources(_: Admin, db: DB, reg: Reg) -> list[m.ManagedSource]:
+def list_sources(_: Admin, db: DB, reg: Reg, vis: Visible) -> list[m.ManagedSource]:
     recs = {r.data_source_id: r for r in db.query(m.ManagedSourceRecord)}
     out = [_view(reg, recs.get(c.data_source_id), c.data_source_id) for c in reg.configs()]
     out += [
@@ -109,6 +111,8 @@ def list_sources(_: Admin, db: DB, reg: Reg) -> list[m.ManagedSource]:
         for i, r in sorted(recs.items())
         if i not in {c.data_source_id for c in reg.configs()}
     ]
+    simulation = vis.mode == RunMode.SIMULATION
+    out = [s for s in out if s.is_simulated == simulation]
     return sorted(out, key=lambda s: s.data_source_id)
 
 

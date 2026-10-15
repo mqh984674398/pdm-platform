@@ -22,6 +22,10 @@ Engineer = Annotated[Principal, Depends(require(Role.ENGINEER))]
 
 class PipelineRequest(ContractModel):
     machine_id: str
+    since: datetime | None = Field(
+        default=None,
+        description="Skip data before this time (a start only moves forward; stored windows are kept)",
+    )
     until: datetime | None = Field(default=None, description="Process data up to this time (default: now)")
     provisional: bool = Field(
         default=False,
@@ -34,7 +38,12 @@ class PipelineRequest(ContractModel):
 def run(body: PipelineRequest, request: Request, _: Engineer, db: DB) -> PipelineResult:
     EquipmentStore(db).machine(body.machine_id)
     out = run_machine(
-        db, request.app.state.sources, body.machine_id, body.until, provisional=body.provisional
+        db,
+        request.app.state.sources,
+        body.machine_id,
+        body.until,
+        provisional=body.provisional,
+        since=body.since,
     )
     db.commit()
     return out

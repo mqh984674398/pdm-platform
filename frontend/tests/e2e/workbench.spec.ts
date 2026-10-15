@@ -37,7 +37,7 @@ test('administrator takes a recommended configuration through validate, publish 
   await expect(page.getByTestId('wb-versions')).toContainText('启用中')
 })
 
-test('step 2 shows the mapped signal, edits its parameters and previews the real data', async ({
+test('step 2 binds the signal to the component and leaves its parameters to the signal page', async ({
   page,
 }) => {
   await page.addInitScript(() => localStorage.setItem('pdm-dev-role', 'admin'))
@@ -82,11 +82,12 @@ test('step 2 shows the mapped signal, edits its parameters and previews the real
   await wb.getByTestId('wb-start').click()
   const row = wb.locator('[data-signal="BENCH.torque"]')
   await expect(row).toBeVisible()
-  await row.getByRole('textbox').first().fill('kN*m')
-  await row.getByRole('button', { name: '保存' }).click()
-  await expect(page.getByTestId('wb-message')).toContainText('信号参数已保存')
-  await wb.locator('[data-signal="BENCH.torque"]').getByTestId('wb-preview').click()
-  await expect(wb.getByTestId('wb-preview-box')).toContainText('最近一小时')
+  // D-053: unit, sampling and range are shown, not edited here; the Signal configuration page owns them
+  await expect(row.getByRole('textbox')).toHaveCount(0)
+  await expect(row.getByTestId('wb-edit-signal')).toHaveAttribute(
+    'href',
+    /\/signals\?signal=BENCH\.torque/,
+  )
   // a component without recorded data cannot pass validation, and the screen says so
   await wb.getByTestId('wb-validate').click()
   await expect(page.getByTestId('wb-message')).toContainText('验证未通过')

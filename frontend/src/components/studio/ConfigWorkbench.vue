@@ -6,6 +6,7 @@
  */
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import type {
   AlgorithmSpec,
   ComponentInstance,
@@ -17,7 +18,6 @@ import type {
   EvidenceType,
   ManagedSource,
   PredictionConfig,
-  PreviewResponse,
   RelationType,
   SignalConfigState,
   SignalDefinition,
@@ -27,8 +27,8 @@ import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import ReferenceForm from '@/components/fleet/ReferenceForm.vue'
 import SignalMappingEditor from '@/components/studio/SignalMappingEditor.vue'
-import PreviewChart, { type ChartSeries } from '@/components/studio/PreviewChart.vue'
 import '@/components/studio/studio.css'
+import { invalidateFleet } from '@/composables/useFleet'
 import { useLocalized } from '@/composables/useLocalized'
 
 const props = defineProps<{
@@ -69,7 +69,8 @@ const comment = ref('')
 const copyFrom = ref('')
 const addAlgo = ref('')
 
-// --- step 2: mapped signals, editable parameters and a preview of the real data -----------------------
+// --- step 2: the signals bound to this component. Their definition (unit, sampling, valid range) and the
+// data preview belong to the Signal configuration page; the binding to a source and device is set here -----------------------
 const signalState = ref<SignalConfigState | null>(null)
 const mapped = computed<{ signal: SignalDefinition; mapping: SignalMapping }[]>(() => {
   const cfg = signalState.value?.content
@@ -85,94 +86,18 @@ const mapped = computed<{ signal: SignalDefinition; mapping: SignalMapping }[]>(
       return sig ? [{ signal: sig, mapping: m }] : []
     })
 })
-const sigEdit = reactive<Record<string, { unit: string; hz: string; min: string; max: string }>>({})
-const origin = new Map<string, string>()
-watch(
-  mapped,
-  (rows) => {
-    for (const { signal: x } of rows) {
-      const key = JSON.stringify(x)
-      if (origin.get(x.signal_id) === key) continue // unchanged on the server: keep what is typed
-      origin.set(x.signal_id, key)
-      sigEdit[x.signal_id] = {
-        unit: x.unit,
-        hz: x.expected_sampling_s == null ? '' : String(x.expected_sampling_s),
-        min: x.valid_min == null ? '' : String(x.valid_min),
-        max: x.valid_max == null ? '' : String(x.valid_max),
-      }
-    }
-  },
-  { immediate: true },
-)
-const num = (v: string) => (v.trim() === '' ? null : Number(v))
-async function saveSignal(x: SignalDefinition) {
-  const e = sigEdit[x.signal_id]!
-  const item = {
-    ...x,
-    unit: e.unit.trim(),
-    expected_sampling_s: num(e.hz),
-    valid_min: num(e.min),
-    valid_max: num(e.max),
-  }
-  const ok = await run(async () => {
-    const latest = await monitoringApi.signalConfig() // the base version must be the current one
-    return monitoringApi.saveSignal(item, 'workbench', latest.version?.version ?? 0)
-  }, t('workbench.signalSaved'))
-  if (ok) {
-    signalState.value = await monitoringApi.signalConfig()
-    load().catch(() => undefined)
-  }
-}
 async function onMappingSaved() {
   signalState.value = await monitoringApi.signalConfig()
   load().catch(() => undefined)
 }
-const previewId = ref<string | null>(null)
-const previewData = ref<PreviewResponse | null>(null)
-const previewNote = ref('')
-async function showPreview(id: string) {
-  previewId.value = id
-  previewData.value = null
-  previewNote.value = ''
-  try {
-    const ext = await monitoringApi.extent(id)
-    if (!ext) {
-      previewNote.value = t('workbench.noData')
-      return
-    }
-    const end = Date.parse(ext.end) + 1000
-    const start = Math.max(Date.parse(ext.start), end - 3600_000)
-    previewData.value = await monitoringApi.signalPreview(
-      id,
-      new Date(start).toISOString(),
-      new Date(end).toISOString(),
-    )
-  } catch {
-    previewNote.value = t('workbench.noData')
-  }
-}
-const previewSeries = computed<ChartSeries[]>(() => {
-  const n = previewData.value?.normalized[0]
-  if (!n) return []
-  const pts = n.samples.filter((x) => x.value !== null)
-  return [
-    {
-      name: n.signal_id,
-      unit: n.unit,
-      points: pts.map((x) => [Date.parse(x.ts), x.value as number]),
-      flagged: pts
-        .filter((x) => x.quality.length)
-        .map((x) => [Date.parse(x.ts), x.value as number]),
-    },
-  ]
-})
-const flagged = computed(() => previewSeries.value[0]?.flagged?.length ?? 0)
 
 // --- readiness: installation date, feature windows from the data, verified healthy reference -----------
 const lifecycles = ref<ComponentLifecycle[]>([])
 const coverage = ref<FeatureCoverage[]>([])
 const installAt = ref('')
 const pipelineResult = ref<PipelineResult | null>(null)
+const rangeFrom = ref('') // optional range for generating features, local time
+const rangeTo = ref('')
 const mappedHere = computed(() =>
   mapped.value.filter((r) => r.mapping.component_id === props.component.component_id),
 )
@@ -205,7 +130,9 @@ async function runPipeline(provisional = false) {
     }
     return
   }
-  const r = await run(() => monitoringApi.runPipeline(props.machineId, provisional))
+  const iso = (v: string) => (v ? new Date(v).toISOString() : undefined)
+  const range = { since: iso(rangeFrom.value), until: iso(rangeTo.value) }
+  const r = await run(() => monitoringApi.runPipeline(props.machineId, provisional, range))
   if (r) {
     pipelineResult.value = r
     await loadReadiness()
@@ -280,6 +207,7 @@ async function run<T>(action: () => Promise<T>, done?: string): Promise<T | unde
   message.value = null
   try {
     const out = await action()
+    invalidateFleet()
     if (done) message.value = { ok: true, text: done }
     return out
   } catch (e) {
@@ -528,36 +456,12 @@ const statusLabel = (v: PredictionConfig) =>
                   >
                 </td>
                 <td class="st-mono">{{ r.mapping.data_source_id }}</td>
-                <td>
-                  <input v-model="sigEdit[r.signal.signal_id]!.unit" class="st-input st-mono num" />
+                <td class="st-mono">{{ r.signal.unit || '—' }}</td>
+                <td class="st-mono">{{ r.signal.expected_sampling_s ?? '—' }}</td>
+                <td class="st-mono">
+                  {{ r.signal.valid_min ?? '—' }} ~ {{ r.signal.valid_max ?? '—' }}
                 </td>
                 <td>
-                  <input
-                    v-model="sigEdit[r.signal.signal_id]!.hz"
-                    class="st-input st-mono num"
-                    type="number"
-                    step="any"
-                    min="0"
-                  />
-                </td>
-                <td>
-                  <input
-                    v-model="sigEdit[r.signal.signal_id]!.min"
-                    class="st-input st-mono num"
-                    type="number"
-                    step="any"
-                  />
-                  <input
-                    v-model="sigEdit[r.signal.signal_id]!.max"
-                    class="st-input st-mono num"
-                    type="number"
-                    step="any"
-                  />
-                </td>
-                <td>
-                  <button type="button" class="link" :disabled="busy" @click="saveSignal(r.signal)">
-                    {{ t('workbench.save') }}
-                  </button>
                   <button
                     v-if="r.mapping.component_id === component.component_id"
                     type="button"
@@ -568,38 +472,19 @@ const statusLabel = (v: PredictionConfig) =>
                   >
                     {{ t('workbench.detach') }}
                   </button>
-                  <button
-                    type="button"
+                  <RouterLink
                     class="link"
-                    data-testid="wb-preview"
-                    @click="showPreview(r.signal.signal_id)"
+                    data-testid="wb-edit-signal"
+                    :to="{ path: '/signals', query: { signal: r.signal.signal_id } }"
                   >
-                    {{ t('workbench.preview') }}
-                  </button>
+                    {{ t('workbench.editInSignals') }}
+                  </RouterLink>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <p v-else class="st-note">{{ t('workbench.noSignals') }}</p>
-        <div v-if="previewId" data-testid="wb-preview-box">
-          <p class="st-note">
-            {{ t('workbench.previewNote', { id: previewId }) }}
-            <template v-if="previewSeries[0]">
-              ·
-              {{
-                t('workbench.previewCount', { n: previewSeries[0].points.length, f: flagged })
-              }}</template
-            >
-            <template v-if="previewNote"> · {{ previewNote }}</template>
-          </p>
-          <PreviewChart
-            v-if="previewSeries[0]?.points.length"
-            :series="previewSeries"
-            :height="200"
-            :flagged-label="t('workbench.flagged')"
-          />
-        </div>
         <SignalMappingEditor
           :component-id="component.component_id"
           :device-id="deviceId"
@@ -637,6 +522,25 @@ const statusLabel = (v: PredictionConfig) =>
           </li>
           <li :class="windows ? 'ok' : 'error'" data-testid="ready-features">
             {{ windows ? '✓' : '✗' }} {{ t('workbench.rFeatures', { n: windows }) }}
+            <span class="row inline" data-testid="pipeline-range">
+              <label class="st-note"
+                >{{ t('workbench.rangeFrom') }}
+                <input
+                  v-model="rangeFrom"
+                  type="datetime-local"
+                  class="st-input"
+                  data-testid="range-from"
+              /></label>
+              <label class="st-note"
+                >{{ t('workbench.rangeTo') }}
+                <input
+                  v-model="rangeTo"
+                  type="datetime-local"
+                  class="st-input"
+                  data-testid="range-to"
+              /></label>
+            </span>
+            <span class="st-note">{{ t('workbench.rangeNote') }}</span>
             <button
               type="button"
               class="st-button"

@@ -8,6 +8,7 @@
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import DataSourcePanel from '@/components/studio/DataSourcePanel.vue'
+import RunModeCard from '@/components/studio/RunModeCard.vue'
 
 const { t } = useI18n()
 </script>
@@ -18,6 +19,7 @@ const { t } = useI18n()
       <h1>{{ t('nav.datasources') }}</h1>
       <p class="lede">{{ t('datasources.lede') }}</p>
     </header>
+    <RunModeCard />
     <DataSourcePanel />
     <p class="st-note">
       {{ t('datasources.next') }}

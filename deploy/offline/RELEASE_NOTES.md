@@ -69,3 +69,6 @@ First release of the Industrial Predictive Maintenance Platform V5.2 (T001–T02
 After the first install, please send back `C:\ProgramData\PDM\install.log`.
 
 尚未验证 / Not yet verified: installation on a real Windows host; a live Ollama model.
+
+## Run modes (after 0.1.4)
+Administrators switch between 仿真演示 and 正式运行 on the 数据源 page. In 正式运行 no simulated machine, alarm, signal or data source is listed, and the scheduled pipeline reads only production machines. An upgraded installation that already has a production source starts in 正式运行.

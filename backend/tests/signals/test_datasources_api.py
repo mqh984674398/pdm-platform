@@ -39,6 +39,7 @@ BODY = {
 
 
 def test_admin_creates_tests_and_deletes_a_source(client, tmp_path):
+    assert client.put("/api/run-mode", {"mode": "production"}, role="admin").status_code == 200  # D-053
     assert client.put("/api/admin/datasources/taos-plant", BODY, role="engineer").status_code == 403
     r = client.put("/api/admin/datasources/taos-plant", BODY)
     assert r.status_code == 200, r.text
@@ -136,6 +137,7 @@ def test_narrow_table_with_value_pattern_passes_and_stores_the_real_columns(clie
         pass
 
     managed.TRANSPORT = httpx.MockTransport(Both())
+    client.put("/api/run-mode", {"mode": "production"}, role="admin")
     try:
         body = {**BODY, "device_tag": "DeviceName", "key_column": "KeyName", "value_columns": ["value_*"]}
         client.put("/api/admin/datasources/taos-plant", body)

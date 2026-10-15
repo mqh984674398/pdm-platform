@@ -13,6 +13,7 @@ import PanelBox from '@/components/base/PanelBox.vue'
 import SideDrawer from '@/components/base/SideDrawer.vue'
 import ConfigWorkbench from '@/components/studio/ConfigWorkbench.vue'
 import '@/components/studio/studio.css'
+import { invalidateFleet } from '@/composables/useFleet'
 import { useLocalized } from '@/composables/useLocalized'
 
 const TYPES = [
@@ -58,6 +59,7 @@ async function run(action: () => Promise<unknown>, done: string) {
   message.value = null
   try {
     await action()
+    invalidateFleet()
     await load()
     message.value = { ok: true, text: done }
   } catch (e) {

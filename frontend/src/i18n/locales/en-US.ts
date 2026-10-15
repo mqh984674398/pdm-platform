@@ -25,7 +25,7 @@ const en: typeof zh = {
     users: 'Users and roles',
     algorithms: 'Algorithm models',
     datasources: 'Data sources',
-    plant: 'Configuration workbench',
+    plant: 'Component setup',
   },
   health: {
     NORMAL: 'Normal',
@@ -76,7 +76,7 @@ const en: typeof zh = {
       users: 'Register and delete accounts, change roles, and choose which screens each role sees.',
       algorithms:
         'The algorithm library, deep-model adapters and plugins, and where each algorithm is used.',
-      datasources: 'Add, test and delete TDengine sources; notes on the simulation database.',
+      datasources: 'Switch the run mode; add, test and delete TDengine sources.',
       plant:
         'One workbench for the plant structure, signal mappings and the prediction configuration of each component. Data sources are set up on the Data sources screen; here you only pick one.',
     },
@@ -375,7 +375,7 @@ const en: typeof zh = {
   signals: {
     lede: 'Mapping, unit and valid range of every saved signal, with a preview of recent data and its quality. To add devices or signals use the',
     pick: 'Choose a signal',
-    empty: 'No saved signals yet. Map signals to a component in the Configuration workbench first.',
+    empty: 'No saved signals yet. Map signals to a component in the Component setup first.',
     source: 'Data source',
     device: 'Device',
     key: 'Signal key (KeyName)',
@@ -399,7 +399,7 @@ const en: typeof zh = {
     },
     unit: 'Engineering unit',
     unitLocked:
-      'This signal has a unit conversion; change its unit in the signal mapping of the Configuration workbench.',
+      'This signal has a unit conversion; change its unit in the signal mapping of the Component setup.',
     sampling: 'Expected sampling interval (s)',
     validMin: 'Valid minimum',
     validMax: 'Valid maximum',
@@ -433,6 +433,10 @@ const en: typeof zh = {
     installed: 'Installation date registered',
     rSignals: 'Signals mapped ({n})',
     rFeatures: 'Feature windows built ({n})',
+    rangeFrom: 'From (optional, local time)',
+    rangeTo: 'To (optional)',
+    rangeNote:
+      'Empty = automatic: from where it stopped last time up to now. A start time skips older data (windows already generated are not recomputed). Data sampled every second is about 86,000 rows per signal per day, so a wide range is slow: generate it in parts.',
     runPipeline: 'Build features from the data source',
     rReference: 'Healthy reference verified',
     detach: 'Unmap',
@@ -489,13 +493,7 @@ const en: typeof zh = {
     unit: 'Unit',
     samplingS: 'Sampling interval (s)',
     validRange: 'Valid range (min/max)',
-    preview: 'Preview',
     noSignals: 'No signals are mapped to this component or device yet.',
-    signalSaved: 'Signal parameters saved (new signal configuration version)',
-    noData: 'The data source has no data to preview',
-    previewNote: 'Last hour of data for {id}',
-    previewCount: '{n} samples, {f} flagged by the quality check',
-    flagged: 'Quality flagged',
     editMapping: 'Edit signal mappings and data source',
     configure: 'Configure',
     title: 'Prediction configuration of {id}',
@@ -526,7 +524,8 @@ const en: typeof zh = {
     s1: 'Component',
     s2: 'Data source and signals',
     s2note:
-      'Pick the data source, map signals and adjust their parameters here; the data sources themselves are maintained by administrators under Data sources at the top of this page.',
+      "Bind signals to this component's data source and device here. Unit, sampling interval, valid range and the data preview are maintained on the Signal configuration page and only shown here.",
+    editInSignals: 'Edit / preview in Signal configuration',
     available: 'Available quantities',
     missing: 'Missing',
     simulated: 'simulated data',
@@ -589,7 +588,7 @@ const en: typeof zh = {
     },
   },
   algorithms: {
-    lede: 'Every algorithm the platform can run: status, limits, the signals it needs, and which components use it in their active configuration. View only; an algorithm is chosen for a component in the decision chain of the Configuration workbench.',
+    lede: 'Every algorithm the platform can run: status, limits, the signals it needs, and which components use it in their active configuration. View only; an algorithm is chosen for a component in the decision chain of the Component setup.',
     library: 'Algorithm library',
     category: 'Category',
     name: 'Algorithm',
@@ -634,9 +633,24 @@ const en: typeof zh = {
       'No plugins registered. Plugins are registered by server code (with an input/output contract and a semantic version); they cannot be uploaded through the page.',
     next: 'Choose algorithms for a component in the',
   },
+  runMode: {
+    production: 'Production (TDengine)',
+    simulation: 'Simulation demo',
+    banner: 'Simulation demo mode: all data is simulated and does not represent real equipment.',
+    title: 'Run mode',
+    lede: 'Production shows and uses only the TDengine production data and never any simulated data; the simulation demo shows only simulated data and does not touch the production database. Machines, components, alarms, signals and data sources of the two modes are kept apart. Only administrators can switch.',
+    current: 'Current mode: {mode}',
+    toProduction: 'Switch to production',
+    toSimulation: 'Switch to simulation demo',
+    confirmProduction:
+      'Switch to production? Every page will then show only TDengine production data and no simulated data.',
+    confirmSimulation:
+      'Switch to the simulation demo? Every page will then show only simulated data, no production data, and the TDengine database is not read.',
+    failed: 'Switching failed',
+  },
   datasources: {
     title: 'Data sources',
-    lede: 'Where the platform reads telemetry from. Production TDengine sources are added, tested and deleted here; the Configuration workbench only picks one of them. The simulation database is defined by the datasources file, for administrators only, and is listed here for reference.',
+    lede: 'Where the platform reads telemetry from. Production TDengine sources are added, tested and deleted here; the Component setup only picks one of them. Only the sources of the current run mode are listed.',
     next: 'Once a source passes its test, go to',
     hostNote:
       'Server address only (IP or host name), e.g. 10.26.30.97; no http:// and no port. A pasted full address is split automatically.',
@@ -669,7 +683,7 @@ const en: typeof zh = {
         'The super table or columns do not match the configuration: use "Read structure" and correct them to the real names.',
       other: 'Check the settings against the reason below.',
     },
-    note: 'Production uses the TDengine database with a read-only account; reading production needs no administrator approval. The account is written to the server only and never shown again. The simulation database is for administrators only.',
+    note: 'Production uses the TDengine database with a read-only account; reading production needs no administrator approval. The account is written to the server only and never shown again.',
     failed: 'Action failed',
     saved: 'Data source saved; run "Test connection" to verify it',
     deleted: 'Data source deleted',
@@ -737,7 +751,7 @@ const en: typeof zh = {
     type: 'Component type',
     deviceId: 'Database device ID',
     deviceNote:
-      "The machine's device id (tag value) in TDengine. The Configuration workbench reads data with it when signals are mapped.",
+      "The machine's device id (tag value) in TDengine. The Component setup reads data with it when signals are mapped.",
     components: 'Components',
     driveChain: 'Drive chain ID',
     torqueLimit: 'Torque limit (unit of the torque signal)',

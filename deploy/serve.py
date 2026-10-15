@@ -33,13 +33,14 @@ def main(argv: list[str] | None = None) -> None:
     import uvicorn
     from alembic import command
     from alembic.config import Config
+    from sqlalchemy import func, select
+    from sqlalchemy.orm import Session
+
     from app.core.config import get_settings
     from app.core.db import get_engine
     from app.datasource.query_service.sources import DataSourceRegistry
     from app.main import create_app
     from app.monitoring.features.store import FeatureVectorRecord
-    from sqlalchemy import func, select
-    from sqlalchemy.orm import Session
 
     settings = get_settings()
     if settings.auth_mode != "local":
@@ -82,6 +83,8 @@ def main(argv: list[str] | None = None) -> None:
         import threading
         import time
 
+        from app.api.visibility import Visibility
+        from app.core.runmode import get_mode
         from app.decision.pipeline import run_all
 
         def loop() -> None:  # D-042: keeps features and alarms current for every mapped machine
@@ -89,7 +92,8 @@ def main(argv: list[str] | None = None) -> None:
             while True:
                 try:
                     with Session(get_engine()) as session:
-                        for r in run_all(session, sources):
+                        vis = Visibility(session, sources, get_mode(session))  # D-053: only this mode
+                        for r in run_all(session, sources, only=vis.machine_ids().__contains__):
                             if r.windows_added:
                                 print(f"pipeline {r.machine_id}: +{r.windows_added} windows")
                 except Exception as exc:  # noqa: BLE001

@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from pydantic import AwareDatetime, BaseModel
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.modules import require_module
 from app.core.schemas import TimeWindow
@@ -45,8 +46,8 @@ Sources = Annotated[DataSourceRegistry, Depends(_sources)]
 
 
 @router.get("/signal-config", response_model=SignalConfigState)
-def current_config(_: Viewer, db: DB) -> SignalConfigState:
-    return SignalConfigStore(db).current()
+def current_config(_: Viewer, db: DB, vis: Visible) -> SignalConfigState:
+    return vis.signal_config(SignalConfigStore(db).current())
 
 
 @router.get("/signal-config/versions", response_model=list[SignalConfigVersion])

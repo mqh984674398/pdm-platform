@@ -10,6 +10,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.security import Principal, Role, require
 from app.equipment.lifecycle import EquipmentConflictError
@@ -32,8 +33,8 @@ Admin = Annotated[Principal, Depends(require(Role.ADMIN))]
 
 
 @router.get("/plant-tree", response_model=PlantTree)
-def plant_tree(_: Viewer, db: DB) -> PlantTree:
-    return PlantStore(db).tree()
+def plant_tree(_: Viewer, db: DB, vis: Visible) -> PlantTree:
+    return vis.plant(PlantStore(db).tree())
 
 
 @router.put("/plant-nodes/{node_id}", response_model=PlantTree)

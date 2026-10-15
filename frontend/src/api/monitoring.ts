@@ -52,6 +52,8 @@ import type {
   ConfigRecommendation,
   ManagedSource,
   PipelineResult,
+  RunMode,
+  RunModeState,
   ManagedSourceBody,
   SourceStructure,
   SourceTestCheck,
@@ -100,6 +102,9 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
   }
 
   return {
+    runMode: () => call<RunModeState>('/api/run-mode'),
+    setRunMode: (mode: RunMode) =>
+      call<RunModeState>('/api/run-mode', { method: 'PUT', body: JSON.stringify({ mode }) }),
     signalConfig: () => call<SignalConfigState>('/api/signal-config'),
     signalVersions: () => call<SignalConfigVersion[]>('/api/signal-config/versions'),
     /** Saved mapping of one signal over a window: normalized samples and the chart series (UI-05). */
@@ -196,10 +201,14 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         method: 'POST',
         body: JSON.stringify({ installed_at: installedAt, comment }),
       }),
-    runPipeline: (machineId: string, provisional = false) =>
+    runPipeline: (
+      machineId: string,
+      provisional = false,
+      range: { since?: string; until?: string } = {},
+    ) =>
       call<PipelineResult>('/api/pipeline/run', {
         method: 'POST',
-        body: JSON.stringify({ machine_id: machineId, provisional }),
+        body: JSON.stringify({ machine_id: machineId, provisional, ...range }),
       }),
     optimizationReadiness: () => call<OptimizationReadiness>('/api/optimization/readiness'),
     // --- data sources and signal mappings (step 2 of the configuration workflow) ---

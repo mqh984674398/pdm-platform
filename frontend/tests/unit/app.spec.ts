@@ -24,10 +24,10 @@ describe('App shell', () => {
   it('registers all 12 required interfaces as routes, plus administration', () => {
     expect(NAV.filter((n) => !n.adminOnly)).toHaveLength(11)
     expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual([
-      'users',
-      'algorithms',
       'datasources',
       'plant',
+      'users',
+      'algorithms',
     ])
     expect(routes.map((r) => r.name)).toEqual(NAV.map((n) => n.name))
   })

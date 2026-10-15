@@ -20,10 +20,12 @@ from app.api import (
     quality,
     query,
     registry,
+    runmode,
     signals,
     studio,
     timeseries,
 )
+from app.core import runmode as _runmode_table  # noqa: F401  (registers the settings table)
 from app.core.config import get_settings
 from app.core.modules import require_module
 from app.datasource.query_service.service import QueryService
@@ -75,6 +77,7 @@ def create_app(sources: DataSourceRegistry | None = None) -> FastAPI:
     )
     app.include_router(llm.router, prefix="/api")
     app.include_router(auth.router, prefix="/api")
+    app.include_router(runmode.router, prefix="/api")
     if settings.static_dir:
         mount_frontend(app, Path(settings.static_dir))
     return app

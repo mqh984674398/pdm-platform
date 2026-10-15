@@ -138,3 +138,13 @@ def test_an_unreadable_source_is_reported_not_swallowed(tmp_path, monkeypatch):
     monkeypatch.setattr("app.decision.pipeline.load_series", boom)
     r = run_machine(s, sources, m.machine_id, until=m.t0 + timedelta(days=5))
     assert r.catalog == "failed" and "200000 rows" in (r.error or "")
+
+
+def test_a_range_skips_older_data_and_a_backwards_range_is_refused(tmp_path):
+    s, sources, m = setup(tmp_path, "r")
+    day6, day7 = m.t0 + timedelta(days=6), m.t0 + timedelta(days=7)
+    bad = run_machine(s, sources, m.machine_id, until=day6, since=day7)
+    assert bad.catalog == "failed" and "earlier" in (bad.error or "")
+    ranged = run_machine(s, sources, m.machine_id, until=day7, since=day6)
+    assert ranged.catalog == "ready" and ranged.windows_added > 0
+    assert min(w for _, w in windows(s, m)) >= day6  # nothing before the start of the range was generated

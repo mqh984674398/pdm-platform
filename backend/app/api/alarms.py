@@ -12,6 +12,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.modules import require_module
 from app.core.security import Principal, Role, require
@@ -82,9 +83,10 @@ def evaluate_alarms(body: AlarmEvaluationRequest, who: Engineer, db: DB) -> Alar
 
 @router.get("/alarms", response_model=list[Alarm])
 def list_alarms(
-    _: Viewer, db: DB, component_id: str | None = None, status: AlarmStatus | None = None
+    _: Viewer, db: DB, vis: Visible, component_id: str | None = None, status: AlarmStatus | None = None
 ) -> list[Alarm]:
-    return AlarmService(db).alarms(component_id, status)
+    keep = {c.component_id for m in vis.machines() for c in EquipmentStore(db).components(m.machine_id)}
+    return [a for a in AlarmService(db).alarms(component_id, status) if a.component_id in keep]
 
 
 @router.post("/alarms/{alarm_id}/acknowledge", response_model=Alarm, dependencies=[require_module("alarms")])

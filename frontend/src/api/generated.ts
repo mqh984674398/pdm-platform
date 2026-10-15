@@ -1788,6 +1788,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/run-mode': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Read Mode */
+    get: operations['read_mode_api_run_mode_get']
+    /** Write Mode */
+    put: operations['write_mode_api_run_mode_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -4680,6 +4698,11 @@ export interface components {
       /** Machine Id */
       machine_id: string
       /**
+       * Since
+       * @description Skip data before this time (a start only moves forward; stored windows are kept)
+       */
+      since?: string | null
+      /**
        * Until
        * @description Process data up to this time (default: now)
        */
@@ -5439,6 +5462,15 @@ export interface components {
        * @default
        */
       comment: string
+    }
+    /**
+     * RunMode
+     * @enum {string}
+     */
+    RunMode: 'simulation' | 'production'
+    /** RunModeState */
+    RunModeState: {
+      mode: components['schemas']['RunMode']
     }
     /** RunRequest */
     RunRequest: {
@@ -10697,6 +10729,74 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['RoleModules']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  read_mode_api_run_mode_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RunModeState']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  write_mode_api_run_mode_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RunModeState']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RunModeState']
         }
       }
       /** @description Validation Error */

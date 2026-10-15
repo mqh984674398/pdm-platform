@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { fetchHealth, type HealthResponse } from '@/api/health'
@@ -8,6 +8,7 @@ import SegmentedControl from '@/components/base/SegmentedControl.vue'
 import SignIn from '@/components/shell/SignIn.vue'
 import { setLocale, type Locale } from '@/i18n'
 import { canOpen, NAV, NAV_GROUPS } from '@/router/nav'
+import { loadRunMode, useRunMode } from '@/composables/useRunMode'
 import { resolvedTheme, toggleTheme } from '@/composables/useTheme'
 
 const { t, locale } = useI18n()
@@ -17,6 +18,7 @@ const sidebarOpen = ref(
     ? true
     : window.matchMedia('(min-width: 861px)').matches,
 )
+const { mode: runMode } = useRunMode()
 const backend = ref<HealthResponse | null>(null)
 const backendChecked = ref(false)
 
@@ -40,6 +42,13 @@ const nav = computed(() => NAV.filter((n) => canOpen(n.name, session.role, sessi
 const groups = computed(() => NAV_GROUPS.filter((g) => nav.value.some((n) => n.group === g)))
 const allowed = computed(
   () => !route.name || canOpen(String(route.name), session.role, session.modules),
+)
+
+watch(
+  () => [session.mode, session.user],
+  () => {
+    if (session.mode !== 'unknown' && !needsSignIn.value) void loadRunMode()
+  },
 )
 
 onMounted(async () => {
@@ -116,6 +125,9 @@ onMounted(async () => {
           </svg>
         </button>
         <span class="toolbar-title">{{ title }}</span>
+        <span v-if="runMode" class="mode-badge" :class="runMode" data-testid="run-mode-badge">{{
+          t(`runMode.${runMode}`)
+        }}</span>
         <div class="toolbar-controls">
           <SegmentedControl
             v-model="lang"
@@ -166,6 +178,9 @@ onMounted(async () => {
         </div>
       </header>
       <main class="content">
+        <p v-if="runMode === 'simulation'" class="mode-banner" data-testid="run-mode-banner">
+          {{ t('runMode.banner') }}
+        </p>
         <SignIn v-if="needsSignIn" />
         <template v-else-if="session.mode !== 'unknown'">
           <RouterView v-if="allowed" />
@@ -317,6 +332,23 @@ nav {
 }
 .toolbar-title {
   font-weight: 600;
+}
+.mode-badge {
+  font-size: var(--text-xs, 0.75rem);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.mode-badge.simulation {
+  color: var(--warn, #9a6700);
+}
+.mode-banner {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--warn, #9a6700);
+  border-radius: 6px;
+  color: var(--warn, #9a6700);
+  font-size: var(--text-sm);
 }
 .toolbar-controls {
   margin-left: auto;

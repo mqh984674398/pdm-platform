@@ -11,6 +11,7 @@ open is left for the next run. Components without a verified reference get featu
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
@@ -36,6 +37,7 @@ SYSTEM = Principal(user_id="system:pipeline", role=Role.ENGINEER)
 CATALOG_DAYS = 4.0
 STEP_HOURS = 24.0
 MAX_STEPS = 31
+MAX_RANGE_STEPS = 92  # an explicit range may span about three months in one run
 MIN_PROVISIONAL_DAYS = 1.0
 
 
@@ -79,12 +81,18 @@ def run_machine(
     max_steps: int = MAX_STEPS,
     provisional: bool = False,
     use_cache: bool = False,
+    since: datetime | None = None,
 ) -> PipelineResult:
     """``provisional`` lets a component that is younger than the learning period start anyway: the regime
     catalog is then learned from the first half of the data it has (at least one day of it), and the
-    result says so. The catalog should be re-learned once the full period has passed. ``use_cache`` (the
-    scheduled run) keeps a learned catalog in memory, so the learning period is not read again every cycle."""
+    result says so. The catalog should be re-learned once the full period has passed. ``since`` and
+    ``until`` bound the data read: data before ``since`` is skipped (windows already stored are never
+    regenerated) and a range may take more steps than the default. ``use_cache`` (the scheduled run)
+    keeps a learned catalog in memory, so the learning period is not read again every cycle."""
+    explicit = since is not None or until is not None
     until = until or datetime.now(UTC)
+    if since is not None and since >= until:
+        return _result(machine_id, "failed", error="the start of the range must be earlier than its end")
     equipment, features = EquipmentStore(session), FeatureStore(session)
     comps = {c.component_id: c for c in equipment.components(machine_id)}
     cfg = SignalConfigStore(session).current().content
@@ -141,7 +149,11 @@ def run_machine(
         for e in MaintenanceService(session).events(cid)
     ]
     last = [v.window.end for cid in comps for v in features.vectors(cid)]
-    cursor = max([cat_end, *last])
+    cursor = max([cat_end, *last, *([since] if since else [])])  # a range start only skips ahead
+    if explicit:
+        max_steps = max(
+            max_steps, min(MAX_RANGE_STEPS, int((until - cursor) / timedelta(hours=step_hours)) + 1)
+        )
     features.register_all()
     added = skipped = 0
     error = None
@@ -202,11 +214,17 @@ def run_machine(
 
 
 def run_all(
-    session: Session, sources: DataSourceRegistry, until: datetime | None = None
+    session: Session,
+    sources: DataSourceRegistry,
+    until: datetime | None = None,
+    only: Callable[[str], bool] | None = None,
 ) -> list[PipelineResult]:
+    """``only`` limits the run to machines the current run mode shows (D-053)."""
     out = []
     for m in EquipmentStore(session).machines():
         if m.is_simulated:  # simulated data is static; run those machines on request only
+            continue
+        if only is not None and not only(m.machine_id):
             continue
         try:
             out.append(run_machine(session, sources, m.machine_id, until, use_cache=True))

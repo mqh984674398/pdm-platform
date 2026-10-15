@@ -7,7 +7,7 @@ test('administrator builds the plant structure in drawers', async ({ page }) => 
   await page.addInitScript(() => localStorage.setItem('pdm-dev-role', 'admin'))
   const sfx = Date.now().toString(36)
   await page.goto('/plant')
-  await expect(page.locator('h1')).toHaveText('配置工作台')
+  await expect(page.locator('h1')).toHaveText('部件配置')
   await page.getByTestId('add-workshop-open').click()
   const ws = page.getByTestId('add-workshop')
   await ws.getByPlaceholder('编号', { exact: true }).fill(`WS-${sfx}`)
