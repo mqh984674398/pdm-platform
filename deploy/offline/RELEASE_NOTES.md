@@ -1,3 +1,19 @@
+## 0.1.4（2026-10-15）
+
+升级包（只含程序代码，不含 Python/PostgreSQL，不改数据库内容与 .env）/ Upgrade package (code only; database contents and `.env` are not touched):
+- 修复：数据源——主机可填 `10.26.30.97`、`host:6041` 或完整 URL，端口 6060（涛思 Explorer 网页）会被识别并提示改用 6041；测试连接逐项说明（设备标签列、信号列、取值列、时间列）；可浏览表结构；窄表（keyname + value_*）支持通配符、大小写不敏感，并可套用推荐。Fix: data sources accept host, host:port or a URL, port 6060 is recognised as taosExplorer, per-check connection diagnosis, schema browser, narrow-table layout (`value_*`, case-insensitive) with a recommendation.
+- 新增：“数据源”管理页（管理员），配置工作台只选择数据源。New: administrator "Data sources" page; the workbench only picks a source.
+- 修复：安装不足 4 天的新部件也能完成预测前提检查（临时特征目录，满 4 天后重建）；验证页逐项显示数据、编译、历史回放、仿真四项结果；参数优化页说明触发条件。Fix: components younger than 4 days can pass readiness (provisional regime catalog); validation lists all four checks; the tuning page explains when it can run.
+- 修复：“读取该设备信号”在真实库上列出该设备的全部信号键。Fix: reading a device's signals on a real database lists its own keys.
+- 修复：删除部件——有安装记录的部件现在可删除，删除前列出将一并删除的数据（安装记录、特征窗口、告警、基线、配置版本）；已有维护记录的部件仍禁止删除。提示条固定在页面顶部。Fix: components with installation records can be deleted after a confirmation that lists what goes with them; maintenance records still block.
+- 新增：“算法模型”页（管理员，只读）：算法库、使用情况、LSTM / D-RCNN 适配器状态、插件。New: read-only Algorithm models page.
+- 修复：配置工作台步骤顺序为 1、2、…、7；步骤 3–7 需要先建草稿，页面会提示。Fix: workbench steps run 1 to 7 in order.
+- 修复：重新运行 `install.cmd` 不再丢掉 `.env` 里已有的设置（涛思账号 PDM_SECRET_*、自定义项）。Fix: re-running `install.cmd` keeps existing `.env` settings such as data source accounts.
+
+升级：解压到任意位置（例如桌面），双击 `upgrade.cmd`。它自动找到已安装目录，备份旧程序（和数据库，若找到 pg_dump）到 `C:\ProgramData\PDM\backup\`，只替换程序文件，迁移到最新结构并重启服务。不要解压到安装目录里。
+Upgrade: unzip anywhere (for example the desktop) and double-click `upgrade.cmd`. It finds the installation, backs up the old program (and the database when pg_dump is found), replaces program files only, migrates to head and restarts the service. Do not unzip into the install folder.
+未在真实 Windows 上运行过。Not yet run on real Windows.
+
 ## 0.1.3（2026-10-14）
 
 配置工作台与决策引擎重做 / Configuration workbench and decision engine redesign (D-043..D-048):

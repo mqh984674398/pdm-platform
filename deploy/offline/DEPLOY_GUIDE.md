@@ -155,3 +155,16 @@ Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 
 - Prediction configuration versions (draft → validate → publish → activate) are handled in the workbench; once active, the decision engine uses the version.
 - **一键测试**：安装包根目录的 `verify.cmd`（源码为 `tools\run_demo.cmd`）用内置 Python 在仿真数据上启动一个独立的演示服务（默认 8765 端口，不影响已安装的服务和 PostgreSQL），先自动走完“新部件→信号映射→特征→健康参考→预测配置→启用”共 10 步并逐步显示通过/失败，然后保持服务以便在浏览器手动测试（管理员 `admin`，密码见窗口输出）。加参数 `-Check` 只做检查。尚未在真实 Windows 上运行过。
 - **One-click test**: `verify.cmd` in the package root (source: `tools\run_demo.cmd`) starts a separate demo server on SIMULATED data with the bundled Python (port 8765 by default; the installed service and PostgreSQL are untouched), first walks a new component through 10 steps (signals → features → healthy reference → prediction configuration → activate) printing PASS/FAIL per step, then keeps the server up for manual browser testing (administrator `admin`, password shown in the window). Add `-Check` to run the check only. Not yet run on a real Windows machine.
+
+## 升级包 / Upgrade package (0.1.4)
+
+升级包 `pdm-0.1.4-upgrade-win64.zip` 只含程序代码（后端、浏览器前端、部署脚本、模拟示例数据），不含 Python 和 PostgreSQL，所以很小。 The upgrade package carries code only (backend, browser client, deploy scripts, SIMULATED data), no Python or PostgreSQL, so it is small.
+
+1. 解压到任意文件夹（例如桌面），**不要**解压进安装目录。 Unzip into any folder (for example the desktop), **not** into the install folder.
+2. 双击 `upgrade.cmd`（会请求管理员权限）。它从“PDM Platform”开机任务找到安装目录；找不到时在 PowerShell 中运行 `setup\upgrade.ps1 -InstallRoot C:\PDM\pdm-offline`。 Double-click `upgrade.cmd`; it finds the installation from the "PDM Platform" startup task, otherwise run `setup\upgrade.ps1 -InstallRoot <install folder>` in PowerShell.
+3. 脚本依次：停止服务 → 备份旧程序（`C:\ProgramData\PDM\backup\<时间>\`，不含 `.env`），能找到 `pg_dump` 时同时备份数据库 → 只替换 `pdm\` 下的程序文件 → 迁移数据库结构到最新（无新迁移时不做任何改动）→ 启动服务并检查健康。 It stops the service, backs up the old program (without `.env`) and, when `pg_dump` is found, the database, replaces only program files, migrates to head, starts the service and checks health.
+4. 不会改动：数据库内容、账号、`pdm\backend\.env`（含涛思账号）、内置 Python、开机任务、防火墙。 Never touched: database contents, accounts, `pdm\backend\.env` (including TDengine accounts), the bundled Python, the startup task, the firewall rule.
+5. 若依赖版本变化（`requirements.lock` 不同），脚本会拒绝并要求使用完整安装包。 If the dependency lock differs, the script refuses and asks for the full package.
+6. 回退：服务起不来时，把备份里 `pdm-before-<旧版本>` 的内容复制回 `pdm\`（先删除 `pdm\frontend\dist`），重启任务。 Rollback: copy the backed-up `pdm-before-<old version>` folder back over `pdm\` (delete `pdm\frontend\dist` first) and restart the task.
+
+升级脚本尚未在真实 Windows 上运行过；首次升级前请确认已有你自己的数据库备份。 The upgrade script has not been run on real Windows yet; keep your own database backup before the first upgrade.

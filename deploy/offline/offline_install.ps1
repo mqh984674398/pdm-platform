@@ -110,16 +110,19 @@ Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
 
 # --- 2. Settings --------------------------------------------------------------------------------------
 $secret = ($existing | Where-Object { $_ -like "PDM_SECRET_KEY=*" }) ; if (-not $secret) { $secret = "PDM_SECRET_KEY=" + (NewSecret 48) }
-@(
-  $dbLine,
-  "PDM_AUTH_MODE=local",
-  $secret,
-  "PDM_COOKIE_SECURE=false",
-  "PDM_STATIC_DIR=../frontend/dist",
-  "PDM_DATASOURCES_FILE=../deploy/datasources.simulated.json",
-  "PDM_PRODUCTION_DATA_APPROVED=false",
-  "PDM_LLM_ENABLED=false"
-) | Set-Content $EnvFile -Encoding ASCII
+# Keep everything already in the file (data source passwords PDM_SECRET_*, a changed pipeline interval, ...):
+# only keys that are missing get the default below.
+$defaults = [ordered]@{
+  PDM_AUTH_MODE = "local"
+  PDM_COOKIE_SECURE = "false"
+  PDM_STATIC_DIR = "../frontend/dist"
+  PDM_DATASOURCES_FILE = "../deploy/datasources.simulated.json"
+  PDM_PRODUCTION_DATA_APPROVED = "false"
+  PDM_LLM_ENABLED = "false"
+}
+$lines = @($existing | Where-Object { $_ -and $_ -notlike "PDM_DATABASE_URL=*" -and $_ -notlike "PDM_SECRET_KEY=*" })
+foreach ($k in $defaults.Keys) { if (-not ($lines | Where-Object { $_ -like "$k=*" })) { $lines += "$k=$($defaults[$k])" } }
+(@($dbLine, $secret) + $lines) | Set-Content $EnvFile -Encoding ASCII
 icacls $EnvFile /inheritance:r /grant:r "SYSTEM:F" "Administrators:F" | Out-Null
 Step "已写入配置 pdm\backend\.env（仅 SYSTEM 与管理员可读）" "Wrote pdm\backend\.env (SYSTEM and Administrators only)"
 
