@@ -20,11 +20,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "deploy"))
 sys.path.insert(0, str(ROOT / "backend"))
-from build_package import INCLUDE, SKIP  # noqa: E402
-
-from app import __version__  # noqa: E402
+from app import __version__
+from build_package import INCLUDE, SKIP
 
 OFF = ROOT / "deploy" / "offline"
+
+
+def crlf(src: Path, dest: Path) -> None:
+    """Scripts for Windows are shipped with CRLF line endings whatever the checkout used."""
+    dest.write_bytes(src.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
 
 
 def main() -> None:
@@ -42,12 +46,22 @@ def main() -> None:
             if not SKIP.search(rel):
                 dest = stage / "pdm" / rel
                 dest.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(f, dest)
+                if f.suffix in (".cmd", ".ps1"):
+                    crlf(f, dest)
+                else:
+                    shutil.copy2(f, dest)
     (stage / "setup").mkdir()
     for n in ("upgrade.ps1", "offline_install.ps1", "offline_uninstall.ps1"):
-        shutil.copy2(OFF / n, stage / "setup" / n)
-    for n in ("upgrade.cmd", "install.cmd", "uninstall.cmd", "verify.cmd", "DEPLOY_GUIDE.md", "RELEASE_NOTES.md"):
-        shutil.copy2(OFF / n, stage / n)
+        crlf(OFF / n, stage / "setup" / n)
+    for n in (
+        "upgrade.cmd",
+        "install.cmd",
+        "uninstall.cmd",
+        "verify.cmd",
+        "DEPLOY_GUIDE.md",
+        "RELEASE_NOTES.md",
+    ):
+        (crlf if n.endswith(".cmd") else shutil.copy2)(OFF / n, stage / n)
     out = args.out / f"pdm-{__version__}-upgrade-win64.zip"
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for f in sorted(x for x in stage.rglob("*") if x.is_file()):
