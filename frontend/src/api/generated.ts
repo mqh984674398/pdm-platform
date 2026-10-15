@@ -542,6 +542,27 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/algorithm-models': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Algorithm Models
+     * @description The algorithm library and where each algorithm is used (read-only; selection happens in a component's
+     *     configuration).
+     */
+    get: operations['algorithm_models_api_algorithm_models_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/components/{component_id}/recommended-config': {
     parameters: {
       query?: never
@@ -984,6 +1005,23 @@ export interface paths {
     get?: never
     /** Put Component */
     put: operations['put_component_api_plant_machines__machine_id__components__component_id__put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/plant-components/{component_id}/usage': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Component Usage */
+    get: operations['component_usage_api_plant_components__component_id__usage_get']
+    put?: never
     post?: never
     delete?: never
     options?: never
@@ -1881,6 +1919,27 @@ export interface components {
      * @enum {string}
      */
     AlarmStatus: 'RAISED' | 'ACKNOWLEDGED' | 'RESOLVED'
+    /** AlgorithmEntry */
+    AlgorithmEntry: {
+      spec: components['schemas']['AlgorithmSpec']
+      /** Adapter Available */
+      adapter_available: boolean | null
+      /** Adapter Reason */
+      adapter_reason: string | null
+      /** Active Uses */
+      active_uses: components['schemas']['AlgorithmUse'][]
+      /** Draft Uses */
+      draft_uses: number
+    }
+    /** AlgorithmModels */
+    AlgorithmModels: {
+      /** Algorithms */
+      algorithms: components['schemas']['AlgorithmEntry'][]
+      /** Deep Adapters */
+      deep_adapters: components['schemas']['DeepAdapterInfo'][]
+      /** Plugins */
+      plugins: components['schemas']['PluginSpec'][]
+    }
     /** AlgorithmSpec */
     AlgorithmSpec: {
       /** Algorithm Id */
@@ -1918,6 +1977,19 @@ export interface components {
       min_sampling_hz: number | null
       /** @description Where the algorithm may and may not be used */
       boundary: components['schemas']['LocalizedText'] | null
+    }
+    /** AlgorithmUse */
+    AlgorithmUse: {
+      /** Component Id */
+      component_id: string
+      /** Config Id */
+      config_id: string
+      /** Version */
+      version: number
+      /** Stage Id */
+      stage_id: string
+      /** Enabled */
+      enabled: boolean
     }
     /**
      * AlignmentReport
@@ -2506,6 +2578,15 @@ export interface components {
      */
     ComponentType:
       'BALL_SCREW' | 'LINEAR_MOTOR' | 'VACUUM_CUP' | 'PNEUMATIC_CYLINDER' | 'CAM' | 'GEAR'
+    /** ComponentUsage */
+    ComponentUsage: {
+      /** Component Id */
+      component_id: string
+      /** Rows */
+      rows: components['schemas']['UsageRow'][]
+      /** Deletable */
+      deletable: boolean
+    }
     /** ConfigContent */
     'ConfigContent-Input': {
       /**
@@ -4700,6 +4781,23 @@ export interface components {
       /** Processes */
       processes: components['schemas']['PlantProcess'][]
     }
+    /** PluginSpec */
+    PluginSpec: {
+      /** Plugin Id */
+      plugin_id: string
+      /** Version */
+      version: string
+      name: components['schemas']['LocalizedText']
+      evidence_type: components['schemas']['EvidenceType']
+      /** Input Quantities */
+      input_quantities: components['schemas']['PhysicalQuantity'][]
+      /**
+       * Needs Labels
+       * @default false
+       */
+      needs_labels: boolean
+      description: components['schemas']['LocalizedText']
+    }
     /** PredictionConfig */
     PredictionConfig: {
       /** Config Id */
@@ -6085,6 +6183,18 @@ export interface components {
        * @default
        */
       source: string
+    }
+    /** UsageRow */
+    UsageRow: {
+      /** Kind */
+      kind: string
+      /** Count */
+      count: number
+      /**
+       * Blocks
+       * @default false
+       */
+      blocks: boolean
     }
     /** UserChange */
     UserChange: {
@@ -7673,6 +7783,38 @@ export interface operations {
       }
     }
   }
+  algorithm_models_api_algorithm_models_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AlgorithmModels']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   recommended_api_components__component_id__recommended_config_get: {
     parameters: {
       query?: never
@@ -8839,9 +8981,45 @@ export interface operations {
       }
     }
   }
-  delete_component_api_plant_components__component_id__delete: {
+  component_usage_api_plant_components__component_id__usage_get: {
     parameters: {
       query?: never
+      header?: {
+        'x-pdm-user'?: string | null
+        'x-pdm-role'?: string | null
+      }
+      path: {
+        component_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ComponentUsage']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_component_api_plant_components__component_id__delete: {
+    parameters: {
+      query?: {
+        cascade?: boolean
+      }
       header?: {
         'x-pdm-user'?: string | null
         'x-pdm-role'?: string | null

@@ -25,6 +25,7 @@ describe('App shell', () => {
     expect(NAV.filter((n) => !n.adminOnly)).toHaveLength(11)
     expect(NAV.filter((n) => n.adminOnly).map((n) => n.name)).toEqual([
       'users',
+      'algorithms',
       'datasources',
       'plant',
     ])

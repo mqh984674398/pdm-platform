@@ -15,6 +15,7 @@ from app.core.security import Principal, Role, require
 from app.equipment.lifecycle import EquipmentConflictError
 from app.equipment.plant import (
     ComponentChange,
+    ComponentUsage,
     MachineCreate,
     MachinePlacement,
     PlantNodeChange,
@@ -84,8 +85,13 @@ def put_component(
     return out
 
 
+@router.get("/plant-components/{component_id}/usage", response_model=ComponentUsage)
+def component_usage(component_id: str, _: Viewer, db: DB) -> ComponentUsage:
+    return PlantStore(db).component_usage(component_id)
+
+
 @router.delete("/plant-components/{component_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_component(component_id: str, who: Admin, db: DB) -> Response:
-    PlantStore(db).delete_component(component_id, who)
+def delete_component(component_id: str, who: Admin, db: DB, cascade: bool = False) -> Response:
+    PlantStore(db).delete_component(component_id, who, cascade=cascade)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

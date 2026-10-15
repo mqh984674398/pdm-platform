@@ -14,6 +14,7 @@ from app.core.security import Principal, Role, require
 from app.datasource.query_service.sources import DataSourceRegistry
 from app.decision import config_validation as cv
 from app.decision import pipeline_config as pc
+from app.decision import plugins
 from app.prediction.models import deep
 
 router = APIRouter(tags=["prediction-config"])
@@ -59,6 +60,64 @@ def deep_adapters(_: Viewer) -> list[DeepAdapterInfo]:
         )
         for f, a in sorted(deep.ADAPTERS.items())
     ]
+
+
+class AlgorithmUse(ContractModel):
+    component_id: str
+    config_id: str
+    version: int
+    stage_id: str
+    enabled: bool
+
+
+class AlgorithmEntry(ContractModel):
+    spec: pc.AlgorithmSpec
+    adapter_available: bool | None = None  # deep-model algorithms only
+    adapter_reason: str | None = None
+    active_uses: list[AlgorithmUse]  # stages of the active configurations that run this algorithm
+    draft_uses: int  # stages in unpublished drafts
+
+
+class AlgorithmModels(ContractModel):
+    algorithms: list[AlgorithmEntry]
+    deep_adapters: list[DeepAdapterInfo]
+    plugins: list[plugins.PluginSpec]
+
+
+@router.get("/algorithm-models", response_model=AlgorithmModels)
+def algorithm_models(_: Viewer, db: DB) -> AlgorithmModels:
+    """The algorithm library and where each algorithm is used (read-only; selection happens in a component's
+    configuration)."""
+    store = pc.PredictionConfigStore(db)
+    uses: dict[str, list[AlgorithmUse]] = {}
+    drafts: dict[str, int] = {}
+    for comp in _components(db):
+        for cfg in store.versions(comp.component_id):
+            for st in cfg.content.pipeline:
+                if cfg.active:
+                    uses.setdefault(st.algorithm, []).append(
+                        AlgorithmUse(
+                            component_id=comp.component_id, config_id=cfg.config_id,
+                            version=cfg.version, stage_id=st.stage_id, enabled=st.enabled,
+                        )
+                    )  # fmt: skip
+                elif cfg.status != pc.ConfigStatus.PUBLISHED:
+                    drafts[st.algorithm] = drafts.get(st.algorithm, 0) + 1
+    adapters = deep_adapters(_)
+    by_family = {a.family: a for a in adapters}
+    entries = []
+    for spec in pc.CATALOG.values():
+        ad = by_family.get(spec.deep_family or "")
+        entries.append(
+            AlgorithmEntry(
+                spec=spec,
+                adapter_available=ad.available if ad else None,
+                adapter_reason=ad.unavailable_reason if ad else None,
+                active_uses=uses.get(spec.algorithm_id, []),
+                draft_uses=drafts.get(spec.algorithm_id, 0),
+            )
+        )
+    return AlgorithmModels(algorithms=entries, deep_adapters=adapters, plugins=plugins.plugin_specs())
 
 
 @router.get("/components/{component_id}/recommended-config", response_model=pc.Recommendation)

@@ -10,6 +10,7 @@ import type {
   FeatureCoverage,
   ComponentHealthReport,
   ComponentInstance,
+  ComponentUsage,
   ComponentLifecycle,
   DegradationHistory,
   FleetOverview,
@@ -40,6 +41,7 @@ import type {
   MachinePlacement,
   PlantNodeChange,
   PlantTree,
+  AlgorithmModels,
   AlgorithmSpec,
   ApiStudioDevice,
   DataSourceConfig,
@@ -116,6 +118,7 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         },
       ),
     // --- prediction configuration versions (D-044..D-046) ---
+    algorithmModels: () => call<AlgorithmModels>('/api/algorithm-models'),
     algorithmCatalog: () => call<AlgorithmSpec[]>('/api/algorithm-catalog'),
     recommendedConfig: (componentId: string) =>
       call<ConfigRecommendation>(
@@ -257,8 +260,12 @@ export function createMonitoringApi(fetchImpl: typeof fetch = (...a) => fetch(..
         `/api/plant-machines/${encodeURIComponent(machineId)}/components/${encodeURIComponent(c.component_id)}`,
         { method: 'PUT', body: JSON.stringify(c) },
       ),
-    deleteComponent: (componentId: string) =>
-      remove(`/api/plant-components/${encodeURIComponent(componentId)}`),
+    componentUsage: (componentId: string) =>
+      call<ComponentUsage>(`/api/plant-components/${encodeURIComponent(componentId)}/usage`),
+    deleteComponent: (componentId: string, cascade = false) =>
+      remove(
+        `/api/plant-components/${encodeURIComponent(componentId)}${cascade ? '?cascade=true' : ''}`,
+      ),
     fleet: () => call<FleetOverview>('/api/fleet'),
     health: (componentId: string) =>
       call<ComponentHealthReport>(`/api/components/${encodeURIComponent(componentId)}/health`),

@@ -4,6 +4,7 @@ import {
   createWebHistory,
   type RouteRecordRaw,
 } from 'vue-router'
+import AlgorithmsView from '@/views/AlgorithmsView.vue'
 import AlarmsView from '@/views/AlarmsView.vue'
 import AnalysisView from '@/views/AnalysisView.vue'
 import AssistantView from '@/views/AssistantView.vue'
@@ -36,6 +37,7 @@ const DELIVERED: Record<string, { component: RouteRecordRaw['component']; param?
   models: { component: ModelsView },
   assistant: { component: AssistantView },
   users: { component: UsersView },
+  algorithms: { component: AlgorithmsView },
   datasources: { component: DataSourcesView },
   plant: { component: PlantView },
 }

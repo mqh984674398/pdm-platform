@@ -456,64 +456,18 @@ const statusLabel = (v: PredictionConfig) =>
         {{ message.text }}
       </p>
 
-      <!-- Versions -->
+      <!-- 1 component -->
       <section>
-        <h3>{{ t('workbench.versions') }}</h3>
-        <p class="st-note">
-          {{ active ? t('workbench.activeIs', { id: active.config_id }) : t('workbench.noActive') }}
+        <h3>1 · {{ t('workbench.s1') }}</h3>
+        <p>
+          <span class="st-mono">{{ component.component_id }}</span> ·
+          {{ t(`types.${component.type}`) }} ·
+          {{ lt(component.name) }}
         </p>
-        <ul v-if="versions.length" class="vers" data-testid="wb-versions">
-          <li
-            v-for="v in versions"
-            :key="v.config_id"
-            :aria-current="v.config_id === current?.config_id"
-          >
-            <button type="button" class="link" @click="open(v)">
-              {{ 'v' + v.version }} · {{ statusLabel(v) }}
-            </button>
-            <span class="st-note st-mono">{{ v.content_hash.slice(0, 8) }}</span>
-            <button type="button" class="link" :disabled="busy" @click="clone(v)">
-              {{ t('workbench.clone') }}
-            </button>
-            <button
-              v-if="v.status === 'PUBLISHED' && !v.active"
-              type="button"
-              class="link"
-              :disabled="busy"
-              @click="activate(v)"
-            >
-              {{ t('workbench.activate') }}
-            </button>
-          </li>
+        <p v-if="rec" class="st-note">{{ lt(rec.match.rules) }}</p>
+        <ul v-if="rec" class="st-note">
+          <li v-for="(c, i) in rec.match.constraints" :key="i">{{ lt(c) }}</li>
         </ul>
-        <div class="row">
-          <button
-            type="button"
-            class="st-button"
-            :disabled="busy || !rec"
-            data-testid="wb-start"
-            @click="startRecommended"
-          >
-            {{ t('workbench.startRecommended') }}
-          </button>
-          <input
-            v-model.trim="copyFrom"
-            class="st-input st-mono"
-            :placeholder="t('workbench.copyFrom')"
-          />
-          <button type="button" class="st-button" :disabled="busy || !copyFrom" @click="startCopy">
-            {{ t('workbench.copy') }}
-          </button>
-          <button
-            v-if="active"
-            type="button"
-            class="link danger"
-            :disabled="busy"
-            @click="deactivate"
-          >
-            {{ t('workbench.deactivate') }}
-          </button>
-        </div>
       </section>
 
       <!-- 2 data -->
@@ -712,6 +666,66 @@ const statusLabel = (v: PredictionConfig) =>
         />
       </section>
 
+      <!-- Versions -->
+      <section>
+        <h3>{{ t('workbench.versions') }}</h3>
+        <p class="st-note">
+          {{ active ? t('workbench.activeIs', { id: active.config_id }) : t('workbench.noActive') }}
+        </p>
+        <ul v-if="versions.length" class="vers" data-testid="wb-versions">
+          <li
+            v-for="v in versions"
+            :key="v.config_id"
+            :aria-current="v.config_id === current?.config_id"
+          >
+            <button type="button" class="link" @click="open(v)">
+              {{ 'v' + v.version }} · {{ statusLabel(v) }}
+            </button>
+            <span class="st-note st-mono">{{ v.content_hash.slice(0, 8) }}</span>
+            <button type="button" class="link" :disabled="busy" @click="clone(v)">
+              {{ t('workbench.clone') }}
+            </button>
+            <button
+              v-if="v.status === 'PUBLISHED' && !v.active"
+              type="button"
+              class="link"
+              :disabled="busy"
+              @click="activate(v)"
+            >
+              {{ t('workbench.activate') }}
+            </button>
+          </li>
+        </ul>
+        <div class="row">
+          <button
+            type="button"
+            class="st-button"
+            :disabled="busy || !rec"
+            data-testid="wb-start"
+            @click="startRecommended"
+          >
+            {{ t('workbench.startRecommended') }}
+          </button>
+          <input
+            v-model.trim="copyFrom"
+            class="st-input st-mono"
+            :placeholder="t('workbench.copyFrom')"
+          />
+          <button type="button" class="st-button" :disabled="busy || !copyFrom" @click="startCopy">
+            {{ t('workbench.copy') }}
+          </button>
+          <button
+            v-if="active"
+            type="button"
+            class="link danger"
+            :disabled="busy"
+            @click="deactivate"
+          >
+            {{ t('workbench.deactivate') }}
+          </button>
+        </div>
+      </section>
+
       <template v-if="current">
         <p class="st-note">
           {{
@@ -720,20 +734,6 @@ const statusLabel = (v: PredictionConfig) =>
               : t('workbench.immutable', { id: current.config_id })
           }}
         </p>
-
-        <!-- 1 component -->
-        <section>
-          <h3>1 · {{ t('workbench.s1') }}</h3>
-          <p>
-            <span class="st-mono">{{ component.component_id }}</span> ·
-            {{ t(`types.${component.type}`) }} ·
-            {{ lt(component.name) }}
-          </p>
-          <p v-if="rec" class="st-note">{{ lt(rec.match.rules) }}</p>
-          <ul v-if="rec" class="st-note">
-            <li v-for="(c, i) in rec.match.constraints" :key="i">{{ lt(c) }}</li>
-          </ul>
-        </section>
 
         <!-- 3 relationships -->
         <section v-if="draft.relationship">

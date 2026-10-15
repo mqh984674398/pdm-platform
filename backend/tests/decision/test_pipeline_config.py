@@ -219,3 +219,23 @@ def test_active_configuration_drives_the_engine(replay):
             pc.Criteria(allowed_evidence_types=[EvidenceType.STATISTICAL])  # safety cannot be excluded
     finally:
         session.rollback()
+
+
+def test_algorithm_models_listing_shows_where_each_algorithm_runs(ctx):
+    from app.api.pipeline_config import algorithm_models
+
+    session, sources, cid = ctx
+    store = pc.PredictionConfigStore(session)
+    d = store.create_draft(cid, good(), ADMIN)
+    before = {e.spec.algorithm_id: e for e in algorithm_models(ADMIN, session).algorithms}
+    assert set(before) == set(pc.CATALOG)
+    assert before["engineering-rules"].draft_uses == 1 and not before["engineering-rules"].active_uses
+    store.save_validation(d.config_id, cv.run_all(session, sources, d), ADMIN)
+    store.publish(d.config_id, ADMIN, "go")
+    store.activate(d.config_id, ADMIN)
+    out = algorithm_models(ADMIN, session)
+    after = {e.spec.algorithm_id: e for e in out.algorithms}
+    use = after["engineering-rules"].active_uses[0]
+    assert (use.component_id, use.config_id, use.enabled) == (cid, d.config_id, True)
+    assert after["engineering-rules"].draft_uses == 0
+    assert {a.family for a in out.deep_adapters}  # LSTM / D-RCNN adapters are listed with their availability

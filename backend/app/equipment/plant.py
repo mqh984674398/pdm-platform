@@ -17,7 +17,7 @@ from enum import StrEnum
 from typing import Any
 
 from pydantic import Field
-from sqlalchemy import JSON, ForeignKey, Integer, String, func, select
+from sqlalchemy import JSON, ForeignKey, Integer, String, delete, func, select
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from app.core.audit import record as audit
@@ -28,7 +28,6 @@ from app.equipment.lifecycle import (
     ComponentRecord,
     EquipmentConflictError,
     EquipmentNotFoundError,
-    LifecycleRecord,
     MachineRecord,
 )
 from app.equipment.schemas import ComponentInstance, ComponentType, Machine
@@ -104,6 +103,21 @@ class MachinePlacement(ContractModel):
     process_id: str | None
     device_id: str | None = Field(default=None, max_length=128)
     name: LocalizedText | None = None
+
+
+PROTECTED_TABLES = frozenset({"maintenance_events", "maintenance_workflows"})  # real history: never cascaded
+
+
+class UsageRow(ContractModel):
+    kind: str  # table name, e.g. component_lifecycles, feature_vectors, alarms
+    count: int
+    blocks: bool = False  # true: deleting the component is refused while these exist
+
+
+class ComponentUsage(ContractModel):
+    component_id: str
+    rows: list[UsageRow]
+    deletable: bool
 
 
 class ComponentChange(ContractModel):
@@ -321,19 +335,53 @@ class PlantStore:
         )  # fmt: skip
         return rec.to_model()
 
-    def delete_component(self, component_id: str, who: Principal) -> None:
-        self._admin(who)
-        rec = self.session.get(ComponentRecord, component_id)
-        if rec is None:
+    def _component_tables(self) -> list[Any]:
+        """Every table that carries a ``component_id`` (found from the metadata so new ones are covered)."""
+        return [
+            t
+            for t in Base.metadata.sorted_tables
+            if "component_id" in t.c and t.name != ComponentRecord.__tablename__
+        ]
+
+    def component_usage(self, component_id: str) -> ComponentUsage:
+        if self.session.get(ComponentRecord, component_id) is None:
             raise EquipmentNotFoundError(f"component '{component_id}' does not exist")
-        if self.session.scalar(
-            select(func.count())
-            .select_from(LifecycleRecord)
-            .where(LifecycleRecord.component_id == component_id)
-        ):
-            raise EquipmentConflictError("a component with installation history cannot be deleted")
-        self.session.delete(rec)
-        audit(self.session, who, "plant.component_delete", "component", component_id)
+        rows = []
+        for t in self._component_tables():
+            n = self.session.scalar(
+                select(func.count()).select_from(t).where(t.c.component_id == component_id)
+            )
+            if n:
+                rows.append(UsageRow(kind=t.name, count=int(n), blocks=t.name in PROTECTED_TABLES))
+        return ComponentUsage(
+            component_id=component_id,
+            rows=rows,
+            deletable=not any(r.blocks for r in rows),
+        )
+
+    def delete_component(self, component_id: str, who: Principal, *, cascade: bool = False) -> None:
+        """Delete a component. Installation history, features, alarms, baselines and configuration versions
+        go with it only when ``cascade`` is set; maintenance records are real history and always block."""
+        self._admin(who)
+        usage = self.component_usage(component_id)
+        blocking = [r.kind for r in usage.rows if r.blocks]
+        if blocking:
+            raise EquipmentConflictError(
+                f"component '{component_id}' has maintenance records ({', '.join(blocking)}); "
+                "it cannot be deleted"
+            )
+        if usage.rows and not cascade:
+            raise EquipmentConflictError(
+                f"component '{component_id}' still has data ({', '.join(r.kind for r in usage.rows)}); "
+                "confirm the cascading delete to remove it"
+            )
+        for t in self._component_tables():
+            self.session.execute(delete(t).where(t.c.component_id == component_id))
+        self.session.delete(self.session.get(ComponentRecord, component_id))
+        audit(
+            self.session, who, "plant.component_delete", "component", component_id,
+            removed={r.kind: r.count for r in usage.rows},
+        )  # fmt: skip
 
 
 def machine_model(session: Session, rec: MachineRecord) -> Machine:

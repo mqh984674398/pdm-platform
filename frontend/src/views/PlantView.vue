@@ -264,12 +264,34 @@ function saveTorqueLimit(c: ComponentInstance, raw: string) {
     t('plant.saved', { id: c.component_id }),
   )
 }
-function deleteComponent(c: ComponentInstance) {
-  if (!window.confirm(t('plant.deleteConfirm', { id: c.component_id }))) return
-  run(
-    () => monitoringApi.deleteComponent(c.component_id),
-    t('plant.deleted', { id: c.component_id }),
-  )
+async function deleteComponent(c: ComponentInstance) {
+  message.value = null
+  try {
+    const usage = await monitoringApi.componentUsage(c.component_id)
+    const blocking = usage.rows.filter((r) => r.blocks)
+    if (blocking.length) {
+      message.value = {
+        ok: false,
+        text: t('plant.deleteBlocked', { id: c.component_id, what: usageText(blocking) }),
+      }
+      return
+    }
+    const attached = usage.rows.length > 0
+    const question = attached
+      ? t('plant.deleteWithData', { id: c.component_id, what: usageText(usage.rows) })
+      : t('plant.deleteConfirm', { id: c.component_id })
+    if (!window.confirm(question)) return
+    await run(
+      () => monitoringApi.deleteComponent(c.component_id, attached),
+      t('plant.deleted', { id: c.component_id }),
+    )
+  } catch (e) {
+    const body = e instanceof MonitoringApiError ? e.body : null
+    message.value = { ok: false, text: body ? lt(body.message) : t('plant.failed') }
+  }
+}
+function usageText(rows: { kind: string; count: number }[]): string {
+  return rows.map((r) => `${t(`plant.usage.${r.kind}`)} ×${r.count}`).join(t('plant.usageSep'))
 }
 function removeNode(kind: 'workshop' | 'process' | 'machine', id: string) {
   select(kind, id, null)
@@ -762,6 +784,12 @@ const chains = computed(() => {
 </template>
 
 <style scoped>
+[data-testid='plant-message'] {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--surface, var(--bg));
+}
 .page {
   display: grid;
   gap: var(--space-4);
