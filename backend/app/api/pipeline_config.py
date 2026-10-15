@@ -184,7 +184,8 @@ def clone(config_id: str, who: Admin, db: DB) -> pc.PredictionConfig:
 
 @router.post("/components/{component_id}/prediction-configs/compile", response_model=pc.CompileResult)
 def compile_(component_id: str, body: pc.ConfigContent, _: Admin, db: DB) -> pc.CompileResult:
-    return pc.compile_config(db, component_id, body)[0]
+    result = pc.compile_config(db, component_id, body)[0]
+    return result.model_copy(update={"issues": [*result.issues, *cv.runtime_issues(db, component_id)]})
 
 
 @router.post("/prediction-configs/{config_id}/validate", response_model=pc.PredictionConfig)

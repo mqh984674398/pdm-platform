@@ -4703,6 +4703,8 @@ export interface components {
       windows_skipped: number
       /** Catalog */
       catalog: string
+      /** Error */
+      error: string | null
       /**
        * Provisional
        * @default false

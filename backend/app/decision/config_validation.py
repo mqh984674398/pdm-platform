@@ -72,9 +72,55 @@ def data_check(session: Session, sources: DataSourceRegistry, component_id: str)
     )  # fmt: skip
 
 
+def runtime_issues(session: Session, component_id: str) -> list[pc.Issue]:
+    """What a component still lacks before its configuration can decide anything on real data. These are
+    warnings next to the compile result: a configuration can compile and still have nothing to run on."""
+    equipment = EquipmentStore(session)
+    cfg = SignalConfigStore(session).current().content
+    defs = {s.signal_id: s for s in cfg.signals}
+    mapped = [m for m in cfg.mappings if m.component_id == component_id and m.signal_id in defs]
+    out: list[pc.Issue] = []
+
+    def warn(code: str, zh: str, en: str) -> None:
+        out.append(pc.Issue(level="warning", stage_id=None, code=code, message=_t(zh, en)))
+
+    if not mapped:
+        warn("RT_NO_SIGNALS", "还没有把任何信号映射到该部件", "No signal is mapped to this component yet")
+    if not equipment.lifecycles(component_id):
+        warn(
+            "RT_NO_INSTALL",
+            "还没有登记安装日期，流水线不会处理该部件",
+            "No installation date yet; the pipeline skips this component",
+        )
+    vectors = FleetHealthService(session).features.vectors(component_id)
+    if not vectors:
+        warn("RT_NO_FEATURES", "还没有特征窗口：到“预测前提检查”生成", "No feature windows yet: generate them under the prerequisite check")  # fmt: skip
+    else:
+        fleet = FleetHealthService(session)
+        has_ref = any(
+            fleet.baselines.verified(component_id, lc, ref) is not None
+            for lc, ref in {(v.lifecycle_id, v.feature_ref) for v in vectors}
+        )
+        if not has_ref:
+            warn(
+                "RT_NO_REFERENCE",
+                "没有工程师确认的健康参考：统计规则、T² 等不会给出判定，只有安全限值在评估",
+                "No verified healthy reference: statistical rules and T² give no verdict; only safety limits are evaluated",
+            )
+    torque = any(defs[m.signal_id].quantity.value == "TORQUE" for m in mapped)
+    if torque and component_id not in equipment.torque_limits():
+        warn(
+            "RT_NO_TORQUE_LIMIT",
+            "映射了扭矩信号但没有设置扭矩限值：扭矩安全规则不会评估（在“配置工作台”部件上填写）",
+            "A torque signal is mapped but no torque limit is set: the torque safety rule is not evaluated",
+        )
+    return out
+
+
 def compile_check(session: Session, component_id: str, content: pc.ConfigContent) -> pc.CheckResult:
     result, _ = pc.compile_config(session, component_id, content)
     n_eff = sum(s.effective for s in result.stages)
+    result = result.model_copy(update={"issues": [*result.issues, *runtime_issues(session, component_id)]})
     return pc.CheckResult(
         name="compile", ok=result.ok,
         summary=_t(f"编译通过：{n_eff}/{len(result.stages)} 个阶段将参与判定", f"Compiled: {n_eff}/{len(result.stages)} stages will take part")

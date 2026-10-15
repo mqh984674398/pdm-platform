@@ -218,10 +218,21 @@ const pipelineText = computed(() => {
     return t('workbench.catalog.pending', {
       date: r.ready_at ? r.ready_at.slice(0, 10) : '—',
     })
-  return t(r.provisional ? 'workbench.catalog.provisional' : `workbench.catalog.${r.catalog}`, {
-    n: r.windows_added,
-  })
+  if (r.catalog === 'failed') return t('workbench.catalog.failed', { error: r.error ?? '' })
+  const base = t(
+    r.provisional ? 'workbench.catalog.provisional' : `workbench.catalog.${r.catalog}`,
+    {
+      n: r.windows_added,
+    },
+  )
+  return r.error ? `${base} ${t('workbench.catalog.stopped', { error: r.error })}` : base
 })
+const configIssues = computed(() =>
+  (compiled.value?.issues ?? []).filter((i) => !i.code.startsWith('RT_')),
+)
+const runtimeIssues = computed(() =>
+  (compiled.value?.issues ?? []).filter((i) => i.code.startsWith('RT_')),
+)
 const VALIDATION_STEPS = ['data', 'compile', 'replay', 'simulation'] as const
 const checkOf = (name: string) => current.value?.validation.find((c) => c.name === name)
 const detailsOf = (name: string) => (checkOf(name)?.details ?? {}) as Record<string, unknown>
@@ -641,7 +652,17 @@ const statusLabel = (v: PredictionConfig) =>
             <span v-else-if="!mappedHere.length" class="st-note error">{{
               t('workbench.needSignals')
             }}</span>
-            <span v-if="pipelineResult" class="st-note" data-testid="pipeline-result">
+            <span
+              v-if="pipelineResult"
+              :class="[
+                'st-note',
+                ['failed', 'no_data', 'no_signals'].includes(pipelineResult.catalog) ||
+                pipelineResult.error
+                  ? 'error'
+                  : '',
+              ]"
+              data-testid="pipeline-result"
+            >
               {{ pipelineText }}
             </span>
             <button
@@ -855,11 +876,20 @@ const statusLabel = (v: PredictionConfig) =>
               {{ t('workbench.compile') }}
             </button>
           </div>
-          <ul v-if="compiled?.issues.length" class="st-note" data-testid="wb-issues">
-            <li v-for="(i, k) in compiled.issues" :key="k">
-              <strong>{{ i.level }}</strong> {{ i.code }}: {{ lt(i.message) }}
-            </li>
-          </ul>
+          <p class="st-note">{{ t('workbench.compileNote') }}</p>
+          <template v-if="compiled">
+            <ul v-if="configIssues.length" class="st-note" data-testid="wb-issues">
+              <li class="head">{{ t('workbench.configIssues') }}</li>
+              <li v-for="(i, k) in configIssues" :key="k">
+                <strong>{{ i.level }}</strong> {{ i.code }}: {{ lt(i.message) }}
+              </li>
+            </ul>
+            <ul class="st-note" data-testid="wb-runtime">
+              <li class="head">{{ t('workbench.runtimeIssues') }}</li>
+              <li v-if="!runtimeIssues.length">{{ t('workbench.runtimeOk') }}</li>
+              <li v-for="(i, k) in runtimeIssues" :key="k">{{ lt(i.message) }}</li>
+            </ul>
+          </template>
         </section>
 
         <!-- 5 criteria -->

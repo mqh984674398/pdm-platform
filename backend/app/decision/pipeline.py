@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from app.core.schemas import ContractModel, TimeWindow
 from app.core.security import Principal, Role
 from app.datasource.query_service.sources import DataSourceRegistry
+from app.datasource.sql import AdapterError, QueryLimitError
 from app.decision.fleet import FleetHealthService
 from app.equipment.lifecycle import EquipmentStore
 from app.equipment.maintenance import MaintenanceService
@@ -43,12 +44,23 @@ class PipelineResult(ContractModel):
     processed_until: datetime | None
     windows_added: int
     windows_skipped: int
-    catalog: str  # ready | pending | no_data | no_signals
+    catalog: str  # ready | pending | no_data | no_signals | failed
+    error: str | None = (
+        None  # why the data source could not be read (catalog failed, or a later step stopped)
+    )
     provisional: bool = False  # the regime catalog was learned from less than CATALOG_DAYS of data
     ready_at: datetime | None = None  # catalog "pending": when the full learning period is complete
     no_reference: list[str]
     alarms_raised: int
     is_simulated: bool
+
+
+READ_ERRORS = (AdapterError, QueryLimitError, ValueError, OSError)
+_CATALOGS: dict[tuple, object] = {}  # learned regime catalogs; the learning period is history, so it is kept
+
+
+def _message(exc: Exception) -> str:
+    return f"{type(exc).__name__}: {exc}"[:300]
 
 
 def _result(machine_id: str, catalog: str, **kw) -> PipelineResult:
@@ -66,10 +78,12 @@ def run_machine(
     step_hours: float = STEP_HOURS,
     max_steps: int = MAX_STEPS,
     provisional: bool = False,
+    use_cache: bool = False,
 ) -> PipelineResult:
     """``provisional`` lets a component that is younger than the learning period start anyway: the regime
     catalog is then learned from the first half of the data it has (at least one day of it), and the
-    result says so. The catalog should be re-learned once the full period has passed."""
+    result says so. The catalog should be re-learned once the full period has passed. ``use_cache`` (the
+    scheduled run) keeps a learned catalog in memory, so the learning period is not read again every cycle."""
     until = until or datetime.now(UTC)
     equipment, features = EquipmentStore(session), FeatureStore(session)
     comps = {c.component_id: c for c in equipment.components(machine_id)}
@@ -95,13 +109,25 @@ def run_machine(
     cat_end = first + timedelta(days=catalog_days)
     if until < cat_end:
         return _result(machine_id, "pending", ready_at=cat_end)
-    catalog_series = load_series(sources, items, TimeWindow(start=min(installs), end=cat_end))
-    sim = any(s.is_simulated for s in catalog_series)
-    catalog = learn_catalog(
-        catalog_series, machine_id, TimeWindow(start=min(installs), end=cat_end), f"{machine_id}-online"
-    )
-    if not catalog.regimes:
-        return _result(machine_id, "no_data", is_simulated=sim)
+    key = (machine_id, first.isoformat(), cat_end.isoformat(), tuple(sorted(m.signal_id for m, _ in items)))
+    catalog = _CATALOGS.get(key) if use_cache else None
+    sim = False
+    if catalog is None:
+        try:
+            catalog_series = load_series(sources, items, TimeWindow(start=first, end=cat_end))
+        except READ_ERRORS as exc:
+            logging.getLogger(__name__).warning("catalog read failed for %s: %s", machine_id, exc)
+            return _result(machine_id, "failed", error=_message(exc))
+        sim = any(s.is_simulated for s in catalog_series)
+        catalog = learn_catalog(
+            catalog_series, machine_id, TimeWindow(start=first, end=cat_end), f"{machine_id}-online"
+        )
+        if not catalog.regimes:
+            return _result(machine_id, "no_data", is_simulated=sim)
+        if use_cache:
+            if len(_CATALOGS) >= 64:
+                _CATALOGS.clear()
+            _CATALOGS[key] = catalog
 
     types = {cid: c.type for cid, c in comps.items()}
     lc_entries = {
@@ -118,12 +144,18 @@ def run_machine(
     cursor = max([cat_end, *last])
     features.register_all()
     added = skipped = 0
+    error = None
     for _ in range(max_steps):
         if cursor >= until:
             break
         end = min(cursor + timedelta(hours=step_hours), until)
         window = TimeWindow(start=cursor, end=end)
-        series = load_series(sources, items, window)
+        try:
+            series = load_series(sources, items, window)
+        except READ_ERRORS as exc:
+            logging.getLogger(__name__).warning("read failed for %s: %s", machine_id, exc)
+            error = _message(exc)
+            break
         ex = extract_features(
             series, window, types, lifecycles=lc_entries, catalog=catalog, maintenance=maintenance
         )
@@ -159,6 +191,7 @@ def run_machine(
         machine_id,
         "ready",
         provisional=short,
+        error=error,
         processed_until=max(newest) if newest else None,
         windows_added=added,
         windows_skipped=skipped,
@@ -176,7 +209,7 @@ def run_all(
         if m.is_simulated:  # simulated data is static; run those machines on request only
             continue
         try:
-            out.append(run_machine(session, sources, m.machine_id, until))
+            out.append(run_machine(session, sources, m.machine_id, until, use_cache=True))
             session.commit()
         except Exception:  # noqa: BLE001  (one machine's bad data must not stop the others)
             session.rollback()

@@ -16543,6 +16543,17 @@
             "type": "string",
             "title": "Catalog"
           },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
           "provisional": {
             "type": "boolean",
             "title": "Provisional",
@@ -16584,6 +16595,7 @@
           "windows_added",
           "windows_skipped",
           "catalog",
+          "error",
           "provisional",
           "ready_at",
           "no_reference",

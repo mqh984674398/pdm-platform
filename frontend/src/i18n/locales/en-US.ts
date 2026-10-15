@@ -445,6 +445,8 @@ const en: typeof zh = {
         'Built provisionally from the data there is (the catalog is provisional; build again after day 4), {n} new windows',
       no_data: 'The data source has no data in that period',
       no_signals: 'No usable signals or installation date',
+      failed: 'Reading the data source failed: {error}',
+      stopped: 'Reading stopped part way (windows already processed are saved): {error}',
     },
     keysNote:
       'This device has {n} signals in the database that nothing is mapped to yet; they are listed below. Tick the ones this component uses, choose the quantity and unit, then save.',
@@ -545,6 +547,11 @@ const en: typeof zh = {
     pickAlgorithm: 'Pick an algorithm…',
     interfaceOnly: 'interface only, no backend',
     compile: 'Check what takes effect',
+    compileNote:
+      'This button checks the configuration only: whether each algorithm applies to this component type, whether its signals are mapped, whether the criteria allow it, and whether the live decision reads its output. It does not mean data is being read and a result can be computed: see the run conditions below and the four checks in step 7.',
+    configIssues: 'Configuration issues',
+    runtimeIssues: 'Run conditions (what is still missing before a verdict can be computed)',
+    runtimeOk: 'All run conditions are met.',
     s5: 'Decision criteria',
     s5note:
       'Safety limits always take part and keep their minimum severity; models and unsupervised detectors raise at most WATCH.',

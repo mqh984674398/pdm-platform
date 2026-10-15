@@ -239,3 +239,28 @@ def test_algorithm_models_listing_shows_where_each_algorithm_runs(ctx):
     assert (use.component_id, use.config_id, use.enabled) == (cid, d.config_id, True)
     assert after["engineering-rules"].draft_uses == 0
     assert {a.family for a in out.deep_adapters}  # LSTM / D-RCNN adapters are listed with their availability
+
+
+def test_a_stage_the_live_decision_does_not_read_is_not_reported_as_taking_effect(ctx):
+    session, sources, cid = ctx
+    content = pc.ConfigContent(
+        pipeline=[
+            pc.Stage(stage_id="rules", algorithm="engineering-rules"),
+            pc.Stage(stage_id="t2", algorithm="mahalanobis-t2"),
+            pc.Stage(stage_id="tree", algorithm="decision-tree"),
+        ]
+    )
+    res, _ = pc.compile_config(session, cid, content)
+    by = {s.stage_id: s for s in res.stages}
+    assert by["rules"].effective and by["t2"].effective
+    assert not by["tree"].effective  # even with a deployed model: nothing feeds it into the live decision
+    assert any(i.code == "NOT_CONSUMED" and i.stage_id == "tree" for i in res.issues)
+
+
+def test_runtime_prerequisites_are_listed_next_to_the_compile_result(ctx):
+    session, sources, cid = ctx
+    issues = cv.runtime_issues(session, cid)
+    assert all(i.code.startswith("RT_") and i.level == "warning" for i in issues)
+    # the check runs end to end and is part of what the validation step shows
+    check = cv.compile_check(session, cid, good())
+    assert {i["code"] for i in check.details["issues"]} >= {i.code for i in issues}

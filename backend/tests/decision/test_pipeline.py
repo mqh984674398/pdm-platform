@@ -95,3 +95,46 @@ def test_without_a_verified_reference_components_are_listed(tmp_path):
     s, sources, m = setup(tmp_path, "a")
     r = run_machine(s, sources, m.machine_id, until=m.end, max_steps=400)
     assert r.no_reference and r.is_simulated
+
+
+def test_a_long_window_is_read_in_bounded_queries():
+    """A real source limits the range and rows of one query; a 4-day catalog read must not hit either."""
+    from datetime import UTC, datetime
+
+    from app.core.schemas import TimeWindow
+    from app.datasource.sql import QueryLimitError
+    from app.equipment.state import _read
+
+    t0 = datetime(2026, 10, 1, tzinfo=UTC)
+    calls: list[timedelta] = []
+
+    class Fake:
+        max_range = timedelta(hours=1)
+
+        def query_range(self, device_id, key_name, window, limit):
+            span = window.end - window.start
+            if span > self.max_range:
+                raise QueryLimitError("range")
+            calls.append(span)
+            n = int(span.total_seconds())
+            rows = [t0 + timedelta(seconds=int((window.start - t0).total_seconds()) + i) for i in range(n)]
+            return [type("R", (), {"ts": ts})() for ts in rows][:limit]
+
+    class M:
+        device_id, key_name, signal_id = "d", "k", "s"
+
+    rows = _read(Fake(), M(), TimeWindow(start=t0, end=t0 + timedelta(hours=3)), 2_000, Fake.max_range)
+    assert len(rows) == 3 * 3600  # every second once: no gap, no duplicate at the cut points
+    assert len({r.ts for r in rows}) == len(rows)
+    assert max(calls) <= timedelta(hours=1)
+
+
+def test_an_unreadable_source_is_reported_not_swallowed(tmp_path, monkeypatch):
+    s, sources, m = setup(tmp_path, "f")
+
+    def boom(*a, **k):
+        raise ValueError("more than 200000 rows for 'X'; use a shorter window")
+
+    monkeypatch.setattr("app.decision.pipeline.load_series", boom)
+    r = run_machine(s, sources, m.machine_id, until=m.t0 + timedelta(days=5))
+    assert r.catalog == "failed" and "200000 rows" in (r.error or "")

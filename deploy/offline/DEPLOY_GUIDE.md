@@ -168,3 +168,12 @@ Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 
 6. 回退：服务起不来时，把备份里 `pdm-before-<旧版本>` 的内容复制回 `pdm\`（先删除 `pdm\frontend\dist`），重启任务。 Rollback: copy the backed-up `pdm-before-<old version>` folder back over `pdm\` (delete `pdm\frontend\dist` first) and restart the task.
 
 升级脚本尚未在真实 Windows 上运行过；首次升级前请确认已有你自己的数据库备份。 The upgrade script has not been run on real Windows yet; keep your own database backup before the first upgrade.
+
+## 涛思数据源的采集策略 / How the platform collects from a TDengine source (D-052)
+
+- **只读、拉取式**：平台不写涛思库，也不订阅；服务内的在线流水线每 `PDM_PIPELINE_INTERVAL_MIN` 分钟（默认 15，0 = 关闭）为每台非仿真设备运行一次，也可在“预测前提检查”里点“从数据源生成”手动运行。 Read-only and pull-based: the online pipeline runs every `PDM_PIPELINE_INTERVAL_MIN` minutes (default 15; 0 = off) for each non-simulated machine, or on demand from the prerequisite check.
+- **读什么**：只读已映射到该设备部件的信号。每条查询形如 `SELECT ts, value FROM 超级表 WHERE 设备标签=… AND 信号键=… AND ts >= … AND ts < … ORDER BY ts LIMIT n`，受数据源的“最大行数”和“最大时间跨度”限制。 It reads only the signals mapped to the machine's components, one bounded query per signal and window.
+- **读多少**：先用安装日期起 4 天的数据学习工况目录（不足 4 天、但已有至少 1 天数据时可临时生成）；之后从“已存特征窗口的末尾”起按每次最多 24 小时、一次运行最多 31 步向前读，只处理已结束的观察窗口，未结束的留到下一次。长时间跨度或行数超限时自动拆成更小的查询（0.1.4 起），单个信号超过 500 万行才会拒绝并说明。 It first learns the regime catalog from the 4 days after installation, then reads forward from the newest stored feature window in steps of up to 24 h (at most 31 steps a run) and only processes windows that have closed. A window that is longer than the source's range limit or fills its row limit is split into smaller queries (from 0.1.4).
+- **存什么**：只保存特征窗口和告警，不复制原始数据；再次运行没有新数据时不产生变化。 It stores feature windows and alarms only, never a copy of the raw data.
+- **出错时**：读取失败不再让按钮“无反应”，页面会显示数据源返回的原因（0.1.4 起）；定时运行中某台设备出错只记日志，不影响其他设备。 A read failure is shown on the page with the reason from the source; in the scheduled run one machine's failure is only logged.
+- **需要你确认的两点**：①服务器返回的时间戳若不带时区（旧版 taosAdapter），请在数据源里把“无时区时间戳的时区”设为服务器所在时区（如 `Asia/Shanghai`），默认的 UTC 会让时间整体偏移；②迟到的数据（时间早于已处理位置才写入涛思库）不会被补读。 Two things to check: a source that returns timestamps without an offset needs its time zone set (default UTC would shift all times); data written late with an old timestamp is not read again.

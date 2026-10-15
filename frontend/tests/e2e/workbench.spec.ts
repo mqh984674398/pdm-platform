@@ -21,6 +21,8 @@ test('administrator takes a recommended configuration through validate, publish 
   await expect(page.getByTestId('wb-pipeline')).toContainText('engineering_rules')
   await wb.getByTestId('wb-compile').click()
   await expect(page.getByTestId('wb-pipeline')).toContainText('将生效')
+  // the check says what it covers and lists what the component still lacks to run on real data
+  await expect(wb.getByTestId('wb-runtime')).toContainText('当前运行条件')
   await wb.getByTestId('wb-validate').click()
   await expect(page.getByTestId('wb-checks')).toBeVisible()
   // all four checks are listed with what they test, and replay names its prerequisites

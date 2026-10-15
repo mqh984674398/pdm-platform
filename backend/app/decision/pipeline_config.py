@@ -151,6 +151,10 @@ class AlgorithmSpec(ContractModel):
     )
 
 
+# What the live decision actually reads: the rules and statistics always run, Hotelling T² when its stage is
+# enabled. The supervised models (decision tree, XGBoost, LSTM, D-RCNN) are not fed into the live decision yet.
+ENGINE_USES = frozenset({"engineering-rules", "feature-engineering", "mahalanobis-t2"})
+
 _ALL_BUT = [ComponentType.BALL_SCREW, ComponentType.LINEAR_MOTOR, ComponentType.PNEUMATIC_CYLINDER,
             ComponentType.VACUUM_CUP]  # fmt: skip
 CATALOG: dict[str, AlgorithmSpec] = {
@@ -425,6 +429,13 @@ def compile_config(
                 issues.append(
                     Issue(level="warning", stage_id=s.stage_id, code="EVIDENCE_NOT_ALLOWED", message=why)
                 )
+        if spec is not None and spec.implemented and s.enabled and s.algorithm not in ENGINE_USES:
+            note = _t(
+                f"{spec.name.zh} 可以配置，但在线判定尚未接入它的输出，目前不参与判定",
+                f"{spec.name.en} can be configured, but the live decision does not consume its output yet, so it takes no part",
+            )
+            issues.append(Issue(level="warning", stage_id=s.stage_id, code="NOT_CONSUMED", message=note))
+            why = why or note
         stages.append(
             CompiledStage(stage_id=s.stage_id, algorithm=s.algorithm, effective=why is None, reason=why)
         )
