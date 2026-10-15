@@ -156,9 +156,9 @@ Verified: PostgreSQL 17.10 compatibility, every dependency present as a Windows 
 - **一键测试**：安装包根目录的 `verify.cmd`（源码为 `tools\run_demo.cmd`）用内置 Python 在仿真数据上启动一个独立的演示服务（默认 8765 端口，不影响已安装的服务和 PostgreSQL），先自动走完“新部件→信号映射→特征→健康参考→预测配置→启用”共 10 步并逐步显示通过/失败，然后保持服务以便在浏览器手动测试（管理员 `admin`，密码见窗口输出）。加参数 `-Check` 只做检查。尚未在真实 Windows 上运行过。
 - **One-click test**: `verify.cmd` in the package root (source: `tools\run_demo.cmd`) starts a separate demo server on SIMULATED data with the bundled Python (port 8765 by default; the installed service and PostgreSQL are untouched), first walks a new component through 10 steps (signals → features → healthy reference → prediction configuration → activate) printing PASS/FAIL per step, then keeps the server up for manual browser testing (administrator `admin`, password shown in the window). Add `-Check` to run the check only. Not yet run on a real Windows machine.
 
-## 升级包 / Upgrade package (0.1.4)
+## 升级包 / Upgrade package (0.1.5)
 
-升级包 `pdm-0.1.4-upgrade-win64.zip` 只含程序代码（后端、浏览器前端、部署脚本、模拟示例数据），不含 Python 和 PostgreSQL，所以很小。 The upgrade package carries code only (backend, browser client, deploy scripts, SIMULATED data), no Python or PostgreSQL, so it is small.
+升级包 `pdm-0.1.5-upgrade-win64.zip` 只含程序代码（后端、浏览器前端、部署脚本、模拟示例数据），不含 Python 和 PostgreSQL，所以很小。 The upgrade package carries code only (backend, browser client, deploy scripts, SIMULATED data), no Python or PostgreSQL, so it is small.
 
 1. 解压到任意文件夹（例如桌面），**不要**解压进安装目录。 Unzip into any folder (for example the desktop), **not** into the install folder.
 2. 双击 `upgrade.cmd`（会请求管理员权限）。它从“PDM Platform”开机任务找到安装目录；找不到时在 PowerShell 中运行 `setup\upgrade.ps1 -InstallRoot C:\PDM\pdm-offline`。 Double-click `upgrade.cmd`; it finds the installation from the "PDM Platform" startup task, otherwise run `setup\upgrade.ps1 -InstallRoot <install folder>` in PowerShell.

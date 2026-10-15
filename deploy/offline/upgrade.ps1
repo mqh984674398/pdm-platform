@@ -1,5 +1,5 @@
 ﻿<#
-  Upgrade an existing offline installation (0.1.4). Code only: it replaces pdm\ (backend, built browser
+  Upgrade an existing offline installation (0.1.5). Code only: it replaces pdm\ (backend, built browser
   client, deploy scripts, SIMULATED data) and the setup scripts. It does NOT touch the bundled Python,
   PostgreSQL or the database contents, pdm\backend\.env (passwords, data source accounts, settings), the
   accounts, the startup task or the firewall rule. The schema is migrated to head (a no-op when this release
