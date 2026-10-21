@@ -10,6 +10,8 @@ Contract-driven development (V5.2). Start with [AGENTS.md](AGENTS.md).
 | [ACCEPTANCE.md](ACCEPTANCE.md) | Definition of Done and gates G1–G4 |
 | [DECISIONS.md](DECISIONS.md) | Decision log |
 | [contracts/CURRENT_TASK.md](contracts/CURRENT_TASK.md) | Currently assigned task |
+| [LOCAL_SETUP.md](LOCAL_SETUP.md) | Local (Windows) development and hand-over state |
+| [docs/analysis/](docs/analysis/) | Algorithm review and workbench redesign notes |
 
 Check contract integrity: `python tools/check_contracts.py`
 
