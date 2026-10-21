@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Component health for the dashboard (T020, L6-04): rules on stored features, decided per component.
 
 Health is an output of the rule evaluation and is never stored as a label. For each component the
@@ -24,17 +25,20 @@ from sqlalchemy.orm import Session
 from app.core.schemas import LocalizedText, ResultMeta, TimeWindow
 from app.decision.config import active as active_config
 from app.decision.fusion import FusionInput, FusionResult, Preconditions, fuse, recommend
+from app.decision.pipeline_config import PredictionConfig, PredictionConfigStore, RelationType
 from app.decision.schemas import (
     CommonCause,
     ComponentHealthReport,
     Decision,
     Evidence,
     EvidenceSource,
+    EvidenceType,
     FleetComponent,
     FleetMachine,
     FleetOverview,
     HealthState,
     HealthTrend,
+    RelatedStatus,
     TrendPoint,
 )
 from app.equipment.lifecycle import EquipmentStore
@@ -42,11 +46,12 @@ from app.equipment.maintenance import MaintenanceService
 from app.equipment.maintenance_impact.service import ImpactService
 from app.equipment.schemas import ComponentInstance, LifecycleStatus, MaintenanceWorkflowState
 from app.monitoring.alarms.service import OPEN, AlarmService
+from app.monitoring.anomaly import t2 as t2mod
 from app.monitoring.baselines.verified import BaselineService
 from app.monitoring.features.definitions import FEATURE_SETS
 from app.monitoring.features.store import FeatureStore
 from app.monitoring.rules.definitions import DEFAULT_RULES
-from app.monitoring.rules.engine import evaluate
+from app.monitoring.rules.engine import component_type, evaluate
 from app.monitoring.rules.settings import RuleSettings
 from app.monitoring.schemas import Baseline, RuleKind, WindowEvaluation
 from app.signals.registry import SignalConfigStore
@@ -125,6 +130,7 @@ class FleetHealthService:
         self.alarms = AlarmService(session)
         self.settings = RuleSettings(session)
         self.config = active_config(session)
+        self.pcfg = PredictionConfigStore(session)
 
     # --- evaluation -----------------------------------------------------------------------------
 
@@ -144,9 +150,37 @@ class FleetHealthService:
             refs,
             self.config.rules,
             self.settings.disabled(),
+            limits=self.equipment.torque_limits(),
             rules_version=self.rules_version(),
         )
         return sorted(evals, key=lambda e: e.window.end), refs
+
+    def _t2(
+        self,
+        cfg: PredictionConfig | None,
+        component_id: str,
+        lifecycle_id: str,
+        ref: Baseline,
+        latest: WindowEvaluation,
+    ) -> list[t2mod.T2Finding]:
+        """Hotelling T² for the newest windows; only when the active configuration enables it (D-045)."""
+        if cfg is None or not any(
+            st.algorithm == "mahalanobis-t2" and st.enabled for st in cfg.content.pipeline
+        ):
+            return []
+        ctype = component_type(latest.feature_ref)
+        feats = []
+        for r in self.config.rules.rules:
+            if r.kind == RuleKind.STATISTICAL and ctype in r.component_types:
+                f = next((x for x in r.features if x in ref.stats), None)
+                if f and f not in feats:
+                    feats.append(f)
+        vs = [
+            v for v in self.features.vectors(component_id, latest.feature_ref, lifecycle_id)
+            if v.window.end <= latest.window.end
+        ]  # fmt: skip
+        reference = [v for v in vs if ref.window.start <= v.window.start and v.window.end <= ref.window.end]
+        return [t2mod.assess(reference, vs, feats)]
 
     def _assess(
         self,
@@ -176,6 +210,7 @@ class FleetHealthService:
             if gap > STALE_HOURS:
                 stale = gap
         comp = self.equipment.component(component_id)
+        cfg = self.pcfg.active(component_id)
         result = fuse(
             FusionInput(
                 component_id=component_id,
@@ -186,6 +221,8 @@ class FleetHealthService:
                 history=mine,
                 pre=Preconditions(stale_hours=stale),
                 is_simulated=self.equipment.is_simulated(component_id),
+                anomalies=self._t2(cfg, component_id, active.lifecycle_id, refs[active.lifecycle_id], latest),
+                allowed=frozenset(cfg.content.criteria.allowed_evidence_types) if cfg else None,
             ),
             self.config.policy,
         )
@@ -247,6 +284,36 @@ class FleetHealthService:
 
     # --- views ----------------------------------------------------------------------------------
 
+    def _relation_causes(self, health: dict[str, HealthState]) -> dict[str, CommonCause]:
+        """Common causes from the active configurations' relationships (D-045), among known components."""
+        out: dict[str, CommonCause] = {}
+        for cid in sorted(health):
+            cfg = self.pcfg.active(cid)
+            rel = cfg.content.relationship if cfg else None
+            if (
+                rel is None
+                or rel.type == RelationType.INDEPENDENT
+                or not (rel.affects_common_cause and rel.members)
+            ):
+                continue
+            bad = sorted(c for c in [cid, *rel.members] if health.get(c) in ABNORMAL)
+            if len(bad) < 2 or cid not in bad:
+                continue
+            where = RELATION_NOTES[rel.type]
+            names = "、".join(bad)
+            cause = CommonCause(
+                drive_chain_id=f"{rel.type.value}:{cid}",
+                component_ids=bad,
+                note=_t(
+                    f"{names} 存在“{where[0]}”关系且同时异常：优先检查{where[1]}，再判断是否为各部件自身问题。",
+                    f"{', '.join(bad)} are related ({where[2]}) and abnormal at the same time: check "
+                    f"{where[3]} before treating it as a fault of each component.",
+                ),
+            )
+            for b in bad:
+                out.setdefault(b, cause)
+        return out
+
     def overview(self) -> FleetOverview:
         signals = SignalConfigStore(self.session).current().content
         by_component: dict[str, list[str]] = {}
@@ -298,6 +365,19 @@ class FleetHealthService:
                     is_simulated=m.is_simulated,
                 )
             )
+        health = {r.component_id: r.health for m in machines for r in m.components}
+        relation = self._relation_causes(health)
+        machines = [
+            m.model_copy(
+                update={
+                    "components": [
+                        r.model_copy(update={"common_cause": r.common_cause or relation.get(r.component_id)})
+                        for r in m.components
+                    ]
+                }
+            )
+            for m in machines
+        ]
         version = self.rules_version()
         basis = _t(BASIS.zh.format(rules=version), BASIS.en.format(rules=version))
         return FleetOverview(
@@ -336,13 +416,20 @@ class FleetHealthService:
         feature_ref = latest.feature_ref if latest else component_type_ref(comp)
         evidence: list[Evidence] = []
         if latest:
-            if a.fusion is not None:
-                evidence += a.fusion.evidence
             ref = refs.get(latest.lifecycle_id)
+            if a.fusion is not None:
+                evidence += [
+                    x.model_copy(update={"baseline_version": ref.baseline_id})
+                    if ref is not None and x.evidence_type == EvidenceType.STATISTICAL
+                    else x
+                    for x in a.fusion.evidence
+                ]
             if ref is not None:
                 evidence.append(
                     Evidence(
                         evidence_id=f"REF:{ref.baseline_id}",
+                        component_id=component_id,
+                        evidence_type=EvidenceType.CONTEXT,
                         source=EvidenceSource.STATISTIC,
                         result_ref=ref.baseline_id,
                         summary=_t(
@@ -361,6 +448,8 @@ class FleetHealthService:
             evidence.append(
                 Evidence(
                     evidence_id=f"ALARM:{al.alarm_id}",
+                    component_id=component_id,
+                    evidence_type=EvidenceType.CONTEXT,
                     source=EvidenceSource.RULE,
                     result_ref=al.alarm_id,
                     summary=_t(
@@ -385,6 +474,8 @@ class FleetHealthService:
             evidence.append(
                 Evidence(
                     evidence_id=f"IMPACT:{wf.workflow_id}",
+                    component_id=component_id,
+                    evidence_type=EvidenceType.CONTEXT,
                     source=EvidenceSource.MAINTENANCE,
                     result_ref=wf.workflow_id,
                     summary=_t(
@@ -428,16 +519,56 @@ class FleetHealthService:
                 for c in peers
             ]
             cause = common_causes(states).get(component_id)
+        cfg = self.pcfg.active(component_id)
+        related: list[RelatedStatus] = []
+        if cfg and cfg.content.relationship.members:
+            rel = cfg.content.relationship
+            others = {
+                m: self._assess(m, *self._evaluate(m), as_of).health
+                for m in rel.members
+                if any(c.component_id == m for c in self.equipment.components())
+            }
+            if cause is None and rel.affects_common_cause:
+                cause = self._relation_causes({component_id: a.health, **others}).get(component_id)
+            if rel.affects_status_display:
+                related = [
+                    RelatedStatus(component_id=m, relation=rel.type.value, health=h)
+                    for m, h in others.items()
+                ]
         return ComponentHealthReport(
             decision=decision,
             evidence=evidence,
             recommendations=recommendations,
             common_cause=cause,
             is_simulated=sim,
+            config_version=cfg.config_id if cfg else None,
+            display=cfg.content.display if cfg else None,
+            related=related,
         )
 
 
 ABNORMAL = (HealthState.WARNING, HealthState.CRITICAL)
+# relation -> (zh name, zh what to check, en name, en what to check)
+RELATION_NOTES = {
+    RelationType.SHARED_DRIVETRAIN: (
+        "共用传动链",
+        "共用的传动链（联轴器、皮带、导轨、润滑）",
+        "shared drivetrain",
+        "the shared drivetrain",
+    ),
+    RelationType.MECHANICAL_DEPENDENCY: (
+        "机械依赖",
+        "相互之间的机械连接与受力",
+        "mechanical dependency",
+        "the mechanical coupling between them",
+    ),
+    RelationType.SHARED_SIGNAL: (
+        "共用信号",
+        "共用的传感器与信号",
+        "shared signal",
+        "the shared sensor and signal",
+    ),
+}
 
 
 def common_causes(

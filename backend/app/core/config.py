@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     static_dir: str | None = None
     # SEC-06: non-simulated data sources stay disabled until the user's explicit approval (G4).
     production_data_approved: bool = False
+    # 'simulation' or 'production' until an administrator saves the mode in the application (D-053).
+    run_mode: str = "simulation"
+    pipeline_interval_min: int = 15  # online feature pipeline period; 0 turns it off
     # Server-side JSON file describing data sources (configs, layouts, credential references).
     datasources_file: str | None = None
     models_dir: str = "var/models"  # trained-model registry (T022); relative to the backend folder

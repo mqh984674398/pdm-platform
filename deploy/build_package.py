@@ -26,11 +26,7 @@ from packaging.requirements import Requirement
 
 ROOT = Path(__file__).resolve().parent.parent
 BACKEND, FRONTEND, DIST = ROOT / "backend", ROOT / "frontend", ROOT / "dist"
-PIP = (
-    [sys.executable, "-m", "pip"]
-    if importlib.util.find_spec("pip")
-    else ["python3", "-m", "pip"]
-)
+PIP = [sys.executable, "-m", "pip"] if importlib.util.find_spec("pip") else ["python3", "-m", "pip"]
 WIN = {
     **default_environment(),
     "sys_platform": "win32",
@@ -43,6 +39,10 @@ INCLUDE = [
     "backend/alembic.ini",
     "backend/pyproject.toml",
     "backend/requirements.lock",
+    "backend/scripts/demo_server.py",
+    "tools/run_demo.cmd",
+    "tools/run_demo.ps1",
+    "tools/verify_workflow.py",
     "deploy",
     "Data",
     "frontend/dist",
@@ -54,9 +54,7 @@ SKIP = re.compile(r"(__pycache__|\.pyc$|/var/|server\.log$|install\.log$|smoke/)
 
 def lock() -> list[str]:
     """Runtime dependency closure of backend/pyproject.toml for Windows, pinned to installed versions."""
-    deps = tomllib.loads((BACKEND / "pyproject.toml").read_text(encoding="utf-8"))[
-        "project"
-    ]["dependencies"]
+    deps = tomllib.loads((BACKEND / "pyproject.toml").read_text(encoding="utf-8"))["project"]["dependencies"]
     seen: dict[str, str | None] = {}
     done: set[tuple[str, str]] = set()
     todo = [Requirement(r) for r in deps]
@@ -70,18 +68,13 @@ def lock() -> list[str]:
             try:
                 dist = metadata.distribution(name)
             except metadata.PackageNotFoundError:
-                seen.setdefault(
-                    name, None
-                )  # Windows-only package not present on the build machine
+                seen.setdefault(name, None)  # Windows-only package not present on the build machine
                 continue
             seen[name] = dist.version
             for r in dist.requires or []:
                 sub = Requirement(r)
                 m = sub.marker
-                if m is None or (
-                    m.evaluate({**WIN, "extra": extra})
-                    and (extra or "extra" not in str(m))
-                ):
+                if m is None or (m.evaluate({**WIN, "extra": extra}) and (extra or "extra" not in str(m))):
                     todo.append(sub)
     return [f"{n}=={v}" if v else n for n, v in sorted(seen.items())]
 
@@ -109,9 +102,7 @@ def main() -> None:
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for item in INCLUDE:
             p = ROOT / item
-            files = (
-                [p] if p.is_file() else sorted(f for f in p.rglob("*") if f.is_file())
-            )
+            files = [p] if p.is_file() else sorted(f for f in p.rglob("*") if f.is_file())
             for f in files:
                 rel = f.relative_to(ROOT).as_posix()
                 if not SKIP.search(rel):

@@ -34,9 +34,7 @@ def _password() -> str:
 
 
 def main(argv: list[str] | None = None) -> None:
-    ap = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("create-admin")
     c.add_argument("user_id")
@@ -83,9 +81,7 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Password reset for {args.user_id}; the lockout was cleared")
         else:
             for u in store.users():
-                print(
-                    f"{u.user_id:20} {u.role.value:12} {'active' if u.active else 'deactivated'}"
-                )
+                print(f"{u.user_id:20} {u.role.value:12} {'active' if u.active else 'deactivated'}")
 
 
 if __name__ == "__main__":

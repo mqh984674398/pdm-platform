@@ -3,18 +3,21 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
-import type { CandidateResult, OptimizationRun } from '@/api/contracts'
+import type { CandidateResult, OptimizationReadiness, OptimizationRun } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
 import SimBadge from '@/components/base/SimBadge.vue'
 import { useLocalized } from '@/composables/useLocalized'
 
 const { t } = useI18n()
-const { fmtDate } = useLocalized()
+const { fmtDate, lt } = useLocalized()
 
 const run = ref<OptimizationRun | null>(null)
+const ready = ref<OptimizationReadiness | null>(null)
+const candidates = ref(12)
 const busy = ref(false)
 const failed = ref(false)
+const failReason = ref('')
 const selected = ref<string | null>(null)
 const proposed = ref<string | null>(null)
 const proposeFailed = ref<string | null>(null)
@@ -32,6 +35,7 @@ async function propose(id: string) {
 }
 
 onMounted(async () => {
+  ready.value = await monitoringApi.optimizationReadiness().catch(() => null)
   try {
     run.value = await monitoringApi.latestOptimization()
   } catch (e) {
@@ -43,10 +47,11 @@ async function start() {
   busy.value = true
   failed.value = false
   try {
-    run.value = await monitoringApi.runOptimization(12, 0)
+    run.value = await monitoringApi.runOptimization(candidates.value, 0)
     selected.value = run.value.recommended
-  } catch {
+  } catch (e) {
     failed.value = true
+    failReason.value = e instanceof MonitoringApiError && e.body ? lt(e.body.message) : ''
   } finally {
     busy.value = false
   }
@@ -83,8 +88,37 @@ const caseRows = computed(() => {
       <h1>{{ t('nav.optimization') }}</h1>
       <p class="lede">{{ t('optimization.lede') }}</p>
     </header>
+    <PanelBox v-if="ready" :title="t('optimization.readiness.title')">
+      <div data-testid="opt-readiness" class="readiness">
+        <p>{{ t('optimization.readiness.how') }}</p>
+        <p v-if="ready.suite">
+          {{ t('optimization.readiness.suite', { suite: ready.suite }) }} ·
+          {{
+            t('optimization.readiness.counts', {
+              cases: ready.cases,
+              components: ready.components,
+              windows: ready.stored_windows,
+            })
+          }}
+        </p>
+        <p class="note">{{ t('optimization.readiness.scope') }}</p>
+        <p v-if="ready.reason" class="error" data-testid="opt-blocked">
+          {{ t('optimization.readiness.blocked') }}{{ lt(ready.reason) }}
+        </p>
+      </div>
+    </PanelBox>
     <div class="bar">
-      <button type="button" class="primary" :disabled="busy" data-testid="opt-run" @click="start">
+      <label class="cand"
+        >{{ t('optimization.candidates') }}
+        <input v-model.number="candidates" type="number" min="1" max="40" data-testid="opt-count"
+      /></label>
+      <button
+        type="button"
+        class="primary"
+        :disabled="busy || (ready !== null && !ready.can_run)"
+        data-testid="opt-run"
+        @click="start"
+      >
         {{ busy ? t('optimization.running') : t('optimization.run') }}
       </button>
       <p v-if="run" class="meta">
@@ -97,7 +131,7 @@ const caseRows = computed(() => {
         }}
       </p>
     </div>
-    <p v-if="failed" class="error" role="alert">{{ t('optimization.failed') }}</p>
+    <p v-if="failed" class="error" role="alert">{{ t('optimization.failed') }} {{ failReason }}</p>
     <p v-else-if="!run && !busy" class="empty" data-testid="opt-none">
       {{ t('optimization.none') }}
     </p>
@@ -228,6 +262,23 @@ const caseRows = computed(() => {
 </template>
 
 <style scoped>
+.readiness {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+.cand {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+.cand input {
+  width: 5rem;
+}
+.note {
+  color: var(--ink-soft);
+}
 .page {
   display: grid;
   gap: var(--space-4);

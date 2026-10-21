@@ -12,7 +12,7 @@ e.g. ``torque`` in ``A02-BS1.torque``) so one spec serves every instance of a co
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Any, Protocol
 
 from app.equipment.schemas import ComponentType
 from app.monitoring.schemas import Baseline, FeatureVector
@@ -35,6 +35,10 @@ class OperatorInput:
     vector: FeatureVector
     reference: Baseline | None = None
     sampling: dict[str, SignalSampling] = field(default_factory=dict)
+    history: tuple[
+        FeatureVector, ...
+    ] = ()  # earlier windows of the installation, oldest first (sequence models)
+    waveform: Any = None  # raw high-frequency samples of the window (waveform models), when supplied
 
     @property
     def lifecycle_id(self) -> str:

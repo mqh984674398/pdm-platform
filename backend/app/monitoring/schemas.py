@@ -195,6 +195,10 @@ class Baseline(ContractModel):
     verified_at: AwareDatetime | None = None
     comment: str = ""
     superseded_by: str | None = None
+    warnings: list[LocalizedText] = Field(
+        default_factory=list,
+        description="Quality notes found when the period was verified (drift inside it, few windows)",
+    )
     meta: ResultMeta
 
     @model_validator(mode="after")
@@ -218,6 +222,17 @@ class BaselineVerification(ContractModel):
     regime_id: str | None = None
     window: TimeWindow
     comment: str = Field(min_length=1, max_length=2000, description="Why this period is known to be healthy")
+
+
+class FeatureCoverage(ContractModel):
+    """Stored feature windows of one installation: what a healthy reference can be chosen from."""
+
+    lifecycle_id: str
+    feature_ref: str
+    windows: int
+    start: AwareDatetime
+    end: AwareDatetime
+    has_reference: bool
 
 
 class AdaptivePoint(ContractModel):
@@ -353,6 +368,15 @@ class RuleHit(ContractModel):
     )
 
 
+class SafetyStatus(StrEnum):
+    """Outcome of a safety check (D-043). Not being able to confirm a violation is never a pass."""
+
+    VIOLATED = "VIOLATED"  # a valid measurement exceeds the safety limit
+    NOT_EVALUATED = "NOT_EVALUATED"  # the check applies but its measurement is missing or invalid
+    CONFIRMED_OK = "CONFIRMED_OK"  # evaluated on valid data and within the limit
+    NOT_CONFIGURED = "NOT_CONFIGURED"  # no safety rule or limit exists for this component
+
+
 class WindowEvaluation(ContractModel):
     """All enabled rules on one feature window of one component."""
 
@@ -367,6 +391,10 @@ class WindowEvaluation(ContractModel):
         description="Per statistical rule: '<rule>:z', ':persistent', ':ewma', ':cusum'"
     )
     not_evaluated: list[str] = Field(description="Rules that could not be evaluated on this window")
+    safety_checks: dict[str, SafetyStatus] = Field(
+        default_factory=dict,
+        description="Per safety rule: violated, not evaluable, confirmed ok, not configured",
+    )
     rules_version: str
     is_simulated: bool
 

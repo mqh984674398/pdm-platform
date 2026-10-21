@@ -4,6 +4,7 @@
 
 Layout of dist/pdm-<version>-offline-win64.zip:
     install.cmd / uninstall.cmd      double-click entry points
+    verify.cmd                       test run on SIMULATED demo data (flow check + demo server)
     setup/                           PowerShell installer (uses the existing PostgreSQL 17)
     runtime/python/                  Windows CPython 3.12 (NuGet "python" package) with every runtime
                                      dependency pre-installed in Lib/site-packages (win_amd64 wheels)
@@ -86,7 +87,7 @@ def main() -> None:
     (args.work / "setup").mkdir()
     for n in ["offline_install.ps1", "offline_uninstall.ps1"]:
         shutil.copy2(off / n, args.work / "setup" / n)
-    for n in ["install.cmd", "uninstall.cmd"]:
+    for n in ["install.cmd", "uninstall.cmd", "verify.cmd"]:
         shutil.copy2(off / n, args.work / n)
     shutil.copy2(off / "DEPLOY_GUIDE.md", args.work / "DEPLOY_GUIDE.md")
     out = ROOT / "dist" / f"pdm-{__version__}-offline-win64.zip"

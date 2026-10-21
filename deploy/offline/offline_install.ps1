@@ -110,16 +110,19 @@ Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
 
 # --- 2. Settings --------------------------------------------------------------------------------------
 $secret = ($existing | Where-Object { $_ -like "PDM_SECRET_KEY=*" }) ; if (-not $secret) { $secret = "PDM_SECRET_KEY=" + (NewSecret 48) }
-@(
-  $dbLine,
-  "PDM_AUTH_MODE=local",
-  $secret,
-  "PDM_COOKIE_SECURE=false",
-  "PDM_STATIC_DIR=../frontend/dist",
-  "PDM_DATASOURCES_FILE=../deploy/datasources.simulated.json",
-  "PDM_PRODUCTION_DATA_APPROVED=false",
-  "PDM_LLM_ENABLED=false"
-) | Set-Content $EnvFile -Encoding ASCII
+# Keep everything already in the file (data source passwords PDM_SECRET_*, a changed pipeline interval, ...):
+# only keys that are missing get the default below.
+$defaults = [ordered]@{
+  PDM_AUTH_MODE = "local"
+  PDM_COOKIE_SECURE = "false"
+  PDM_STATIC_DIR = "../frontend/dist"
+  PDM_DATASOURCES_FILE = "../deploy/datasources.simulated.json"
+  PDM_PRODUCTION_DATA_APPROVED = "false"
+  PDM_LLM_ENABLED = "false"
+}
+$lines = @($existing | Where-Object { $_ -and $_ -notlike "PDM_DATABASE_URL=*" -and $_ -notlike "PDM_SECRET_KEY=*" })
+foreach ($k in $defaults.Keys) { if (-not ($lines | Where-Object { $_ -like "$k=*" })) { $lines += "$k=$($defaults[$k])" } }
+(@($dbLine, $secret) + $lines) | Set-Content $EnvFile -Encoding ASCII
 icacls $EnvFile /inheritance:r /grant:r "SYSTEM:F" "Administrators:F" | Out-Null
 Step "已写入配置 pdm\backend\.env（仅 SYSTEM 与管理员可读）" "Wrote pdm\backend\.env (SYSTEM and Administrators only)"
 
@@ -141,9 +144,9 @@ try {
 $TaskName = "PDM Platform"
 $serveArgs = "..\deploy\serve.py --port $Port" + $(if ($SimulatedFleet) { " --simulated-fleet" } else { "" })
 $runner = Join-Path $Root "setup\run_server.cmd"
-Set-Content $runner "@echo off`r`ncd /d `"$Backend`"`r`n`"$Py`" $serveArgs >> `"$Data\server.log`" 2>&1`r`n" -Encoding ASCII
+Set-Content $runner "@echo off`r`ncd /d `"$Backend`"`r`n`"$Py`" $serveArgs >> `"$Data\server.log`" 2>&1`r`n" -Encoding Default
 Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-$action = New-ScheduledTaskAction -Execute $runner -WorkingDirectory $Backend
+$action = New-ScheduledTaskAction -Execute "`"$runner`"" -WorkingDirectory $Backend
 $settings = New-ScheduledTaskSettingsSet -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit ([TimeSpan]::Zero) -StartWhenAvailable
 Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -User "SYSTEM" -RunLevel Highest -Force | Out-Null
 $rule = "PDM Platform $Port"
@@ -153,10 +156,21 @@ Step "已注册开机任务并只对本地子网开放端口 $Port" "Startup tas
 
 Start-ScheduledTask -TaskName $TaskName
 $ok = $false
-for ($i = 0; $i -lt 300; $i++) {
+$ServerLog = "$Data\server.log"
+for ($i = 0; $i -lt 60; $i++) {
   try { $h = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 3; $ok = $true; break } catch { Start-Sleep 2 }
+  if ($i % 5 -eq 4) {
+    $state = (Get-ScheduledTask -TaskName $TaskName).State
+    $info = Get-ScheduledTaskInfo -TaskName $TaskName
+    Step "任务上次结果 $($info.LastTaskResult)，运行时间 $($info.LastRunTime)" "Task last result $($info.LastTaskResult), last run $($info.LastRunTime)"
+    Step "等待服务启动… 已 $(($i + 1) * 2) 秒（任务状态：$state）" "Waiting for the service… $(($i + 1) * 2) s (task state: $state)"
+    if (Test-Path $ServerLog) { Get-Content $ServerLog -Tail 3 | ForEach-Object { "    $_" } }
+  }
 }
-if (-not $ok) { Fail "服务未启动，详见 $Data\server.log" "server did not start, see $Data\server.log" }
+if (-not $ok) {
+  if (Test-Path $ServerLog) { Get-Content $ServerLog -Tail 30 }
+  Fail "服务未启动，详见 $ServerLog" "server did not start, see $ServerLog"
+}
 $ip = (Get-NetIPAddress -AddressFamily IPv4 -PrefixOrigin Dhcp, Manual -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -notlike "169.254*" } | Select-Object -First 1).IPAddress
 Step "部署完成：http://${ip}:$Port/  （版本 $($h.version)）" "Done: http://${ip}:$Port/ (version $($h.version))"
 if (-not $NoBrowser) { Start-Process "http://127.0.0.1:$Port/" }

@@ -246,7 +246,7 @@ def test_slow_steady_aging_is_capped_at_watch_with_plan_recommendation():
 @pytest.mark.parametrize(
     ("hist", "why"),
     [
-        (series(1.0, 60, hits=[stat("CRITICAL", 60)]), "faster"),
+        (series(1.0, 60, hits=[stat("WARNING", 12)]), "faster"),
         (series(0.1, 90, jump_at=86, hits=[stat("WARNING", 15)]), "Abrupt"),
         (series(0.1, 20, hits=[stat("WARNING", 6)]), "Installed only"),
     ],
@@ -255,6 +255,13 @@ def test_fast_abrupt_or_young_drift_keeps_its_level(hist, why):
     r = fuse(inp(hist))
     assert r.decision.health_state == H(hist[-1].level.value)
     assert why in r.aging["ST-TORQUE"].reason.en
+
+
+def test_critical_is_never_lowered_by_aging_grading():  # D-040
+    hist = series(0.1, 90, hits=[stat("CRITICAL", 30.0)])
+    r = fuse(inp(hist))
+    assert r.decision.health_state == H.CRITICAL
+    assert "ST-TORQUE" not in r.aging
 
 
 def test_accelerating_drift_is_not_aging():
@@ -313,3 +320,53 @@ def test_golden_s11_partial_repair(replay):
     svc, machines = replay
     ok, n = _within(graded(svc, machines, "S11"))
     assert n and ok / n >= 0.9, (ok, n)
+
+
+# --- D-043: safety check that cannot be evaluated is neither a violation nor normal ------------------
+
+
+def _with_checks(w: WindowEvaluation, **checks) -> WindowEvaluation:
+    from app.monitoring.schemas import SafetyStatus
+
+    return w.model_copy(update={"safety_checks": {k: SafetyStatus(v) for k, v in checks.items()}})
+
+
+def test_unmeasurable_safety_check_is_not_normal():
+    from app.decision.schemas import QualityStatus
+    from app.monitoring.schemas import SafetyStatus
+
+    r = fuse(inp([_with_checks(window(0), **{"SF-TORQUE-LIMIT": "NOT_EVALUATED"})]))
+    d = r.decision
+    assert d.health_state == H.UNKNOWN  # never NORMAL: normal is not confirmed
+    assert d.safety_status == SafetyStatus.NOT_EVALUATED
+    assert d.safety_unevaluated == ["SF-TORQUE-LIMIT"]
+    gap = next(x for x in r.evidence if x.evidence_id.startswith("SAFETY-GAP:"))
+    assert not gap.applicable and gap.quality_status == QualityStatus.INVALID
+    assert gap.proposed_severity is None  # no violation is claimed
+    assert "无法评估" in d.reasons[-1].zh
+
+
+def test_unmeasurable_safety_check_keeps_a_statistical_warning():
+    hits = [stat("WARNING")]
+    r = fuse(inp([_with_checks(window(0, hits=hits), **{"SF-TORQUE-LIMIT": "NOT_EVALUATED"})]))
+    assert r.decision.health_state == H.WARNING
+    assert r.decision.safety_unevaluated == ["SF-TORQUE-LIMIT"]
+
+
+def test_confirmed_ok_and_violation_and_not_configured():
+    from app.monitoring.schemas import SafetyStatus
+
+    ok = fuse(inp([_with_checks(window(0), **{"SF-TORQUE-LIMIT": "CONFIRMED_OK"})])).decision
+    assert (ok.health_state, ok.safety_status) == (H.NORMAL, SafetyStatus.CONFIRMED_OK)
+    bad = fuse(inp([_with_checks(window(0, hits=[safety()]), **{"SF-TORQUE-LIMIT": "VIOLATED"})])).decision
+    assert (bad.health_state, bad.safety_status) == (H.CRITICAL, SafetyStatus.VIOLATED)
+    none = fuse(inp([window(0)])).decision
+    assert (none.health_state, none.safety_status) == (H.NORMAL, SafetyStatus.NOT_CONFIGURED)
+
+
+def test_evidence_object_carries_the_unified_fields():
+    r = fuse(inp([window(0, hits=[safety()])]))
+    ev = r.evidence[0]
+    assert ev.evidence_type.value == "SAFETY" and ev.component_id == "C1"
+    assert (ev.raw_value, ev.threshold) == (99.0, 90.0)
+    assert ev.input_window_id.startswith("C1:") and ev.model_version and ev.evaluated_at

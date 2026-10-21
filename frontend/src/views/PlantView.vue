@@ -3,14 +3,17 @@
  * Plant structure (D-037/D-038), administrators only: workshop (车间) → process (工序) → machine (机台).
  * Each machine carries its device id in the data source and its components, including which components
  * share a drive chain. Machine paths show on the overview, machine map and component history; the
- * Algorithm configuration screen offers this tree to pick a device.
+ * workbench screen offers the tree to pick a device.
  */
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { ComponentInstance, PlantMachine, PlantTree } from '@/api/contracts'
 import { MonitoringApiError, monitoringApi } from '@/api/monitoring'
 import PanelBox from '@/components/base/PanelBox.vue'
+import SideDrawer from '@/components/base/SideDrawer.vue'
+import ConfigWorkbench from '@/components/studio/ConfigWorkbench.vue'
 import '@/components/studio/studio.css'
+import { invalidateFleet } from '@/composables/useFleet'
 import { useLocalized } from '@/composables/useLocalized'
 
 const TYPES = [
@@ -32,6 +35,15 @@ const busy = ref(false)
 const message = ref<{ ok: boolean; text: string } | null>(null)
 type Sel = { kind: 'workshop' | 'process' | 'machine'; id: string } | null
 const selected = ref<Sel>(null)
+type Drawer = {
+  kind: 'workshop' | 'process' | 'machine' | 'new'
+  mode: 'all' | 'add' | 'edit'
+} | null
+const drawer = ref<Drawer>(null)
+const configuring = ref<string | null>(null)
+const configComponent = computed(() =>
+  machine.value?.components.find((c) => c.component_id === configuring.value),
+)
 
 async function load() {
   try {
@@ -47,6 +59,7 @@ async function run(action: () => Promise<unknown>, done: string) {
   message.value = null
   try {
     await action()
+    invalidateFleet()
     await load()
     message.value = { ok: true, text: done }
   } catch (e) {
@@ -89,8 +102,14 @@ const wsForm = reactive({ id: '', zh: '', en: '' })
 const mform = reactive({ zh: '', en: '', device: '', process: '' as string | null })
 const comp = reactive({ id: '', type: 'BALL_SCREW', zh: '', en: '', chain: '' })
 
-function select(kind: 'workshop' | 'process' | 'machine', id: string) {
+function select(
+  kind: 'workshop' | 'process' | 'machine',
+  id: string,
+  mode: 'all' | 'add' | 'edit' | null = 'all',
+) {
   selected.value = { kind, id }
+  drawer.value = mode ? { kind, mode } : null
+  configuring.value = null
   message.value = null
   Object.assign(child, { id: '', zh: '', en: '', device: '' })
   Object.assign(comp, { id: '', type: 'BALL_SCREW', zh: '', en: '', chain: '' })
@@ -127,7 +146,10 @@ function addWorkshop() {
         sort: (tree.value?.workshops.length ?? 0) * 10,
       }),
     t('plant.saved', { id }),
-  ).then(() => Object.assign(wsForm, { id: '', zh: '', en: '' }))
+  ).then(() => {
+    Object.assign(wsForm, { id: '', zh: '', en: '' })
+    drawer.value = null
+  })
 }
 function saveNode() {
   const n = workshop.value ?? process.value
@@ -212,12 +234,14 @@ function saveComponent(c?: ComponentInstance, chain?: string) {
         type: c.type,
         name: c.name,
         drive_chain_id: (chain ?? '').trim() || null,
+        torque_limit: c.torque_limit ?? null,
       }
     : {
         component_id: comp.id,
         type: comp.type as (typeof TYPES)[number],
         name: name(comp.zh, comp.en),
         drive_chain_id: comp.chain.trim() || null,
+        torque_limit: null,
       }
   if (idError(body.component_id) || !body.name.zh) return
   if (body.drive_chain_id && idError(body.drive_chain_id)) return
@@ -226,12 +250,63 @@ function saveComponent(c?: ComponentInstance, chain?: string) {
     t('plant.saved', { id: body.component_id }),
   )
 }
-function deleteComponent(c: ComponentInstance) {
-  if (!window.confirm(t('plant.deleteConfirm', { id: c.component_id }))) return
+function saveTorqueLimit(c: ComponentInstance, raw: string) {
+  const m = machine.value
+  const limit = raw.trim() === '' ? null : Number(raw)
+  if (!m || (limit !== null && !(limit > 0))) return
   run(
-    () => monitoringApi.deleteComponent(c.component_id),
-    t('plant.deleted', { id: c.component_id }),
+    () =>
+      monitoringApi.putComponent(m.machine_id, {
+        component_id: c.component_id,
+        type: c.type,
+        name: c.name,
+        drive_chain_id: c.drive_chain_id ?? null,
+        torque_limit: limit,
+      }),
+    t('plant.saved', { id: c.component_id }),
   )
+}
+async function deleteComponent(c: ComponentInstance) {
+  message.value = null
+  try {
+    const usage = await monitoringApi.componentUsage(c.component_id)
+    const blocking = usage.rows.filter((r) => r.blocks)
+    if (blocking.length) {
+      message.value = {
+        ok: false,
+        text: t('plant.deleteBlocked', { id: c.component_id, what: usageText(blocking) }),
+      }
+      return
+    }
+    const attached = usage.rows.length > 0
+    const question = attached
+      ? t('plant.deleteWithData', { id: c.component_id, what: usageText(usage.rows) })
+      : t('plant.deleteConfirm', { id: c.component_id })
+    if (!window.confirm(question)) return
+    await run(
+      () => monitoringApi.deleteComponent(c.component_id, attached),
+      t('plant.deleted', { id: c.component_id }),
+    )
+  } catch (e) {
+    const body = e instanceof MonitoringApiError ? e.body : null
+    message.value = { ok: false, text: body ? lt(body.message) : t('plant.failed') }
+  }
+}
+function usageText(rows: { kind: string; count: number }[]): string {
+  return rows.map((r) => `${t(`plant.usage.${r.kind}`)} ×${r.count}`).join(t('plant.usageSep'))
+}
+function removeNode(kind: 'workshop' | 'process' | 'machine', id: string) {
+  select(kind, id, null)
+  if (kind === 'machine') deleteMachine()
+  else deleteNode()
+}
+function openConfig(machineId: string, componentId: string) {
+  select('machine', machineId, null)
+  configuring.value = componentId
+}
+function removeComponent(machineId: string, c: ComponentInstance) {
+  select('machine', machineId, null)
+  deleteComponent(c)
 }
 /** Components sharing a drive chain with at least one other component of the same machine. */
 const chains = computed(() => {
@@ -259,39 +334,159 @@ const chains = computed(() => {
     </p>
     <div v-if="tree" class="layout">
       <PanelBox :title="t('plant.tree')">
+        <div class="row tree-head">
+          <button
+            type="button"
+            class="st-button"
+            data-testid="add-workshop-open"
+            @click="drawer = { kind: 'new', mode: 'add' }"
+          >
+            + {{ t('plant.addTop') }}
+          </button>
+        </div>
         <ul class="tree" data-testid="plant-tree">
           <li v-for="w in tree.workshops" :key="w.node_id">
-            <button
-              type="button"
-              class="node ws"
-              :aria-current="selected?.kind === 'workshop' && selected.id === w.node_id"
-              :data-node="w.node_id"
-              @click="select('workshop', w.node_id)"
-            >
-              {{ lt(w.name) }}
-            </button>
-            <ul>
-              <li v-for="p in w.processes" :key="p.node_id">
+            <div class="line">
+              <button
+                type="button"
+                class="node ws"
+                :aria-current="selected?.kind === 'workshop' && selected.id === w.node_id"
+                :data-node="w.node_id"
+                @click="select('workshop', w.node_id)"
+              >
+                {{ lt(w.name) }}
+              </button>
+              <span class="acts">
                 <button
                   type="button"
-                  class="node"
-                  :aria-current="selected?.kind === 'process' && selected.id === p.node_id"
-                  :data-node="p.node_id"
-                  @click="select('process', p.node_id)"
+                  :aria-label="t('plant.addChildOf')"
+                  @click="select('workshop', w.node_id, 'add')"
                 >
-                  {{ lt(p.name) }}
+                  +
                 </button>
-                <ul>
-                  <li v-for="m in p.machines" :key="m.machine_id">
+                <button
+                  type="button"
+                  :aria-label="t('plant.editNode')"
+                  @click="select('workshop', w.node_id, 'edit')"
+                >
+                  ✎
+                </button>
+                <button
+                  type="button"
+                  class="danger"
+                  :aria-label="t('plant.delete')"
+                  @click="removeNode('workshop', w.node_id)"
+                >
+                  ✕
+                </button>
+              </span>
+            </div>
+            <ul>
+              <li v-for="p in w.processes" :key="p.node_id">
+                <div class="line">
+                  <button
+                    type="button"
+                    class="node"
+                    :aria-current="selected?.kind === 'process' && selected.id === p.node_id"
+                    :data-node="p.node_id"
+                    @click="select('process', p.node_id)"
+                  >
+                    {{ lt(p.name) }}
+                  </button>
+                  <span class="acts">
                     <button
                       type="button"
-                      class="node mc"
-                      :aria-current="selected?.kind === 'machine' && selected.id === m.machine_id"
-                      :data-machine="m.machine_id"
-                      @click="select('machine', m.machine_id)"
+                      :aria-label="t('plant.addChildOf')"
+                      @click="select('process', p.node_id, 'add')"
                     >
-                      {{ lt(m.name) }} <span class="st-mono st-note">{{ m.machine_id }}</span>
+                      +
                     </button>
+                    <button
+                      type="button"
+                      :aria-label="t('plant.editNode')"
+                      @click="select('process', p.node_id, 'edit')"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      class="danger"
+                      :aria-label="t('plant.delete')"
+                      @click="removeNode('process', p.node_id)"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                </div>
+                <ul>
+                  <li v-for="m in p.machines" :key="m.machine_id">
+                    <div class="line">
+                      <button
+                        type="button"
+                        class="node mc"
+                        :aria-current="selected?.kind === 'machine' && selected.id === m.machine_id"
+                        :data-machine="m.machine_id"
+                        @click="select('machine', m.machine_id)"
+                      >
+                        {{ lt(m.name) }} <span class="st-mono st-note">{{ m.machine_id }}</span>
+                      </button>
+                      <span class="acts">
+                        <button
+                          type="button"
+                          :aria-label="t('plant.addComponent')"
+                          @click="select('machine', m.machine_id, 'add')"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          :aria-label="t('plant.editNode')"
+                          @click="select('machine', m.machine_id, 'edit')"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          type="button"
+                          class="danger"
+                          :aria-label="t('plant.delete')"
+                          @click="removeNode('machine', m.machine_id)"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    </div>
+                    <ul>
+                      <li v-for="c in m.components" :key="c.component_id">
+                        <div class="line">
+                          <button
+                            type="button"
+                            class="node cp"
+                            :data-comp-node="c.component_id"
+                            @click="openConfig(m.machine_id, c.component_id)"
+                          >
+                            {{ lt(c.name) }}
+                            <span class="st-mono st-note">{{ c.component_id }}</span>
+                          </button>
+                          <span class="acts">
+                            <button
+                              type="button"
+                              :aria-label="t('plant.editNode')"
+                              @click="select('machine', m.machine_id, 'edit')"
+                            >
+                              ✎
+                            </button>
+                            <button
+                              type="button"
+                              class="danger"
+                              :aria-label="t('plant.delete')"
+                              @click="removeComponent(m.machine_id, c)"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        </div>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
               </li>
@@ -301,34 +496,104 @@ const chains = computed(() => {
             <span class="node ws muted">{{ t('plant.unplaced') }}</span>
             <ul>
               <li v-for="m in tree.unplaced" :key="m.machine_id">
-                <button
-                  type="button"
-                  class="node mc"
-                  :aria-current="selected?.kind === 'machine' && selected.id === m.machine_id"
-                  :data-machine="m.machine_id"
-                  @click="select('machine', m.machine_id)"
-                >
-                  {{ lt(m.name) }} <span class="st-mono st-note">{{ m.machine_id }}</span>
-                </button>
+                <div class="line">
+                  <button
+                    type="button"
+                    class="node mc"
+                    :aria-current="selected?.kind === 'machine' && selected.id === m.machine_id"
+                    :data-machine="m.machine_id"
+                    @click="select('machine', m.machine_id)"
+                  >
+                    {{ lt(m.name) }} <span class="st-mono st-note">{{ m.machine_id }}</span>
+                  </button>
+                  <span class="acts">
+                    <button
+                      type="button"
+                      :aria-label="t('plant.addComponent')"
+                      @click="select('machine', m.machine_id, 'add')"
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      :aria-label="t('plant.editNode')"
+                      @click="select('machine', m.machine_id, 'edit')"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      class="danger"
+                      :aria-label="t('plant.delete')"
+                      @click="removeNode('machine', m.machine_id)"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                </div>
+                <ul>
+                  <li v-for="c in m.components" :key="c.component_id">
+                    <div class="line">
+                      <button
+                        type="button"
+                        class="node cp"
+                        :data-comp-node="c.component_id"
+                        @click="openConfig(m.machine_id, c.component_id)"
+                      >
+                        {{ lt(c.name) }} <span class="st-mono st-note">{{ c.component_id }}</span>
+                      </button>
+                      <span class="acts">
+                        <button
+                          type="button"
+                          :aria-label="t('plant.editNode')"
+                          @click="select('machine', m.machine_id, 'edit')"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          type="button"
+                          class="danger"
+                          :aria-label="t('plant.delete')"
+                          @click="removeComponent(m.machine_id, c)"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    </div>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
         </ul>
-        <form class="add" data-testid="add-workshop" @submit.prevent="addWorkshop">
-          <strong>{{ t('plant.addWorkshop') }}</strong>
+      </PanelBox>
+
+      <SideDrawer
+        :open="drawer?.kind === 'new'"
+        :title="t('plant.drawerNew')"
+        @close="drawer = null"
+      >
+        <form class="add first" data-testid="add-workshop" @submit.prevent="addWorkshop">
           <input v-model.trim="wsForm.id" class="st-input" :placeholder="t('plant.id')" />
           <input v-model="wsForm.zh" class="st-input" :placeholder="t('plant.nameZh')" />
           <input v-model="wsForm.en" class="st-input" :placeholder="t('plant.nameEn')" />
           <button type="submit" class="st-button" :disabled="busy">{{ t('plant.add') }}</button>
         </form>
-      </PanelBox>
+      </SideDrawer>
 
-      <PanelBox
-        v-if="workshop || process"
-        :title="workshop ? t('plant.workshop') : t('plant.process')"
+      <SideDrawer
+        :open="
+          (drawer?.kind === 'workshop' || drawer?.kind === 'process') && !!(workshop || process)
+        "
+        :title="
+          workshop
+            ? t('plant.drawerWorkshop', { id: workshop.node_id })
+            : t('plant.drawerProcess', { id: process?.node_id ?? '' })
+        "
+        @close="drawer = null"
       >
         <div class="st-stack">
-          <div class="st-form">
+          <div v-if="drawer?.mode !== 'add'" class="st-form">
             <label class="st-field"
               ><span>{{ t('plant.nameZh') }}</span
               ><input v-model="node.zh" class="st-input"
@@ -342,7 +607,7 @@ const chains = computed(() => {
               ><input v-model.number="node.sort" type="number" class="st-input"
             /></label>
           </div>
-          <div class="row">
+          <div v-if="drawer?.mode !== 'add'" class="row">
             <button type="button" class="st-button primary" :disabled="busy" @click="saveNode">
               {{ t('plant.save') }}
             </button>
@@ -351,6 +616,7 @@ const chains = computed(() => {
             </button>
           </div>
           <form
+            v-if="drawer?.mode !== 'edit'"
             class="add"
             :data-testid="workshop ? 'add-process' : 'add-machine'"
             @submit.prevent="workshop ? addProcess() : addMachine()"
@@ -368,11 +634,15 @@ const chains = computed(() => {
             <button type="submit" class="st-button" :disabled="busy">{{ t('plant.add') }}</button>
           </form>
         </div>
-      </PanelBox>
+      </SideDrawer>
 
-      <PanelBox v-if="machine" :title="t('plant.machine', { id: machine.machine_id })">
-        <div class="st-stack">
-          <div class="st-form">
+      <SideDrawer
+        :open="drawer?.kind === 'machine' && !!machine"
+        :title="t('plant.drawerMachine', { id: machine?.machine_id ?? '' })"
+        @close="drawer = null"
+      >
+        <div v-if="machine" class="st-stack">
+          <div v-if="drawer?.mode !== 'add'" class="st-form">
             <label class="st-field"
               ><span>{{ t('plant.nameZh') }}</span
               ><input v-model="mform.zh" class="st-input"
@@ -396,7 +666,7 @@ const chains = computed(() => {
               <span class="st-note">{{ t('plant.deviceNote') }}</span>
             </label>
           </div>
-          <div class="row">
+          <div v-if="drawer?.mode !== 'add'" class="row">
             <button type="button" class="st-button primary" :disabled="busy" @click="saveMachine">
               {{ t('plant.save') }}
             </button>
@@ -405,9 +675,9 @@ const chains = computed(() => {
             </button>
           </div>
 
-          <h3>{{ t('plant.components') }}</h3>
-          <p class="st-note">{{ t('plant.chainNote') }}</p>
-          <div class="st-scroll">
+          <h3 v-if="drawer?.mode !== 'add'">{{ t('plant.components') }}</h3>
+          <p v-if="drawer?.mode !== 'add'" class="st-note">{{ t('plant.chainNote') }}</p>
+          <div v-if="drawer?.mode !== 'add'" class="st-scroll">
             <table class="st-table" data-testid="plant-components">
               <thead>
                 <tr>
@@ -415,6 +685,7 @@ const chains = computed(() => {
                   <th>{{ t('plant.type') }}</th>
                   <th>{{ t('plant.name') }}</th>
                   <th>{{ t('plant.driveChain') }}</th>
+                  <th>{{ t('plant.torqueLimit') }}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -442,6 +713,27 @@ const chains = computed(() => {
                     >
                   </td>
                   <td>
+                    <input
+                      class="st-input st-mono chain"
+                      type="number"
+                      min="0"
+                      step="any"
+                      :value="c.torque_limit ?? ''"
+                      :placeholder="t('plant.torqueLimitOff')"
+                      :aria-label="t('plant.torqueLimit')"
+                      data-testid="component-torque-limit"
+                      @change="saveTorqueLimit(c, ($event.target as HTMLInputElement).value)"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="link"
+                      data-testid="component-configure"
+                      @click="openConfig(machine.machine_id, c.component_id)"
+                    >
+                      {{ t('workbench.configure') }}
+                    </button>
                     <button
                       type="button"
                       class="link danger"
@@ -455,7 +747,12 @@ const chains = computed(() => {
               </tbody>
             </table>
           </div>
-          <form class="add" data-testid="add-component" @submit.prevent="saveComponent()">
+          <form
+            v-if="drawer?.mode !== 'edit'"
+            class="add"
+            data-testid="add-component"
+            @submit.prevent="saveComponent()"
+          >
             <strong>{{ t('plant.addComponent') }}</strong>
             <input v-model.trim="comp.id" class="st-input st-mono" :placeholder="t('plant.id')" />
             <select v-model="comp.type" class="st-select" :aria-label="t('plant.type')">
@@ -471,7 +768,16 @@ const chains = computed(() => {
             <button type="submit" class="st-button" :disabled="busy">{{ t('plant.add') }}</button>
           </form>
         </div>
-      </PanelBox>
+      </SideDrawer>
+      <ConfigWorkbench
+        v-if="machine && configComponent"
+        :key="configComponent.component_id"
+        class="wide"
+        :component="configComponent"
+        :siblings="machine.components"
+        :device-id="machine.device_id"
+        :machine-id="machine.machine_id"
+      />
       <PanelBox v-if="!selected" :title="t('plant.hintTitle')">
         <p class="st-note">{{ t('plant.hint') }}</p>
       </PanelBox>
@@ -480,6 +786,12 @@ const chains = computed(() => {
 </template>
 
 <style scoped>
+[data-testid='plant-message'] {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--surface, var(--bg));
+}
 .page {
   display: grid;
   gap: var(--space-4);
@@ -559,6 +871,46 @@ h3 {
 .add .st-select {
   flex: 1 1 120px;
   min-width: 0;
+}
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.line .node {
+  flex: 1;
+  width: auto;
+}
+.acts {
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0.35;
+}
+.line:hover .acts,
+.line:focus-within .acts {
+  opacity: 1;
+}
+.acts button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+.acts button.danger:hover {
+  color: var(--health-critical);
+}
+.tree-head {
+  margin-bottom: var(--space-2);
+}
+.add.first {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.wide {
+  grid-column: 1 / -1;
 }
 .chain {
   width: 140px;

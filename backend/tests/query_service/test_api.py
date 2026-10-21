@@ -140,6 +140,7 @@ def test_changes_are_versioned_and_audited(client):
 
 def test_no_endpoint_returns_credentials(client):
     create(client)
+    client.http.put("/api/run-mode", json={"mode": "production"}, headers=client.as_("admin"))
     body = {"parameters": {"device_id": "SIM-S13", "key_name": "M01_BS1_SPD", **window()}}
     responses = [
         client.get("/api/datasources"),

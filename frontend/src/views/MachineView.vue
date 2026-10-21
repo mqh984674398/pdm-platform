@@ -4,10 +4,11 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import HealthBadge from '@/components/base/HealthBadge.vue'
 import PanelBox from '@/components/base/PanelBox.vue'
-import ComponentDetail from '@/components/fleet/ComponentDetail.vue'
 import DemoNotice from '@/components/fleet/DemoNotice.vue'
 import MachineMap from '@/components/fleet/MachineMap.vue'
+import BackButton from '@/components/base/BackButton.vue'
 import { machineHealth, useFleet } from '@/composables/useFleet'
+import { usePlantTree } from '@/composables/usePlantTree'
 import { useLocalized } from '@/composables/useLocalized'
 
 const { t } = useI18n()
@@ -17,22 +18,24 @@ const router = useRouter()
 const { fleet, machines, findMachine } = useFleet()
 
 const machine = computed(() => findMachine(route.params.id as string | undefined))
-const selectedId = computed(() => (route.query.c as string | undefined) ?? null)
-const selected = computed(
-  () => machine.value?.components.find((c) => c.component_id === selectedId.value) ?? null,
-)
+const { workshopOf } = usePlantTree()
+const backTo = computed(() => {
+  const w = machine.value ? workshopOf.value.get(machine.value.machine_id) : undefined
+  return w ? { path: '/', query: { w } } : { path: '/' }
+})
 
 function selectMachine(id: string) {
   router.push(`/machine/${id}`)
 }
-function selectComponent(id: string) {
-  router.replace({ query: { c: id } })
+function openComponent(id: string) {
+  router.push(`/component/${id}`) // the component's history
 }
 </script>
 
 <template>
   <div v-if="fleet && machine" class="page">
     <header class="page-head">
+      <BackButton :to="backTo" :target="t('nav.overview')" />
       <div class="title-row">
         <h1>{{ lt(machine.name) }}</h1>
         <HealthBadge :state="machineHealth(machine)" />
@@ -59,13 +62,10 @@ function selectComponent(id: string) {
       </p>
       <DemoNotice :basis="fleet.health_basis" />
     </header>
-    <div class="layout" :class="{ withDetail: selected }">
+    <div class="layout">
       <PanelBox :title="t('machine.mapTitle')">
-        <MachineMap :machine="machine" :selected="selectedId" @select="selectComponent" />
+        <MachineMap :machine="machine" :selected="null" @select="openComponent" />
         <p class="hint">{{ t('machine.hint') }}</p>
-      </PanelBox>
-      <PanelBox v-if="selected" class="side">
-        <ComponentDetail :component="selected" compact />
       </PanelBox>
     </div>
   </div>

@@ -94,6 +94,10 @@ class DataSourceRegistry:
         self._sources[config.data_source_id] = (config, adapter)
         self._datasets[config.data_source_id] = list(datasets)
 
+    def remove(self, data_source_id: str) -> None:
+        self._sources.pop(data_source_id, None)
+        self._datasets.pop(data_source_id, None)
+
     def datasets(self, data_source_id: str) -> list[SimulatedDataset]:
         return list(self._datasets.get(data_source_id, []))
 

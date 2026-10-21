@@ -11,6 +11,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.api.visibility import Visible
 from app.core.db import get_session
 from app.core.security import Principal, Role, require
 from app.decision.fleet import FleetHealthService
@@ -22,8 +23,8 @@ Viewer = Annotated[Principal, Depends(require(Role.VIEWER))]
 
 
 @router.get("/fleet", response_model=FleetOverview)
-def fleet_overview(_: Viewer, db: DB) -> FleetOverview:
-    return FleetHealthService(db).overview()
+def fleet_overview(_: Viewer, db: DB, vis: Visible) -> FleetOverview:
+    return vis.fleet(FleetHealthService(db).overview())
 
 
 @router.get("/components/{component_id}/health", response_model=ComponentHealthReport)

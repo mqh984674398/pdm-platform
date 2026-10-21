@@ -75,6 +75,7 @@ class ComponentRecord(Base):
     name: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
     drive_chain_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     signal_ids: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    torque_limit: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     def to_model(self) -> ComponentInstance:
         return ComponentInstance(
@@ -84,6 +85,7 @@ class ComponentRecord(Base):
             name=LocalizedText.model_validate(self.name),
             drive_chain_id=self.drive_chain_id,
             signal_ids=list(self.signal_ids),
+            torque_limit=self.torque_limit,
         )
 
 
@@ -195,8 +197,14 @@ class EquipmentStore:
                 raise EquipmentConflictError("a component's type cannot change; create a new one")
         rec.machine_id, rec.type, rec.name = c.machine_id, c.type.value, c.name.model_dump()
         rec.drive_chain_id, rec.signal_ids = c.drive_chain_id, list(c.signal_ids)
+        rec.torque_limit = c.torque_limit
         audit(self.session, who, f"topology.component_{action}", "component", c.component_id)
         return rec.to_model()
+
+    def torque_limits(self) -> dict[str, float]:
+        """Component id → configured torque limit (SF-TORQUE-LIMIT is not evaluated without one)."""
+        stmt = select(ComponentRecord).where(ComponentRecord.torque_limit.is_not(None))
+        return {r.component_id: r.torque_limit for r in self.session.scalars(stmt)}  # type: ignore[misc]
 
     def is_simulated(self, component_id: str) -> bool:
         comp = self._component(component_id)
